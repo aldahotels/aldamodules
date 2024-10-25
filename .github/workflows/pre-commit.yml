@@ -3,41 +3,26 @@ name: pre-commit
 on:
   pull_request:
     branches:
-      - "{{ odoo_version }}*"
+      - "16.0*"
   push:
     branches:
-      - "{{ odoo_version }}"
-      - "{{ odoo_version }}-ocabot-*"
+      - "16.0"
+      - "16.0-ocabot-*"
 
 jobs:
   pre-commit:
-{%- if odoo_version < 14 %}
-    runs-on: ubuntu-20.04
-{%- else %}
     runs-on: ubuntu-22.04
-{%- endif %}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v2
-{%- if odoo_version < 11 %}
-        with:
-          python-version: "2.7"
-{%- elif odoo_version < 13 %}
-        with:
-          python-version: "3.6"
-{%- elif odoo_version < 14 %}
-        with:
-          python-version: "3.8"
-{%- else %}
         with:
           python-version: "3.11"
-{%- endif %}
       - name: Get python version
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
       - uses: actions/cache@v1
         with:
           path: ~/.cache/pre-commit
-          key: {% raw %}pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}{% endraw %}
+          key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Install pre-commit
         run: pip install pre-commit
       - name: Run pre-commit
