@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-user_access_pms_wizard_reconcile,user_access_pms_wizard_reconcile,model_pms_wizard_reconcile,pms.group_pms_manager,1,1,1,1
