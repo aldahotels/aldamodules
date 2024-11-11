@@ -1,0 +1,49 @@
+<odoo>
+    <!-- Acción para abrir el formulario y vista de árbol de KPI -->
+    <record id="action_pms_alda_kpis" model="ir.actions.act_window">
+        <field name="name">KPI</field>
+        <field name="res_model">pms.alda.kpis</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the Value KPI configurations
+            </p>
+        </field>
+    </record>
+
+    <!-- Vista de árbol para KPI -->
+    <record id="view_pms_alda_kpis_tree" model="ir.ui.view">
+        <field name="name">pms.alda.kpis.tree</field>
+        <field name="model">pms.alda.kpis</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="kpi_value"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de formulario para KPI -->
+    <record id="view_pms_alda_kpis_form" model="ir.ui.view">
+        <field name="name">pms.alda.kpis.form</field>
+        <field name="model">pms.alda.kpis</field>
+        <field name="arch" type="xml">
+            <form string="KPI">
+                <sheet>
+                    <group>
+                        <field name="name" widget="selection" options="{'selection': 'get_available_kpi_names'}"/>
+                        <field name="kpi_value"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Submenú KPI bajo el menú existente PMS Management -->
+    <menuitem id="menu_pms_alda_kpis" 
+              name="KPI" 
+              parent="pms.pms_configuration_menu" 
+              sequence="65" 
+              action="action_pms_alda_kpis"
+              groups="pms.group_pms_manager"/>
+</odoo>

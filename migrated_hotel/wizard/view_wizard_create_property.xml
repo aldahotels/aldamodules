@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+		<record id="wizard_create_property_form" model="ir.ui.view">
+			<field name="name">wizard.create.property.form</field>
+			<field name="model">wizard.create.property</field>
+			<field name="arch" type="xml">
+				<form string="Create Property Easy" >
+                    <group>
+                        <field name="company_id" />
+                        <field name="default_pricelist_id" />
+                    </group>
+                    <group>
+                        <field name="name" />
+                        <field name="property_code" />
+                        <field name="account_code" />
+                    </group>
+                    <group>
+                        <field name="bank_ids" />
+                        <field name="tpv1_bank_id" />
+                        <field name="tpv2_bank_id" />
+                        <field name="tpv3_bank_id" />
+                        <field name="ps_bank_id" />
+                        <field name="booking_bank_id" />
+                    </group>
+                    <footer>
+                        <button string="Create" name="create_property"
+                            type="object" class="oe_highlight" />
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="wizard_create_property_action" model="ir.actions.act_window">
+			<field name="name">Create Property Easy</field>
+			<field name="res_model">wizard.create.property</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="wizard_create_property_form" />
+			<field name="target">new</field>
+		</record>
+
+	</data>
+</odoo>

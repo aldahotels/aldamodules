@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_docuware_backend_full,Full access on docuware.backend,model_docuware_backend,connector.group_connector_manager,1,1,1,1
+access_docuware_cabinet,access_docuware_cabinet,model_docuware_cabinet,connector.group_connector_manager,1,1,1,1
+access_docuware_company,access_docuware_company,model_docuware_company,connector.group_connector_manager,1,1,1,1
+access_docuware_property,access_docuware_property,model_docuware_property,connector.group_connector_manager,1,1,1,1
+access_docuware_payment_mode,access_docuware_payment_mode,model_docuware_payment_mode,connector.group_connector_manager,1,1,1,1
+access_docuware_account_move,access_docuware_account_move,model_docuware_account_move,base.group_user,1,0,0,0
+access_docuware_account_move_manager,access_docuware_account_move_manager,model_docuware_account_move,connector.group_connector_manager,1,1,1,1
