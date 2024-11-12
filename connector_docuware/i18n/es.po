@@ -1,0 +1,255 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* connector_docuware
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-29 11:44+0000\n"
+"PO-Revision-Date: 2022-03-29 11:44+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_backend__access_token
+msgid "Access Token"
+msgstr "Token de acceso"
+
+#. module: connector_docuware
+#: model_terms:ir.ui.view,arch_db:connector_docuware.docuware_backend_view_form
+msgid "Archived"
+msgstr "Archivado"
+
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_company__backend_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_payment_mode__backend_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_property__backend_id
+msgid "Backend"
+msgstr "Backends"
+
+#. module: connector_docuware
+#: model:ir.ui.menu,name:connector_docuware.menu_docuware_backend
+msgid "Backends"
+msgstr "Backends"
+
+#. module: connector_docuware
+#: model:ir.ui.menu,name:connector_docuware.docuware_cabinet_menu_act
+#: model_terms:ir.ui.view,arch_db:connector_docuware.docuware_cabinet_view_form
+msgid "Cabinet"
+msgstr ""
+
+#. module: connector_docuware
+#: model_terms:ir.ui.view,arch_db:connector_docuware.docuware_backend_view_form
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: connector_docuware
+#: model:ir.ui.menu,name:connector_docuware.menu_docuware_root
+#: model_terms:ir.ui.view,arch_db:connector_docuware.hr_expense_view_form
+#: model_terms:ir.ui.view,arch_db:connector_docuware.view_move_form
+msgid "Docuware"
+msgstr "Docuware"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__docuware_amount_total
+msgid "Docuware Amount Total"
+msgstr "Total docuware"
+
+#. module: connector_docuware
+#: model:ir.actions.act_window,name:connector_docuware.action_docuware_backend
+msgid "Docuware Backends"
+msgstr ""
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_account_bank_statement_line__docuware_bind_ids
+#: model:ir.model.fields,field_description:connector_docuware.field_account_move__docuware_bind_ids
+#: model:ir.model.fields,field_description:connector_docuware.field_account_payment__docuware_bind_ids
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__docuware_bind_ids
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_hr_expense__docuware_bind_ids
+#: model:ir.model.fields,field_description:connector_docuware.field_hr_expense__docuware_bind_ids
+msgid "Docuware Bind"
+msgstr ""
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_backend__docuware_company_ids
+msgid "Docuware Company"
+msgstr ""
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__docuware_document_type
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_document__docuware_document_type
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_hr_expense__docuware_document_type
+msgid "Docuware Document Type"
+msgstr ""
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_backend__docuware_payment_mode_ids
+msgid "Docuware Payment Mode"
+msgstr "Modos de pago Docuware"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_backend__docuware_property_ids
+msgid "Docuware Property"
+msgstr ""
+
+#. module: connector_docuware
+#: model:ir.model,name:connector_docuware.model_docuware_document
+msgid "Docuware document"
+msgstr ""
+
+#. module: connector_docuware
+#: model:ir.model,name:connector_docuware.model_docuware_hr_expense
+msgid "Docuware expense"
+msgstr ""
+
+#. module: connector_docuware
+#: model:ir.model,name:connector_docuware.model_docuware_cabinet
+msgid "Docuware file cabinet"
+msgstr ""
+
+#. module: connector_docuware
+#: model:ir.model,name:connector_docuware.model_docuware_account_move
+msgid "Docuware invoice"
+msgstr ""
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_backend__url
+msgid "Url"
+msgstr "Url"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__user_id
+msgid "User"
+msgstr "Usuario"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_backend__execute_user_id
+msgid "User for the jobs"
+msgstr "Usuario para ejecutar trabajos"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_backend__username
+msgid "Username"
+msgstr "Usuario"
+
+#. module: connector_docuware
+#: model_terms:ir.ui.view,arch_db:connector_docuware.docuware_backend_view_form
+msgid "Webhook"
+msgstr "Webhook"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_backend__webhook_password
+msgid "Webhook Password"
+msgstr "Contraseña webhook"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_backend__webhook_user
+msgid "Webhook User"
+msgstr "Usuario webhook"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__backend_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_binding__backend_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_binding_odoo__backend_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_cabinet__backend_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_document__backend_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_hr_expense__backend_id
+msgid "docuware Backend"
+msgstr "Backend Docuware"
+
+#. module: connector_docuware
+#: model:ir.model.constraint,message:connector_docuware.constraint_docuware_backend_unique_webhook_user
+msgid "webhook user must be unique"
+msgstr "El usuario del webhook debe de ser único"
+
+#. module: connector_docuware
+#: model_terms:ir.ui.view,arch_db:connector_docuware.docuware_backend_view_form
+msgid "Properties"
+msgstr "Hoteles"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_backend__name
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_cabinet__name
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_company__name
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_payment_mode__name
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_property__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__pms_property_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_property__property_id
+msgid "Property"
+msgstr "Hotel"
+
+#. module: connector_docuware
+#: model_terms:ir.ui.view,arch_db:connector_docuware.docuware_backend_view_form
+msgid "Payment modes"
+msgstr "Modos de pago"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__payment_mode_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_payment_mode__payment_mode_id
+msgid "Payment Mode"
+msgstr "Modo de pago"
+
+#. module: connector_docuware
+#: model_terms:ir.ui.view,arch_db:connector_docuware.docuware_backend_view_form
+msgid "Generate token"
+msgstr "Generar token"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__company_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_company__company_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_hr_expense__company_id
+msgid "Company"
+msgstr "Compañía"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__journal_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_property__journal_id
+msgid "Journal"
+msgstr "Diario"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__docuware_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_binding__docuware_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_binding_odoo__docuware_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_cabinet__docuware_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_document__docuware_id
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_hr_expense__docuware_id
+msgid "ID on docuware"
+msgstr "ID en Docuware"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__docuware_document_type
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_document__docuware_document_type
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_hr_expense__docuware_document_type
+msgid "Docuware Document Type"
+msgstr "Tipo de documento"
+
+#. module: connector_docuware
+#: model:ir.model.fields,field_description:connector_docuware.field_account_bank_statement_line__docuware_fixed_asset
+#: model:ir.model.fields,field_description:connector_docuware.field_account_move__docuware_fixed_asset
+#: model:ir.model.fields,field_description:connector_docuware.field_account_payment__docuware_fixed_asset
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__docuware_fixed_asset
+#: model:ir.model.fields,field_description:connector_docuware.field_docuware_account_move__fixed_asset
+msgid "Fixed assets"
+msgstr "Inmobilizado"
+
+#. module: connector_docuware
+#: code:addons/connector_docuware/models/account_move/importer.py:0
+#, python-format
+msgid "Supplier with vat {}  not found"
+msgstr "No se ha encontrado ningún proveedor con el nif {}"
+
+#. module: connector_docuware
+#: model_terms:ir.ui.view,arch_db:connector_docuware.docuware_backend_view_form
+msgid "Import cabinets"
+msgstr "Importar cabinets"
