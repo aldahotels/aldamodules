@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_users_view_form" model="ir.ui.view">
+        <field name="name">Users Data Bi Export</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//page[@name='references']/group[@name='messaging']"
+                position="after"
+            >
+                <group string="Data Bi export">
+                    <field string="Days to download data" name="data_bi_days" />
+                    <group name="ftp_bi">
+                        <field string="FTP server url" name="url_ftp_bi" />
+                        <field string="FTP User" name="user_ftp_bi" />
+                        <field string="FTP Password" name="pass_ftp_bi" password="True" />
+                    </group>
+                    <group name="ftp_test">
+                        <div class="o_row">
+                            <field string="FTP Active"
+                                name="valid_ftp_bi"
+                                widget="boolean_toggle"
+                                readonly="True"
+                            />
+                            <button type="object"
+                                    name="ftp_bi_test"
+                                    string="Check and activate FTP"
+                                    class="oe_highlight"
+                                    />
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
