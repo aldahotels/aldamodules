@@ -1,0 +1,294 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_wizard_reconcile
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-31 11:43+0000\n"
+"PO-Revision-Date: 2022-03-31 13:51+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: es\n"
+"X-Generator: Poedit 2.3\n"
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "(file)"
+msgstr "(Archivo)"
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "(payments) /"
+msgstr "(Apuntes) /"
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "(statement) /"
+msgstr "(extracto) /"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields.selection,name:pms_wizard_reconcile.selection__pms_wizard_reconcile__move_types__all
+msgid "All"
+msgstr "Todos"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields.selection,name:pms_wizard_reconcile.selection__pms_wizard_reconcile__type__csv
+msgid "CSV"
+msgstr ""
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__check_not_found_lines_csv
+msgid "Check Not Found CSV lines"
+msgstr ""
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__check_reconciled_found
+msgid "Check Reconciled Found"
+msgstr ""
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__company_id
+msgid "Company"
+msgstr "Compañía"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__currency_id
+msgid "Company Currency"
+msgstr "Moneda"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__count_csv_transactions
+msgid "Count CSV transactions"
+msgstr ""
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__count_payments_found
+msgid "Count Payments Found"
+msgstr ""
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__create_date
+msgid "Created on"
+msgstr "Creado en"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__display_name
+msgid "Display Name"
+msgstr "Nombre a mostrar"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__file
+msgid "File"
+msgstr "Archivo"
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "File lines not founds"
+msgstr "Líneas del archivo no encontradas"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__name
+msgid "File name"
+msgstr "Nombre del archivo"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__type
+msgid "File type."
+msgstr "Tipo de archivo."
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__filter_by_date
+msgid "Filter by date"
+msgstr "Filtrar por fechas"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__filter_by_origin_agency
+msgid "Filter by origin agency"
+msgstr "Filtrar por agencia de origen"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__filter_by_property
+msgid "Filter by property"
+msgstr "Filtrar por hotel"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__filter_from
+msgid "Filter from"
+msgstr "Desde"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__filter_to
+msgid "Filter to"
+msgstr "Hasta"
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "Found lines already reconciled"
+msgstr "Líneas encontradas ya conciliadas"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__id
+msgid "ID"
+msgstr ""
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__incongruence_file
+msgid "Incongruence File"
+msgstr "Incongruencia del archivo"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields.selection,name:pms_wizard_reconcile.selection__pms_wizard_reconcile__move_types__invoice
+msgid "Invoice"
+msgstr "Factura"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__journal_id
+msgid "Journal"
+msgstr "Diario"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__journal_ids
+msgid "Journals"
+msgstr "Diarios"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.view_bank_statement_form
+msgid "Match Payments"
+msgstr "Conciliar apuntes"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__move_line_ids
+msgid "Move lines"
+msgstr "Apuntes contable"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__move_line_reconciled_ids
+msgid "Move lines reconciled"
+msgstr "Apuntes contables conciliados"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__move_types
+msgid "Move types"
+msgstr "Tipos de asiento"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__origin_agency_id
+msgid "Origin agency"
+msgstr "Agencia de origen"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__origin_statement_line_id
+msgid "Origin statement line"
+msgstr "Línea de extracto asociada"
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "Partial Reconcile"
+msgstr "Conciliar parcialmente"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields.selection,name:pms_wizard_reconcile.selection__pms_wizard_reconcile__move_types__payment
+msgid "Payment"
+msgstr "Pago"
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "Payments to Reconcile"
+msgstr "Apuntes listos para conciliar"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__pms_property_id
+msgid "Property"
+msgstr "Hotel"
+
+#. module: pms_wizard_reconcile
+#: model:ir.actions.act_window,name:pms_wizard_reconcile.action_pms_wizard_reconcile
+#: model:ir.model,name:pms_wizard_reconcile.model_pms_wizard_reconcile
+msgid "Reconcile Payments"
+msgstr "Apuntes ya conciliados"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__residual
+msgid "Residual"
+msgstr "Diferencia"
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "Search"
+msgstr "Buscar"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__smart_search
+msgid "Smart Search"
+msgstr ""
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "Target Total"
+msgstr "Total encontrado"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__target_total
+msgid "Target total"
+msgstr "Total encontrado"
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "The file does not seem to match the line in the statement"
+msgstr "El archivo subido no parece corresponderse con la línea de extracto a conciliar (los importes no coinciden)"
+
+#. module: pms_wizard_reconcile
+#: model_terms:ir.ui.view,arch_db:pms_wizard_reconcile.pms_wizard_reconcile_form
+msgid "Total Reconcile :)"
+msgstr "Conciliar Todo :)"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__file_total
+msgid "Total in File"
+msgstr "Total en archivo"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__origin_total
+msgid "Total in Origin Statement"
+msgstr "Total en la línea del extracto"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__folio_ids
+msgid "folios not found"
+msgstr "Folios encontrados sin pago"
+
+#. module: pms_wizard_reconcile
+#: model:ir.model.fields,field_description:pms_wizard_reconcile.field_pms_wizard_reconcile__csv_not_found
+msgid "transactions not found"
+msgstr "Códigos no encontrados ni en apuntes ni en folios"

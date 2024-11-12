@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="view_users_form_token_access" model="ir.ui.view">
+        <field name="name">view.users.form.token.access</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='references']" position="inside">
+                <group>
+                    <group string="Token Access" name="token_access">
+                        <field name="portal_access_token" />
+                        <field name="portal_access_token_expire" />
+                        <button
+                            name="create_portal_token_access"
+                            string="Creare or renew portal token"
+                            type="object"
+                            default_focus="1"
+                            class="oe_highlight"
+                        />
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
