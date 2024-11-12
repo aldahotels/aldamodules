@@ -4,11 +4,11 @@
 {
     "name": "PMS Data Bi",
     "summary": "Export hotel data for business intelligence",
-    "version": "14.0.3.1.0",
+    "version": "16.0.0.0.0",
     "license": "AGPL-3",
     "author": "Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>, "
     "Odoo Community Association (OCA)",
-    "website": "https://github.com/OsoTranquilo/aldahotels.git",
+    "website": "https://github.com/OCA/pms",
     "depends": ["pms", "pms_l10n_es"],
     "category": "Generic Modules/Property Management System",
     "data": [
