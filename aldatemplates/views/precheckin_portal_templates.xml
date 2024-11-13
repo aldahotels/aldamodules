@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="inherit_portal_my_precheckin_detail"
+        inherit_id="pms.portal_my_precheckin_detail"
+    >
+        <style>
+        #wrap{
+                background-image:url('/aldatemplates/static/description/precheckin.jpg'); background-size: cover; width:100%; height:100%; background-attachment: fixed; background-position: center center;
+                background-repeat: no-repeat;
+            }
+        label, span, h4, h5, #btnSave, #btnPrev1, #btnPrev2, #btnNext, #pager_count{
+                color: #f7f7f7
+            }
+        #title{
+                margin-top: 20px;
+            }
+        </style>
+    </template>
+    <template
+        id="inherit_portal_my_reservation_precheckin"
+        inherit_id="pms.portal_my_reservation_precheckin"
+    >
+        <style>
+            #wrap{
+                background-image:url('/aldatemplates/static/description/precheckin.jpg'); background-size: cover; width:100%; height:100%; background-attachment: fixed; background-position: center center;
+                background-repeat: no-repeat;
+            }
+            .container{
+                color: white !important
+            }
+
+        </style>
+    </template>
+    <template
+        id="inherit_portal_my_precheckin_end"
+        inherit_id="pms.portal_my_precheckin_end"
+    >
+        <style>
+            #wrap{
+                background-image:url('/aldatemplates/static/description/precheckin.jpg'); background-size: cover; width:100%; height:100%; background-attachment: fixed; background-position: center center;
+                background-repeat: no-repeat;
+            }
+
+            .container{
+                color: white !important
+            }
+
+            tbody, td{
+                color: black !important
+            }
+
+        </style>
+    </template>
+    <template
+        id="inherit_portal_my_folio_invitations"
+        inherit_id="pms.portal_my_folio_invitations"
+    >
+        <style>
+            #wrap{
+                background-image:url('/aldatemplates/static/description/precheckin.jpg'); background-size: cover; width:100%; height:100%;
+                background-repeat: no-repeat;
+            }
+        .table-responsive{margin-top:50px}
+        </style>
+    </template>
+</odoo>
