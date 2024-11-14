@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.view_users_form" />
         <field name="arch" type="xml">
             <xpath
-                expr="//page[@name='references']/group[@name='messaging']"
+                expr="//page[@name='preferences']/group[@name='messaging']"
                 position="after"
             >
                 <group string="Data Bi export">
@@ -14,20 +14,26 @@
                     <group name="ftp_bi">
                         <field string="FTP server url" name="url_ftp_bi" />
                         <field string="FTP User" name="user_ftp_bi" />
-                        <field string="FTP Password" name="pass_ftp_bi" password="True" />
+                        <field
+                            string="FTP Password"
+                            name="pass_ftp_bi"
+                            password="True"
+                        />
                     </group>
                     <group name="ftp_test">
                         <div class="o_row">
-                            <field string="FTP Active"
+                            <field
+                                string="FTP Active"
                                 name="valid_ftp_bi"
                                 widget="boolean_toggle"
                                 readonly="True"
                             />
-                            <button type="object"
-                                    name="ftp_bi_test"
-                                    string="Check and activate FTP"
-                                    class="oe_highlight"
-                                    />
+                            <button
+                                type="object"
+                                name="ftp_bi_test"
+                                string="Check and activate FTP"
+                                class="oe_highlight"
+                            />
                         </div>
                     </group>
                 </group>
