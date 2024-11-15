@@ -8,7 +8,7 @@
             <xpath expr="//notebook" position="inside">
                 <page name="staff_property" string="Property Staff">
                     <field name="employee_ids">
-                        <tree string="Employees">
+                        <tree>
                             <field name="job_id" />
                             <field name="name" />
                             <field name="work_email" />
