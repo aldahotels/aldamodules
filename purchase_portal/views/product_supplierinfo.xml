@@ -8,6 +8,12 @@
             <field name="delay" position="after">
                 <field name="supplier_stock" optional="hide"/>
             </field>
+            <field name="partner_id" position="after">
+                <field name="seller_children_ids" widget="many2many_tags" optional="show"/>
+            </field>
+            <field name="company_id" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
         </field>
     </record>
 </odoo>

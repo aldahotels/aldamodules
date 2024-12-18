@@ -24,6 +24,18 @@ class ProductSupplierinfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     supplier_stock = fields.Float('Supplier stock')
+    seller_children_ids = fields.Many2many(
+        'res.partner',
+        string='Seller children',
+        compute='_compute_seller_children_ids',
+        store=True,
+        readonly=True
+    )
+
+    @api.depends('partner_id')
+    def _compute_seller_children_ids(self):
+        for record in self:
+            record.seller_children_ids = self.env['res.partner'].search([('parent_id', '=', record.partner_id.id)])
 
     @api.model
     def create(self, values):

@@ -321,8 +321,9 @@
                 </td>
                 <td class="text-right">
                     <t t-if="product.mapped('seller_ids').mapped('partner_id') and purchase_request.property_id.seller_ids">
-                        <t t-foreach="product.mapped('seller_ids').filtered(lambda x: x.partner_id in purchase_request.property_id.seller_ids).mapped('partner_id')" t-as="seller">
-                            <span class="ml-2"><t t-esc="seller.name"/><br/>
+                        <t t-foreach="product.mapped('seller_ids').filtered(lambda x: x.partner_id in (purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids)).mapped('partner_id')" t-as="seller">
+                            <span class="ml-2">
+                                <t t-esc="seller.display_name"/><br/>
                                 <t t-esc="seller.email"/><br/>
                                 <t t-esc="seller.phone"/>
                             </span>

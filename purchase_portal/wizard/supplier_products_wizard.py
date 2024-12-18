@@ -41,5 +41,6 @@ class SupplierProductsWizard(models.TransientModel):
         for wizard in self:
             wizard.hotel_id.product_ids += wizard.product_ids
             wizard.hotel_id.seller_ids += wizard.supplier_ids
+            wizard.hotel_id.onchange_seller_ids()
 
         return {'type': 'ir.actions.act_window_close'}

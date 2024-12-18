@@ -56,8 +56,9 @@ class PMSProperty(models.Model):
         for record in self:
             record.seller_commercial_ids = record.seller_ids.mapped('commercial_partner_id')
 
-    @api.onchange("seller_ids", "seller_commercial_ids")
+    @api.onchange("seller_ids")
     def onchange_seller_ids(self):
+        self._compute_seller_commercial_ids()
         for hotel in self:
             if hotel.seller_ids:
                 seller_products = self.env['product.supplierinfo'].search([
