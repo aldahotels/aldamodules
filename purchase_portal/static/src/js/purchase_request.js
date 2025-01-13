@@ -28,11 +28,15 @@ publicWidget.registry.PurchaseRequestPortal = publicWidget.Widget.extend({
         let search = $(ev.currentTarget).val();
         let property_id = $(ev.currentTarget).attr("data-property_id");
         let purchase_request = $(ev.currentTarget).attr("data-purchase_request");
+        let seller_id = $("#product_seller").val();
+        let category_id = $("#product_category").val();
 
         this._rpc({
             route: "/purchase_request_product_table",
             params: {
                 'search': search,
+                'seller_id': seller_id,
+                'category_id': category_id,
                 'property_id': property_id,
                 'purchase_request': purchase_request,
             },
@@ -59,7 +63,7 @@ publicWidget.registry.PurchaseRequestPortal = publicWidget.Widget.extend({
                 let json_data = JSON.parse(new_data);
                 if ("error" in json_data) {
                     $("#edit_errors")[0].innerHTML = "<div class='alert alert-danger' role='alert'>"+json_data["message"]+"</div>";
-                }                
+                }
             } catch (e) {
                 $("#edit_errors").empty();
                 $("#purchase_request_details_list").empty();
@@ -83,7 +87,7 @@ publicWidget.registry.PurchaseRequestPortal = publicWidget.Widget.extend({
                 let json_data = JSON.parse(new_data);
                 if ("error" in json_data) {
                     $("#edit_errors")[0].innerHTML = "<div class='alert alert-danger' role='alert'>"+json_data["message"]+"</div>";
-                }                
+                }
             } catch (e) {
                 $("#edit_errors").empty();
                 $("#purchase_request_details_list").empty();
@@ -105,7 +109,7 @@ publicWidget.registry.PurchaseRequestPortal = publicWidget.Widget.extend({
                 let json_data = JSON.parse(new_data);
                 if ("error" in json_data) {
                     $("#edit_errors")[0].innerHTML = "<div class='alert alert-danger' role='alert'>"+json_data["message"]+"</div>";
-                }                
+                }
             } catch (e) {
                 $("#edit_errors").empty();
                 $("#purchase_request_details_list").empty();
@@ -115,13 +119,17 @@ publicWidget.registry.PurchaseRequestPortal = publicWidget.Widget.extend({
     },
 
     _onChangeSelect: function (ev) {
+        let search = $("#search").val();
         let category_id = $(ev.currentTarget).val();
+        let seller_id = $("#product_seller").val();
         let property_id = $(ev.currentTarget).attr("data-property_id");
         let purchase_request = $(ev.currentTarget).attr("data-purchase_request");
 
         this._rpc({
             route: "/purchase_request_product_table",
             params: {
+                'search': search,
+                'seller_id': seller_id,
                 'category_id': category_id,
                 'property_id': property_id,
                 'purchase_request': purchase_request,
@@ -177,14 +185,18 @@ publicWidget.registry.PurchaseRequestPortal = publicWidget.Widget.extend({
     },
 
     _onChangeSeller: function (ev) {
+        let search = $("#search").val();
         let seller_id = $(ev.currentTarget).val();
+        let category_id = $("#product_category").val();
         let property_id = $(ev.currentTarget).attr("data-property_id");
         let purchase_request = $(ev.currentTarget).attr("data-purchase_request");
 
         this._rpc({
             route: "/purchase_request_product_table",
             params: {
+                'search': search,
                 'seller_id': seller_id,
+                'category_id': category_id,
                 'property_id': property_id,
                 'purchase_request': purchase_request,
             },

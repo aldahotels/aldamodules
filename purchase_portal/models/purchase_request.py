@@ -94,17 +94,30 @@ class PurchaseRequestLine(models.Model):
             product = self.env['product.product'].browse(product_id)
             if not product.seller_ids:
                 raise UserError(_('There are no sellers for this product in the current company.'))
-            min_cost_productinfo = product.seller_ids.filtered(lambda x: x.partner_id.id in request.property_id.seller_ids.ids).sorted(key=lambda r: r.price)[0]
+            min_cost_productinfo = product.seller_ids.filtered(
+                lambda x: x.partner_id.id in request.property_id.seller_ids.ids
+                or x.partner_id.id in request.property_id.seller_commercial_ids.ids
+            ).sorted(key=lambda r: r.price)[0]
             if not min_cost_productinfo:
                 raise UserError(_('There are no sellers allowed for this request.'))
-            values['suggested_supplier_id'] = min_cost_productinfo.partner_id.id
-            # min_qty = product.seller_ids.filtered(lambda x: x.name.id == request.property_id.seller_id.id).min_qty
+            if min_cost_productinfo.partner_id not in request.property_id.seller_ids:
+                values['supplier_id'] = request.property_id.seller_ids.filtered(
+                    lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
+                ).id
+                values['suggested_supplier_id'] = request.property_id.seller_ids.filtered(
+                    lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
+                ).id
+            else:
+                values['suggested_supplier_id'] = min_cost_productinfo.partner_id.id
+            # min_qty = product.seller_ids.filtered(lambda x: x.partner_id.id == request.property_id.seller_id.id).min_qty
             min_qty = min_cost_productinfo.min_qty
 
             if product_qty < min_qty:
                 raise UserError(_('The minimum quantity for this product is %s') % min_qty)
             if request.review_ids:
-                request.message_post(body=_('New line added by {user}: <strong> {product} ({quantity})</strong>'.format(user=self.env.user.name, product=product.name, quantity=product_qty)))
+                request.message_post(body=_(
+                    'New line added by {user}: <strong> {product} ({quantity})</strong>'
+                ).format(user=self.env.user.name, product=product.name, quantity=product_qty))
         return super().create(values)
 
     def write(self, vals):
@@ -113,9 +126,20 @@ class PurchaseRequestLine(models.Model):
         product_qty = vals.get('product_qty', False)
         no_msg = ctx.get('no_msg', False)
         if portal and product_qty:
-            min_cost_productinfo = self.product_id.seller_ids.filtered(lambda x: x.partner_id.id in self.request_id.property_id.seller_ids.ids).sorted(key=lambda r: r.price)[0]
-            vals['suggested_supplier_id'] = min_cost_productinfo.partner_id.id
-            # min_qty = self.product_id.seller_ids.filtered(lambda x: x.name.id == self.request_id.property_id.seller_id.id).min_qty
+            min_cost_productinfo = self.product_id.seller_ids.filtered(
+                lambda x: x.partner_id.id in self.request_id.property_id.seller_ids.ids
+                or x.partner_id.id in self.request_id.property_id.seller_commercial_ids.ids
+            ).sorted(key=lambda r: r.price)[0]
+            if min_cost_productinfo.partner_id not in self.request_id.property_id.seller_ids:
+                vals['supplier_id'] = self.request_id.property_id.seller_ids.filtered(
+                    lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
+                ).id
+                vals['suggested_supplier_id'] = self.request_id.property_id.seller_ids.filtered(
+                    lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
+                ).id
+            else:
+                vals['suggested_supplier_id'] = min_cost_productinfo.partner_id.id
+            # min_qty = self.product_id.seller_ids.filtered(lambda x: x.partner_id.id == self.request_id.property_id.seller_id.id).min_qty
             min_qty = min_cost_productinfo.min_qty
             if product_qty < min_qty:
                 raise UserError(_('The minimum quantity for this product is %s') % min_qty)
