@@ -185,6 +185,7 @@ class DocuwareMapper(Component):
                     partner_id).property_payment_term_id.id or values.get("payment_mode_id")
             else:
                 payment_mode_id = values.get("payment_mode_id")
+        values["payment_mode_id"] = payment_mode_id
         onchange_values = (
             self.env["account.move"]
             .with_context(context)
