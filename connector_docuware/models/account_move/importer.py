@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import base64
 
-from odoo import _
+from odoo import _, fields
 from odoo.exceptions import ValidationError
 
 from odoo.addons.component.core import Component
@@ -143,7 +143,7 @@ class DocuwareMapper(Component):
         )
         return {"cabinet_id": cabinet.id}
 
-    def get_journal_type_by_move_type(self,move_type):
+    def get_journal_type_by_move_type(self, move_type):
         """Obtiene el tipo de diario correspondiente a un tipo de movimiento."""
         mapping = {
             'out_invoice': 'sale',
@@ -172,8 +172,19 @@ class DocuwareMapper(Component):
         if company_id:
             context["default_company_id"] = company_id
             context["allowed_company_ids"] = [company_id]
-        journal = self.env["account.move"].with_context(context)._search_default_journal()
+        journal = self.env["account.move"].with_context(
+            context)._search_default_journal()
         values["journal_id"] = journal.id
+
+        if partner_id:
+            if move_type in ["in_invoice", "in_refund"]:
+                payment_mode_id = self.env['res.partner'].browse(
+                    partner_id).supplier_payment_mode_id.id or values.get("payment_mode_id")
+            elif move_type in ["out_invoice", "out_refund"]:
+                payment_mode_id = self.env['res.partner'].browse(
+                    partner_id).property_payment_term_id.id or values.get("payment_mode_id")
+            else:
+                payment_mode_id = values.get("payment_mode_id")
         onchange_values = (
             self.env["account.move"]
             .with_context(context)
@@ -182,15 +193,18 @@ class DocuwareMapper(Component):
                     "partner_id": partner_id,
                     "move_type": move_type,
                     "journal_id": journal.id,
+                    "payment_mode_id": payment_mode_id,
                 },
                 ["partner_id"],
             )
         )
-        for key in onchange_values.keys():
-            if key not in values:
-                if key == "invoice_payment_term_id" and values.get("invoice_date_due"):
+
+        for key, value in onchange_values.items():
+            if key == 'invoice_date_due':
+                if (value is None or value == fields.Date.today()) and values.get('invoice_date_due') == fields.Date.today():
                     continue
-                values[key] = onchange_values[key]
+            if key not in values:
+                values[key] = value
 
         if partner_id:
             previous_invoice = self.env["account.move"].search(
@@ -252,4 +266,5 @@ class DocuwareMapper(Component):
         values["invoice_line_ids"] = [(0, 0, x) for x in new_lines]
         if values.get("partner_bank_id"):
             values["partner_bank_id"] = values.get("partner_bank_id").id
+
         return values
