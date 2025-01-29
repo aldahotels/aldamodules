@@ -22,6 +22,5 @@
         "views/docuware_cabinet.xml",
         "views/account_move.xml",
         "security/ir.model.access.csv",
-        "data/ir_cron.xml",
     ],
 }

@@ -5,4 +5,3 @@ from . import docuware_backend
 from . import docuware_cabinet
 from . import docuware_document
 from . import account_move
-from . import res_users
