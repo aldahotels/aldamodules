@@ -17,7 +17,7 @@ class DocuwareBackend(models.Model):
     url = fields.Char(required=True)
     username = fields.Char(required=True)
     password = fields.Char(required=True)
-    access_token = fields.Char()
+    access_token = fields.Char(readonly=True)
     active = fields.Boolean(string="Active", default=True)
     webhook_user = fields.Char()
     webhook_password = fields.Char()
@@ -25,6 +25,7 @@ class DocuwareBackend(models.Model):
     docuware_property_ids = fields.One2many("docuware.property", "backend_id")
     docuware_payment_mode_ids = fields.One2many("docuware.payment.mode", "backend_id")
     execute_user_id = fields.Many2one("res.users", "User for the jobs")
+    token_ok = fields.Boolean(default=False)
 
     _sql_constraints = [
         (
@@ -43,9 +44,10 @@ class DocuwareBackend(models.Model):
 
     def generate_token(self):
         self.ensure_one()
-        self.access_token = DocuwareApi(self.url).generate_access_token(
-            self.username, self.password
+        self.access_token = DocuwareApi(self.url,self.username, self.password).genereate_access_token_identity_service(
         )
+        if self.access_token:
+            self.token_ok = True
 
     def import_docuware_document(self, cabinet_id, document_id, document_type):
         self.ensure_one()

@@ -2,8 +2,10 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import json
 import logging
+import time
 
 import requests
+from urllib.parse import urlencode
 from requests.exceptions import ConnectionError as ConnError, HTTPError, Timeout
 
 from odoo.addons.component.core import AbstractComponent
@@ -35,52 +37,98 @@ def retryable_error(func):
 
 
 class DocuwareApi(object):
-    def __init__(self, location, token=False):
+    def __init__(self, location, username, password, token=False):
         self.location = location
+        self.username = username
+        self.password = password
         self.token = token
         self.headers = {
             "User-Agent": "OdooConnector/1.0",
             "Accept": "application/json",
         }
         self.session = requests.session()
+        self.identity_url = self.get_identity_url()
 
     def login(self):
         """
         Login into docuware
         """
-        token_login_url = "{}/Account/TokenLogOn".format(self.location)
-        data = {
-            "Token": self.token,
-            "HostID": "This_Is_A_Test",
-            "LicenseType": "PlatformService",
-        }
-        response = self._make_call(token_login_url, "POST", params=data)
-        if response.status_code != 200:
-            raise FailedJobError(
-                "%s error: %s" % (response.status_code, response.content)
-            )
+        self.genereate_access_token_identity_service()
         return self
 
-    def generate_access_token(self, username, password):
-        login_url = "{}/Account/Logon".format(self.location)
-        params = {"UserName": username, "Password": password}
-        response = self._make_call(login_url, "POST", params)
+
+    # New Rest API
+    def get_identity_url(self):
+        identity_info_url = "{}/home/identityserviceinfo".format(self.location)
+        response = self.session.request(
+            "GET",
+            url=identity_info_url,
+            headers={
+                "User-Agent": "OdooConnector/1.0",
+                "Accept": "application/json"
+            }
+        )
         if response.status_code != 200:
             raise FailedJobError(
                 "%s error: %s" % (response.status_code, response.content)
             )
-        get_token_url = "{}/Organization/LoginToken".format(self.location)
+        identity = json.loads(response.content)["IdentityServiceUrl"]
+        if not identity:
+            raise FailedJobError("No Identity Service URL found")
+        return identity
+
+    # Old Rest API (NOT USED)
+    # def generate_access_token(self, username, password):
+    #     login_url = "{}/Account/Logon".format(self.location)
+    #     params = {"UserName": username, "Password": password}
+    #     response = self._make_call(login_url, "POST", params)
+    #     if response.status_code != 200:
+    #         raise FailedJobError(
+    #             "%s error: %s" % (response.status_code, response.content)
+    #         )
+    #     get_token_url = "{}/Organization/LoginToken".format(self.location)
+    #     data = {
+    #         "TargetProducts": ["PlatformService"],
+    #         "Usage": "Multi",
+    #         "Lifetime": "365.00:00:00",
+    #     }
+    #     token_response = self._make_call(get_token_url, "POST", json=data)
+    #     if token_response.status_code != 200:
+    #         raise FailedJobError(
+    #             "%s error: %s" % (response.status_code, response.content)
+    #         )
+    #     return token_response.content
+
+    # New Rest API
+    def genereate_access_token_identity_service(self):
+        get_token_url = "{}/connect/token".format(self.identity_url)
         data = {
-            "TargetProducts": ["PlatformService"],
-            "Usage": "Multi",
-            "Lifetime": "365.00:00:00",
+            "grant_type": "password",
+            "username": self.username,
+            "password": self.password,
+            "scope": "docuware.platform",
+            "client_id": "docuware.platform.net.client"
         }
-        token_response = self._make_call(get_token_url, "POST", json=data)
+        payload = urlencode(data)
+        token_response = self.session.request(
+            "POST",
+            get_token_url,
+            data=payload,
+            headers={
+                "User-Agent": "OdooConnector/1.0",
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        )
         if token_response.status_code != 200:
             raise FailedJobError(
-                "%s error: %s" % (response.status_code, response.content)
+                "%s error: %s" % (token_response.status_code, token_response.content)
             )
-        return token_response.content
+        self.headers["Authorization"] = "Bearer " + \
+            json.loads(token_response.content)["access_token"]
+        self.token = json.loads(token_response.content)["access_token"]
+
+        return self.token
 
     def _make_call(
         self,
@@ -91,7 +139,10 @@ class DocuwareApi(object):
         json=None,
         content_type="application/json",
     ):
+
         headers = self.headers
+        if 'Authorization' not in headers:
+            self.genereate_access_token_identity_service()
         headers["Content-Type"] = content_type
         return self.session.request(
             method,
@@ -140,7 +191,7 @@ class DocuwareCRUDAdapter(AbstractComponent):
         """
         super().__init__(environment)
         self.client = DocuwareApi(
-            self.backend_record.url, self.backend_record.access_token
+            self.backend_record.url, self.backend_record.username, self.backend_record.password, self.backend_record.access_token
         )
         self.client.login()
 

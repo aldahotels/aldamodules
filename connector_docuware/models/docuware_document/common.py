@@ -52,5 +52,5 @@ class DocumentAdapter(AbstractComponent):
 
     def get_document_attachment(self, cabinet_id, document_id):
         return self.client.get_binary_data(
-            "/FileCabinets/{}/Documents/{}/Data".format(cabinet_id, document_id)
+            "FileCabinets/{}/Documents/{}/Data".format(cabinet_id, document_id)
         )

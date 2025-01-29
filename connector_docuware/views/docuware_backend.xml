@@ -30,7 +30,15 @@
                     />
                 </header>
                 <sheet>
+
                     <field name="active" invisible="1" />
+                    <field name="token_ok" invisible="1" />
+                    <widget
+                        name="web_ribbon"
+                        title="Token Valid"
+                        bg_color="bg-success"
+                        attrs="{'invisible': [('token_ok', '=', False)]}"
+                    />
                     <widget
                         name="web_ribbon"
                         title="Archived"
@@ -45,7 +53,6 @@
                     <group>
                         <group>
                             <field name="url" />
-                            <field name="access_token" />
                         </group>
                         <group>
                             <field name="username" />
