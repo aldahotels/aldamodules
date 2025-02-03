@@ -94,12 +94,21 @@ class PurchaseRequestLine(models.Model):
             product = self.env['product.product'].browse(product_id)
             if not product.seller_ids:
                 raise UserError(_('There are no sellers for this product in the current company.'))
-            min_cost_productinfo = product.seller_ids.filtered(
-                lambda x: x.partner_id.id in request.property_id.seller_ids.ids
-                or x.partner_id.id in request.property_id.seller_commercial_ids.ids
-            ).sorted(key=lambda r: r.price)[0]
+
+            pms_seller_ids = self.env['res.partner'].sudo().search([
+                ('id', 'in', request.property_id.seller_ids.ids + request.property_id.seller_commercial_ids.ids)
+            ])
+
+            min_cost_productinfo = self.env["product.supplierinfo"].sudo().search([
+                '&',
+                ('partner_id', 'in', pms_seller_ids.ids),
+                '|',
+                ('product_tmpl_id', '=', product.product_tmpl_id.id),
+                ('product_id', '=', product.id),
+            ]).sorted(key=lambda r: r.price)
             if not min_cost_productinfo:
                 raise UserError(_('There are no sellers allowed for this request.'))
+            min_cost_productinfo = min_cost_productinfo[0]
             if min_cost_productinfo.partner_id not in request.property_id.seller_ids:
                 values['supplier_id'] = request.property_id.seller_ids.filtered(
                     lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
@@ -126,11 +135,19 @@ class PurchaseRequestLine(models.Model):
         product_qty = vals.get('product_qty', False)
         no_msg = ctx.get('no_msg', False)
         if portal and product_qty:
-            min_cost_productinfo = self.product_id.seller_ids.filtered(
-                lambda x: x.partner_id.id in self.request_id.property_id.seller_ids.ids
-                or x.partner_id.id in self.request_id.property_id.seller_commercial_ids.ids
-            ).sorted(key=lambda r: r.price)[0]
-            if min_cost_productinfo.partner_id not in self.request_id.property_id.seller_ids:
+            pms_seller_ids = self.env['res.partner'].sudo().search([
+                ('id', 'in', self.request_id.property_id.seller_ids.ids + self.request_id.property_id.seller_commercial_ids.ids)
+            ])
+
+            min_cost_productinfo = self.env["product.supplierinfo"].sudo().search([
+                '&',
+                ('partner_id', 'in', pms_seller_ids.ids),
+                '|',
+                ('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
+                ('product_id', '=', self.product_id.id),
+            ]).sorted(key=lambda r: r.price)[0]
+
+            if min_cost_productinfo.partner_id not in pms_seller_ids:
                 vals['supplier_id'] = self.request_id.property_id.seller_ids.filtered(
                     lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
                 ).id
@@ -153,7 +170,7 @@ class PurchaseRequestLine(models.Model):
         return super().unlink()
 
     def _autocreate_purchase_orders_from_lines(self):
-        lines = self.env['purchase.request.line'].search([
+        lines = self.env['purchase.request.line'].sudo().search([
             ('request_state', '=', 'approved'),
             ('purchase_state', '=', False),
         ])
@@ -163,8 +180,9 @@ class PurchaseRequestLine(models.Model):
                 ctx = self.env.context.copy()
                 ctx['active_model'] = 'purchase.request.line'
                 ctx['active_ids'] = lines.filtered(lambda r: r.property_id == hotel).ids
+                supplier_id = lines.mapped('suggested_supplier_id')[0] if lines.mapped('suggested_supplier_id') else lines.mapped('supplier_id')[0]
                 wiz = self.env['purchase.request.line.make.purchase.order'].with_context(ctx).create({
-                    'supplier_id': hotel.seller_ids[0].id,
+                    'supplier_id': supplier_id.id,
                     'multiple_suppliers': True if len(hotel.seller_ids) > 1 else False,
                     'property_id': hotel.id,
                     'sync_data_planned': True,
@@ -179,14 +197,14 @@ class PurchaseRequestLine(models.Model):
                         order.button_confirm()
 
                         ir_model_data = self.env['ir.model.data']
-                        template_id = ir_model_data.get_object_reference('purchase', 'email_template_edi_purchase_done')[1]
+                        template_id = ir_model_data.check_object_reference('purchase', 'email_template_edi_purchase_done')[1]
                         mail_wiz = self.env['mail.compose.message'].create({
                             'res_id': order.id,
                             'template_id': template_id or False,
                             'model': 'purchase.order',
                             'composition_mode': 'comment'}
                         )
-                        mail_wiz.onchange_template_id_wrapper()
+                        mail_wiz._onchange_template_id_wrapper()
                         mail_wiz.action_send_mail()
                 except UserError as e:
                     _logger.warning(e)

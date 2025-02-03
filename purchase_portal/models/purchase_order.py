@@ -40,3 +40,6 @@ class PurchaseOrder(models.Model):
         if not force_confirm and self.partner_id.min_purchase_amount and self.amount_total < self.partner_id.min_purchase_amount:
             raise UserError(_('The minimum purchase amount for {} is {}').format(self.partner_id.name, self.partner_id.min_purchase_amount))
         return super().button_confirm()
+
+    def _add_supplier_to_product(self):
+        return True

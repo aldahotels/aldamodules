@@ -158,7 +158,7 @@ class PortalAccount(CustomerPortal):
 
             values = self._purchase_request_get_page_view_values(purchase_request_sudo, access_token, **kw)
 
-        allowed_pms_property_ids = request.env.user.get_active_property_ids()
+        allowed_pms_property_ids = request.env.user.pms_property_ids.ids
         if allowed_pms_property_ids:
             allowed_pms_property_ids = request.env['pms.property'].browse(allowed_pms_property_ids).filtered(lambda x: x.company_id == request.env.company)
 

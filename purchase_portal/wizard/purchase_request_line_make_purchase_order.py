@@ -70,12 +70,16 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         pr_line_obj = self.env["purchase.request.line"]
         purchase = False
 
-        if len(self.item_ids.mapped('line_id').mapped('suggested_supplier_id')) == 1:
+        line_ids = pr_line_obj.sudo().search([
+            ('id', 'in', self.item_ids.mapped("line_id").ids)
+        ])
+
+        if len(line_ids.mapped('suggested_supplier_id')) == 1:
             return super(PurchaseRequestLineMakePurchaseOrder, self).make_purchase_order()
 
         # We use the original method with a few moditifications to create a PO for each supplier
 
-        suppliers = self.item_ids.mapped('line_id').mapped('suggested_supplier_id')
+        suppliers = line_ids.mapped('suggested_supplier_id')
         for supplier in suppliers:
             purchase = None
             supplier_lines = self.item_ids.filtered(lambda x: x.line_id.suggested_supplier_id == supplier)
@@ -148,8 +152,8 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                     line, po_line=po_line, new_pr_line=new_pr_line
                 )
                 po_line.product_qty = new_qty
-                po_line._onchange_quantity()
-                # The onchange quantity is altering the scheduled date of the PO
+                po_line._compute_price_unit_and_date_planned_and_name()
+                # The compute is altering the scheduled date of the PO
                 # lines. We do not want that:
                 date_required = item.line_id.date_required
                 po_line.date_planned = datetime(
