@@ -56,5 +56,5 @@ class Budget(models.Model):
         "pms.property",
         required=True,
         ondelete="restrict",
-        default=lambda self: self.env.user.get_active_property_ids()[0],
+        default=lambda self: self.env.user.pms_property_id.id or False,
     )
