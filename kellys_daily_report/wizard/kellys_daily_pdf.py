@@ -65,8 +65,9 @@ class KellysWizard(models.TransientModel):
         self.habitaciones = self.calculalimpiar(self.date_start)
         return
 
-    def calculalimpiar(self):
-        fechalimpieza = date.today()
+    def calculalimpiar(self, fechalimpieza=False):
+        if not fechalimpieza:
+            fechalimpieza = date.today()
         grids = self.env["pms.room"].search(
             [("pms_property_id", "=", self.pms_property_id.id)],
             order="sequence ASC",
@@ -209,7 +210,7 @@ class KellysWizard(models.TransientModel):
 
         return {
             "xls_filename": "Kellys_%s_%s.xlsx" % (pms_property.name, self.date_start),
-            "xls_binary": base64.encodestring(file_data.read()),
+            "xls_binary": base64.encodebytes(file_data.read()),
         }
 
     def excel_rooms_report(self):
