@@ -18,6 +18,7 @@ class Budget(models.Model):
 
     _name = "pms.budget"
     _description = "Revenue budget"
+    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
 
     # fecha Primer día del mes
     month = fields.Selection(
