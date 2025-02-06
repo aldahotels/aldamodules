@@ -146,15 +146,15 @@ class DocuwareMapper(Component):
     def get_journal_type_by_move_type(self, move_type):
         """Obtiene el tipo de diario correspondiente a un tipo de movimiento."""
         mapping = {
-            'out_invoice': 'sale',
-            'out_refund': 'sale',
-            'in_invoice': 'purchase',
-            'in_refund': 'purchase',
-            'bank': 'bank',
-            'cash': 'cash',
-            'entry': 'general',
+            "out_invoice": "sale",
+            "out_refund": "sale",
+            "in_invoice": "purchase",
+            "in_refund": "purchase",
+            "bank": "bank",
+            "cash": "cash",
+            "entry": "general",
         }
-        return mapping.get(move_type, 'purchase')
+        return mapping.get(move_type, "purchase")
 
     def finalize(self, map_record, values):
 
@@ -172,20 +172,31 @@ class DocuwareMapper(Component):
         if company_id:
             context["default_company_id"] = company_id
             context["allowed_company_ids"] = [company_id]
-        journal = self.env["account.move"].with_context(
-            context)._search_default_journal()
+        journal = (
+            self.env["account.move"].with_context(context)._search_default_journal()
+        )
         values["journal_id"] = journal.id
 
+        payment_mode_id = False
         if partner_id:
             if move_type in ["in_invoice", "in_refund"]:
-                payment_mode_id = self.env['res.partner'].browse(
-                    partner_id).supplier_payment_mode_id.id or values.get("payment_mode_id")
+                payment_mode_id = self.env["res.partner"].browse(
+                    partner_id
+                ).supplier_payment_mode_id.id or values.get("payment_mode_id")
             elif move_type in ["out_invoice", "out_refund"]:
-                payment_mode_id = self.env['res.partner'].browse(
-                    partner_id).property_payment_term_id.id or values.get("payment_mode_id")
-            else:
-                payment_mode_id = values.get("payment_mode_id")
-        values["payment_mode_id"] = payment_mode_id
+                payment_mode_id = self.env["res.partner"].browse(
+                    partner_id
+                ).property_payment_term_id.id or values.get("payment_mode_id")
+
+        if payment_mode_id:
+            values["payment_mode_id"] = payment_mode_id
+        else:
+            payment_mode_id = (
+                self.env["account.payment.mode"]
+                .search([("name", "=", values["payment_mode_id"])], limit=1)
+                .id
+            )
+
         onchange_values = (
             self.env["account.move"]
             .with_context(context)
@@ -201,8 +212,10 @@ class DocuwareMapper(Component):
         )
 
         for key, value in onchange_values.items():
-            if key == 'invoice_date_due':
-                if (value is None or value == fields.Date.today()) and values.get('invoice_date_due') == fields.Date.today():
+            if key == "invoice_date_due":
+                if (value is None or value == fields.Date.today()) and values.get(
+                    "invoice_date_due"
+                ) == fields.Date.today():
                     continue
             if key not in values:
                 values[key] = value
