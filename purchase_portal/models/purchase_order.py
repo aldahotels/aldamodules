@@ -32,7 +32,10 @@ class PurchaseOrder(models.Model):
         property_id = values.get('property_id', False)
         wharehouse_id = self.env['pms.property'].browse(property_id).wharehouse_id.id if property_id else False
         if wharehouse_id:
-            values['picking_type_id'] = self.env['stock.picking.type'].search([('warehouse_id', '=', wharehouse_id), ('code', '=', 'incoming')]).id
+            values['picking_type_id'] = self.env['stock.picking.type'].search([
+                ('warehouse_id', '=', wharehouse_id),
+                ('code', '=', 'incoming')
+            ], order="id", limit=1).id
         return super().create(values)
 
     def button_confirm(self):
