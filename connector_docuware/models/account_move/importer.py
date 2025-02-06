@@ -190,12 +190,6 @@ class DocuwareMapper(Component):
 
         if payment_mode_id:
             values["payment_mode_id"] = payment_mode_id
-        else:
-            payment_mode_id = (
-                self.env["account.payment.mode"]
-                .search([("name", "=", values["payment_mode_id"])], limit=1)
-                .id
-            )
 
         onchange_values = (
             self.env["account.move"]
