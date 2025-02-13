@@ -269,5 +269,6 @@ class DocuwareMapper(Component):
         values["invoice_line_ids"] = [(0, 0, x) for x in new_lines]
         if values.get("partner_bank_id"):
             values["partner_bank_id"] = values.get("partner_bank_id").id
-
+        if not journal.pms_property_ids:
+            values["pms_property_id"] = False
         return values
