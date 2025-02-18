@@ -67,8 +67,6 @@ class AldaImportSalariesWzd(models.TransientModel):
                     "move_type": "entry",
                     "date": move_date,
                     "journal_id": self.journal_id.id,
-                    "currency_id": self.journal_id.currency_id.id
-                    or self.journal_id.company_id.currency_id.id,
                 }
                 last_move_name = row[0]
             if type(row[2]) == float:
@@ -89,12 +87,16 @@ class AldaImportSalariesWzd(models.TransientModel):
                         "name": row[4],
                         "debit": row[5] or 0.0,
                         "credit": row[6] or 0.0,
-                        "amount_currency": (row[5] or 0.0) - (row[6] or 0.0),
                         "tax_ids": row[2][:3] == "640" and [(6, 0, [tax.id])] or False,
-                        "tax_line_id": row[2][:3] == "475" and tax.id or False,
+                        "tax_repartition_line_id": row[2][:3] == "475"
+                        and tax.invoice_repartition_line_ids.filtered(
+                            lambda x: x.repartition_type == "tax"
+                        ).id
+                        or False,
                         "pms_property_id": pms_property.id,
-                        "currency_id": self.journal_id.currency_id.id
-                        or self.journal_id.company_id.currency_id.id,
+                        "analytic_distribution": row[2][:1] == "6"
+                        and {pms_property.analytic_account_id.id: 100}
+                        or False,
                     },
                 )
             )
@@ -104,7 +106,11 @@ class AldaImportSalariesWzd(models.TransientModel):
                 moves_to_create.append(newmove_vals)
 
         if moves_to_create:
-            moves = self.env["account.move"].create(moves_to_create)
+            moves = (
+                self.env["account.move"]
+                .with_context(skip_invoice_sync=True)
+                .create(moves_to_create)
+            )
             result = self.env["ir.actions.act_window"]._for_xml_id(
                 "account.action_move_journal_line"
             )
