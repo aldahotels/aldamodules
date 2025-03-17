@@ -46,3 +46,13 @@ class PurchaseOrder(models.Model):
 
     def _add_supplier_to_product(self):
         return True
+
+
+class PurchaseOrderLine(models.Model):
+    _inherit = 'purchase.order.line'
+
+    @api.model
+    def create(self, values):
+        res = super().create(values)
+        res.product_uom_qty = values.get('product_qty', 0)
+        return res
