@@ -35,12 +35,14 @@
         "custom_login_by_token",
         "point_of_sale",
         "website_sale",
+        "stock",
         # Módulo parche de odoo que arregla el no poder acceder a la configuración
         "account_payment_invoice_online_payment_patch",
     ],
     "data": [
         'security/ir.model.access.csv',
         "security/request_carts_security.xml",
+        "security/product_template_security.xml",
         'templates/purchase_request.xml',
         'templates/stock_picking.xml',
         "templates/request_saved_cart.xml",
