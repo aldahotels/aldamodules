@@ -66,7 +66,7 @@ class PortalAccount(CustomerPortal):
         return self._get_page_view_values(purchase_request, access_token, values, 'my_purchase_request_history', False, **kwargs)
 
     def _get_purchase_requests_domain(self):
-        return []
+        return [('requested_by', '=', request.uid)]
 
     @http.route(['/my/purchase_requests', '/my/purchase_requests/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_purchase_request(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
@@ -88,6 +88,12 @@ class PortalAccount(CustomerPortal):
         searchbar_filters = {
             'all': {'label': _('All'), 'domain': []},
         }
+        user = request.env['res.users'].sudo().browse(request.uid)
+        for property_id in user.pms_property_ids:
+            searchbar_filters[property_id.name] = {
+                'label': property_id.name,
+                'domain': [('property_id', '=', property_id.id)]
+            }
         # default filter by value
         if not filterby:
             filterby = 'all'
@@ -97,7 +103,7 @@ class PortalAccount(CustomerPortal):
             domain += [('date_start', '>', date_begin), ('date_start', '<=', date_end)]
 
         # count for pager
-        purchase_request_count = PurchaseRequest.search_count(domain)
+        purchase_request_count = PurchaseRequest.sudo().search_count(domain)
         # pager
         pager = portal_pager(
             url="/my/purchase_requests",
@@ -107,7 +113,7 @@ class PortalAccount(CustomerPortal):
             step=self._items_per_page
         )
         # content according to pager and archive selected
-        purchase_requests = PurchaseRequest.search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
+        purchase_requests = PurchaseRequest.sudo().search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
         request.session['my_purchase_request_history'] = purchase_requests.ids[:100]
 
         values.update({
