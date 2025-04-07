@@ -44,6 +44,7 @@
         "security/request_carts_security.xml",
         "security/product_template_security.xml",
         "security/stock_picking_security.xml",
+        "security/purchase_order_security.xml",
         'templates/purchase_request.xml',
         'templates/stock_picking.xml',
         "templates/request_saved_cart.xml",
