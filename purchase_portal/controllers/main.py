@@ -489,13 +489,24 @@ class PortalAccount(CustomerPortal):
             'property_id': saved_cart.property_id.id,
         })
         for line in saved_cart.item_ids:
+            product_info = request.env['product.supplierinfo'].sudo().search([
+                '|',
+                ('partner_id', 'in', purchase_r.property_id.seller_ids.ids),
+                ('partner_id', 'in', purchase_r.property_id.seller_commercial_ids.ids),
+                '|',
+                ('product_id', '=', line.product_id.id),
+                ('product_tmpl_id.product_variant_ids', '=', line.product_id.id),
+            ], order='price asc', limit=1)
+
             request.env['purchase.request.line'].create({
                 'request_id': purchase_r.id,
                 'product_id': line.product_id.id,
                 'product_qty': line.product_qty,
                 'product_uom_id': line.product_uom_id.id,
+                'estimated_cost': (product_info.price * line.product_qty) if product_info else 0,
                 'name': line.description,
             })
+
         return purchase_r
 
     def _delete_saved_cart(self, saved_cart):
