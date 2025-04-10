@@ -206,6 +206,9 @@
                             <a type="button" t-if="purchase_request" t-att-href="'/save_purchase_request/' + str(purchase_request.id)" class="btn btn-primary" string="Save request" role="button">
                                 <span>Save </span><i class="fa fa-floppy-o" aria-hidden=""></i>
                             </a>
+                            <a type="button" t-if="purchase_request" t-att-href="'/delete_purchase_request/' + str(purchase_request.id)" class="btn btn-primary" string="Delete request" role="button">
+                                <span>Delete </span><i class="fa fa-trash-o" aria-hidden=""></i>
+                            </a>
                             <button t-if="purchase_request and purchase_request.state == 'draft' and not purchase_request.review_ids" class="btn btn-primary request_validation" t-att-data-purchase_request="purchase_request.id">Request validation</button>
                             <button t-if="purchase_request and purchase_request.rejected" class="btn btn-primary restart_validation" t-att-data-purchase_request="purchase_request.id">Restart validation</button>
                         </div>

@@ -483,6 +483,17 @@ class PortalAccount(CustomerPortal):
 
         return request.redirect('/my')
 
+    @http.route(['/delete_purchase_request/<int:purchase_request>'], type='http', auth="public", website=True)
+    def portal_delete_current_cart(self, purchase_request=None, access_token=None, **kw):
+        if purchase_request:
+            order_id = request.env['purchase.request'].browse(purchase_request)
+            if order_id.state in ['draft']:
+                order_id.sudo().unlink()
+            else:
+                raise UserError(_('You can only delete draft purchase requests.'))
+
+        return request.redirect('/my')
+
     def _add_saved_cart(self, saved_cart):
         purchase_r = request.env['purchase.request'].create({
             'requested_by': saved_cart.user_id.id,
