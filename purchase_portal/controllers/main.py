@@ -27,6 +27,7 @@ from odoo.addons.portal.controllers.portal import CustomerPortal, pager as porta
 from odoo.addons.web.controllers.main import ensure_db
 from odoo.exceptions import AccessError, MissingError
 from collections import OrderedDict
+from odoo.exceptions import UserError
 
 
 class PortalAccount(CustomerPortal):

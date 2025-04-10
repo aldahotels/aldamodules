@@ -22,6 +22,7 @@ import json
 from odoo import http, _
 from odoo.http import request
 from odoo.tools.misc import get_lang
+from odoo.exceptions import UserError
 
 
 class PurchaseRequestJsonMethods(http.Controller):
