@@ -208,10 +208,10 @@ class PortalAccount(CustomerPortal):
         domain = self._get_stock_pickings_domain()
 
         searchbar_sortings = {
-            'date': {'label': _('Date'), 'order': 'scheduled_date desc'},
+            'date': {'label': _('Date'), 'order': 'scheduled_date desc, name desc'},
             'name': {'label': _('Reference'), 'order': 'name desc'},
-            'origin': {'label': _('Origin'), 'order': 'origin desc'},
-            'state': {'label': _('Status'), 'order': 'state'},
+            'origin': {'label': _('Origin'), 'order': 'origin desc, name desc'},
+            'state': {'label': _('Status'), 'order': 'state, name desc'},
         }
         # default sort by order
         if not sortby:
@@ -219,11 +219,17 @@ class PortalAccount(CustomerPortal):
         order = searchbar_sortings[sortby]['order']
 
         searchbar_filters = {
-            'all': {'label': _('All'), 'domain': []},
+            '00-all': {'label': _('All'), 'domain': []},
+            '01-draft': {'label': _('Draft'), 'domain': [('state', '=', 'draft')]},
+            '02-waiting': {'label': _('Waiting for other operation'), 'domain': [('state', '=', 'waiting')]},
+            '03-confirmed': {'label': _('On Wait'), 'domain': [('state', '=', 'confirmed')]},
+            '04-assigned': {'label': _('Prepared'), 'domain': [('state', '=', 'assigned')]},
+            '05-done': {'label': _('Done'), 'domain': [('state', '=', 'done')]},
+            '06-cancel': {'label': _('Cancelled'), 'domain': [('state', '=', 'cancel')]},
         }
         # default filter by value
         if not filterby:
-            filterby = 'all'
+            filterby = '00-all'
         domain += searchbar_filters[filterby]['domain']
 
         if date_begin and date_end:
