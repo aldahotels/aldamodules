@@ -303,6 +303,23 @@ class PurchaseRequestJsonMethods(http.Controller):
             )
 
         try:
+            for line in purchase_request.line_ids:
+                if line.product_qty <= 0:
+                    raise UserError(_('The quantity must be greater than 0'))
+                seller = line.product_id.seller_ids.filtered(
+                    lambda x: x.partner_id in (
+                        purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids
+                    )
+                )[0]
+                if seller.min_qty > line.product_qty:
+                    raise UserError(
+                        _('The minimum quantity for %s is %s %s') % (
+                            line.product_id.name,
+                            seller.min_qty,
+                            seller.product_uom.name
+                        )
+                    )
+
             if purchase_request.estimated_cost <= 300:
                 purchase_request.button_approved()
             else:
