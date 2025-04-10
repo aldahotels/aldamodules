@@ -76,9 +76,9 @@ class PortalAccount(CustomerPortal):
         domain = self._get_purchase_requests_domain()
 
         searchbar_sortings = {
-            'date': {'label': _('Date'), 'order': 'date_start desc'},
+            'date': {'label': _('Date'), 'order': 'date_start desc, name desc'},
             'name': {'label': _('Reference'), 'order': 'name desc'},
-            'state': {'label': _('Status'), 'order': 'state'},
+            'state': {'label': _('Status'), 'order': 'state, name desc'},
         }
         # default sort by order
         if not sortby:
@@ -86,17 +86,27 @@ class PortalAccount(CustomerPortal):
         order = searchbar_sortings[sortby]['order']
 
         searchbar_filters = {
-            'all': {'label': _('All'), 'domain': []},
+            '00-all': {'label': _('All'), 'domain': []},
+            '01-draft': {'label': _('Draft'), 'domain': [('state', '=', 'draft')]},
+            '02-approved': {'label': _('Approved'), 'domain': [('state', '=', 'approved')]},
+            '03-in_progress': {'label': _('In Progress'), 'domain': [('state', '=', 'in_progress')]},
+            '04-done': {'label': _('Done'), 'domain': [('state', '=', 'done')]},
+            '05-cancelled': {'label': _('Cancelled'), 'domain': [('state', '=', 'cancelled')]},
         }
         user = request.env['res.users'].sudo().browse(request.uid)
+        count = len(searchbar_filters)
         for property_id in user.pms_property_ids:
-            searchbar_filters[property_id.name] = {
+            key = str(count) + "-" + property_id.name
+            if count < 10:
+                key = "0" + key
+            searchbar_filters[key] = {
                 'label': property_id.name,
                 'domain': [('property_id', '=', property_id.id)]
             }
+            count += 1
         # default filter by value
         if not filterby:
-            filterby = 'all'
+            filterby = '00-all'
         domain += searchbar_filters[filterby]['domain']
 
         if date_begin and date_end:
