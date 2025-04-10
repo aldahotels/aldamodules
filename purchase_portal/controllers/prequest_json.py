@@ -201,11 +201,14 @@ class PurchaseRequestJsonMethods(http.Controller):
         request_id = line_id.request_id
 
         try:
-            if float(qty) == 0.0:
+            qty = float(qty)
+            if qty == 0.0:
                 line_id.unlink()
             else:
+                estimated_cost = (line_id.estimated_cost / line_id.product_qty) * qty
                 line_id.with_context(portal=True).write({
-                    'product_qty': float(qty),
+                    'product_qty': qty,
+                    'estimated_cost': estimated_cost,
                 })
         except Exception as e:
             return json.dumps(
