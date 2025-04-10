@@ -22,6 +22,7 @@ import json
 from odoo import http, _
 from odoo.http import request
 from odoo.tools.misc import get_lang
+from odoo.exceptions import UserError
 
 
 class PurchaseRequestJsonMethods(http.Controller):
@@ -201,11 +202,14 @@ class PurchaseRequestJsonMethods(http.Controller):
         request_id = line_id.request_id
 
         try:
-            if float(qty) == 0.0:
+            qty = float(qty)
+            if qty == 0.0:
                 line_id.unlink()
             else:
+                estimated_cost = (line_id.estimated_cost / line_id.product_qty) * qty
                 line_id.with_context(portal=True).write({
-                    'product_qty': float(qty),
+                    'product_qty': qty,
+                    'estimated_cost': estimated_cost,
                 })
         except Exception as e:
             return json.dumps(
@@ -300,6 +304,23 @@ class PurchaseRequestJsonMethods(http.Controller):
             )
 
         try:
+            for line in purchase_request.line_ids:
+                if line.product_qty <= 0:
+                    raise UserError(_('The quantity must be greater than 0'))
+                seller = line.product_id.seller_ids.filtered(
+                    lambda x: x.partner_id in (
+                        purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids
+                    )
+                )[0]
+                if seller.min_qty > line.product_qty:
+                    raise UserError(
+                        _('The minimum quantity for %s is %s %s') % (
+                            line.product_id.name,
+                            seller.min_qty,
+                            seller.product_uom.name
+                        )
+                    )
+
             if purchase_request.estimated_cost <= 300:
                 purchase_request.button_approved()
             else:

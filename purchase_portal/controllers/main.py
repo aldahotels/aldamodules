@@ -27,6 +27,7 @@ from odoo.addons.portal.controllers.portal import CustomerPortal, pager as porta
 from odoo.addons.web.controllers.main import ensure_db
 from odoo.exceptions import AccessError, MissingError
 from collections import OrderedDict
+from odoo.exceptions import UserError
 
 
 class PortalAccount(CustomerPortal):
@@ -66,7 +67,7 @@ class PortalAccount(CustomerPortal):
         return self._get_page_view_values(purchase_request, access_token, values, 'my_purchase_request_history', False, **kwargs)
 
     def _get_purchase_requests_domain(self):
-        return [('requested_by', '=', request.uid)]
+        return []
 
     @http.route(['/my/purchase_requests', '/my/purchase_requests/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_purchase_request(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
@@ -76,9 +77,9 @@ class PortalAccount(CustomerPortal):
         domain = self._get_purchase_requests_domain()
 
         searchbar_sortings = {
-            'date': {'label': _('Date'), 'order': 'date_start desc'},
+            'date': {'label': _('Date'), 'order': 'date_start desc, name desc'},
             'name': {'label': _('Reference'), 'order': 'name desc'},
-            'state': {'label': _('Status'), 'order': 'state'},
+            'state': {'label': _('Status'), 'order': 'state, name desc'},
         }
         # default sort by order
         if not sortby:
@@ -86,17 +87,27 @@ class PortalAccount(CustomerPortal):
         order = searchbar_sortings[sortby]['order']
 
         searchbar_filters = {
-            'all': {'label': _('All'), 'domain': []},
+            '00-all': {'label': _('All'), 'domain': []},
+            '01-draft': {'label': _('Draft'), 'domain': [('state', '=', 'draft')]},
+            '02-approved': {'label': _('Approved'), 'domain': [('state', '=', 'approved')]},
+            '03-in_progress': {'label': _('In Progress'), 'domain': [('state', '=', 'in_progress')]},
+            '04-done': {'label': _('Done'), 'domain': [('state', '=', 'done')]},
+            '05-cancelled': {'label': _('Cancelled'), 'domain': [('state', '=', 'cancelled')]},
         }
         user = request.env['res.users'].sudo().browse(request.uid)
+        count = len(searchbar_filters)
         for property_id in user.pms_property_ids:
-            searchbar_filters[property_id.name] = {
+            key = str(count) + "-" + property_id.name
+            if count < 10:
+                key = "0" + key
+            searchbar_filters[key] = {
                 'label': property_id.name,
                 'domain': [('property_id', '=', property_id.id)]
             }
+            count += 1
         # default filter by value
         if not filterby:
-            filterby = 'all'
+            filterby = '00-all'
         domain += searchbar_filters[filterby]['domain']
 
         if date_begin and date_end:
@@ -198,10 +209,10 @@ class PortalAccount(CustomerPortal):
         domain = self._get_stock_pickings_domain()
 
         searchbar_sortings = {
-            'date': {'label': _('Date'), 'order': 'scheduled_date desc'},
+            'date': {'label': _('Date'), 'order': 'scheduled_date desc, name desc'},
             'name': {'label': _('Reference'), 'order': 'name desc'},
-            'origin': {'label': _('Origin'), 'order': 'origin desc'},
-            'state': {'label': _('Status'), 'order': 'state'},
+            'origin': {'label': _('Origin'), 'order': 'origin desc, name desc'},
+            'state': {'label': _('Status'), 'order': 'state, name desc'},
         }
         # default sort by order
         if not sortby:
@@ -209,11 +220,17 @@ class PortalAccount(CustomerPortal):
         order = searchbar_sortings[sortby]['order']
 
         searchbar_filters = {
-            'all': {'label': _('All'), 'domain': []},
+            '00-all': {'label': _('All'), 'domain': []},
+            '01-draft': {'label': _('Draft'), 'domain': [('state', '=', 'draft')]},
+            '02-waiting': {'label': _('Waiting for other operation'), 'domain': [('state', '=', 'waiting')]},
+            '03-confirmed': {'label': _('On Wait'), 'domain': [('state', '=', 'confirmed')]},
+            '04-assigned': {'label': _('Prepared'), 'domain': [('state', '=', 'assigned')]},
+            '05-done': {'label': _('Done'), 'domain': [('state', '=', 'done')]},
+            '06-cancel': {'label': _('Cancelled'), 'domain': [('state', '=', 'cancel')]},
         }
         # default filter by value
         if not filterby:
-            filterby = 'all'
+            filterby = '00-all'
         domain += searchbar_filters[filterby]['domain']
 
         if date_begin and date_end:
@@ -467,19 +484,41 @@ class PortalAccount(CustomerPortal):
 
         return request.redirect('/my')
 
+    @http.route(['/delete_purchase_request/<int:purchase_request>'], type='http', auth="public", website=True)
+    def portal_delete_current_cart(self, purchase_request=None, access_token=None, **kw):
+        if purchase_request:
+            order_id = request.env['purchase.request'].browse(purchase_request)
+            if order_id.state in ['draft']:
+                order_id.sudo().unlink()
+            else:
+                raise UserError(_('You can only delete draft purchase requests.'))
+
+        return request.redirect('/my')
+
     def _add_saved_cart(self, saved_cart):
         purchase_r = request.env['purchase.request'].create({
             'requested_by': saved_cart.user_id.id,
             'property_id': saved_cart.property_id.id,
         })
         for line in saved_cart.item_ids:
+            product_info = request.env['product.supplierinfo'].sudo().search([
+                '|',
+                ('partner_id', 'in', purchase_r.property_id.seller_ids.ids),
+                ('partner_id', 'in', purchase_r.property_id.seller_commercial_ids.ids),
+                '|',
+                ('product_id', '=', line.product_id.id),
+                ('product_tmpl_id.product_variant_ids', '=', line.product_id.id),
+            ], order='price asc', limit=1)
+
             request.env['purchase.request.line'].create({
                 'request_id': purchase_r.id,
                 'product_id': line.product_id.id,
                 'product_qty': line.product_qty,
                 'product_uom_id': line.product_uom_id.id,
+                'estimated_cost': (product_info.price * line.product_qty) if product_info else 0,
                 'name': line.description,
             })
+
         return purchase_r
 
     def _delete_saved_cart(self, saved_cart):
