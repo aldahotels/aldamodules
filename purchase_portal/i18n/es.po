@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-18 10:41+0000\n"
-"PO-Revision-Date: 2024-12-18 10:41+0000\n"
+"POT-Creation-Date: 2025-04-10 10:21+0000\n"
+"PO-Revision-Date: 2025-04-10 10:21+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -575,6 +575,11 @@ msgstr ""
 
 #. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_new_purchase_request_page
+msgid "<span>Delete </span><i class=\"fa fa-trash-o\" aria-hidden=\"\"/>"
+msgstr "<span>Borrar </span><i class=\"fa fa-trash-o\" aria-hidden=\"\"/>"
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_new_purchase_request_page
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_purchase_request_page
 msgid "<span>Save </span><i class=\"fa fa-floppy-o\" aria-hidden=\"\"/>"
 msgstr "<span>Guardar </span><i class=\"fa fa-floppy-o\" aria-hidden=\"\"/>"
@@ -707,12 +712,15 @@ msgid "All supplier {} products have been updated successfully"
 msgstr "Todos los productos del proveedor {} han sido actualizados correctamente"
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_room_type__purchase_property_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_room_type__purchase_property_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_product_product__purchase_property_ids
 msgid "Allowed in properties"
 msgstr "Permitido en propiedades"
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__product_ids
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__product_seller_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__product_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__product_seller_ids
 msgid "Allowed products"
@@ -722,6 +730,13 @@ msgstr "Productos permitidos"
 #: model:ir.model.fields,field_description:purchase_portal.field_supplier_products_wizard__product_supplier_ids
 msgid "Allowed products by seller"
 msgstr "Productos permitidos por vendedor"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/main.py:0
+#, python-format
+msgid "Approved"
+msgstr "Aprobado"
 
 #. module: purchase_portal
 #: model:ir.model,name:purchase_portal.model_stock_backorder_confirmation
@@ -738,6 +753,14 @@ msgstr "Nombre del fichero CSV"
 #: model_terms:ir.ui.view,arch_db:purchase_portal.supplier_products_wizard
 msgid "Cancel"
 msgstr "Cancelar"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/main.py:0
+#: code:addons/purchase_portal/controllers/main.py:0
+#, python-format
+msgid "Cancelled"
+msgstr "Cancelado"
 
 #. module: purchase_portal
 #: model:ir.model.fields,field_description:purchase_portal.field_purchase_request_saved_cart_item__cart_id
@@ -833,9 +856,21 @@ msgid "Display Name"
 msgstr "Nombre"
 
 #. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/main.py:0
+#: code:addons/purchase_portal/controllers/main.py:0
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
+#, python-format
 msgid "Done"
 msgstr "Hecho"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/main.py:0
+#: code:addons/purchase_portal/controllers/main.py:0
+#, python-format
+msgid "Draft"
+msgstr "Borrador"
 
 #. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_purchase_requests
@@ -924,6 +959,13 @@ msgstr "Importado"
 #. odoo-python
 #: code:addons/purchase_portal/controllers/main.py:0
 #, python-format
+msgid "In Progress"
+msgstr "En progreso"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/main.py:0
+#, python-format
 msgid "Inactive"
 msgstr "Inactivo"
 
@@ -1004,11 +1046,24 @@ msgid "Mail to seller content"
 msgstr "Contenido mail a proveedor"
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__min_purchase_amount
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__min_purchase_amount
 #: model:ir.model.fields,field_description:purchase_portal.field_res_partner__min_purchase_amount
 #: model:ir.model.fields,field_description:purchase_portal.field_res_users__min_purchase_amount
 msgid "Minimum purchase amount"
 msgstr "Importe mínimo de compra"
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_new_purchase_request_page
+msgid "Minimun qty"
+msgstr "Cantidad mínima"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/prequest_json.py:0
+#, python-format
+msgid "Missing parameters"
+msgstr "Parámetros que faltan"
 
 #. module: purchase_portal
 #: model:ir.model.fields,field_description:purchase_portal.field_purchase_request_line_make_purchase_order__multiple_suppliers
@@ -1037,6 +1092,20 @@ msgstr "Nueva línea añadida por {user}: <strong> {product} ({quantity})</stron
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_new_purchase_request_page
 msgid "New purchase request"
 msgstr "Nueva solicitud de compra"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/prequest_json.py:0
+#, python-format
+msgid "No purchase_request or wrong state"
+msgstr "No hay solicitud de compra o estado incorrecto"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/main.py:0
+#, python-format
+msgid "On Wait"
+msgstr "En espera"
 
 #. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_saved_carts
@@ -1101,6 +1170,13 @@ msgstr "Sesión TPV"
 #: model:ir.model.fields,field_description:purchase_portal.field_stock_picking__access_url
 msgid "Portal Access URL"
 msgstr "URL acceso portal"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/main.py:0
+#, python-format
+msgid "Prepared"
+msgstr "Preparado"
 
 #. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_product_product
@@ -1277,6 +1353,7 @@ msgid "Saved Cart -"
 msgstr "Carrito guardado -"
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__saved_cart_count
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__saved_cart_count
 #: model:ir.model.fields,field_description:purchase_portal.field_res_partner__saved_cart_count
 #: model:ir.model.fields,field_description:purchase_portal.field_res_users__saved_cart_count
@@ -1298,6 +1375,7 @@ msgstr "Carritos guardados"
 
 #. module: purchase_portal
 #: model:ir.actions.act_window,name:purchase_portal.action_purchase_request_saved_cart_group
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__saved_cart_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__saved_cart_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_res_partner__saved_cart_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_res_users__saved_cart_ids
@@ -1433,11 +1511,25 @@ msgstr "La compra mínima para {} es de {}"
 
 #. module: purchase_portal
 #. odoo-python
+#: code:addons/purchase_portal/controllers/prequest_json.py:0
+#, python-format
+msgid "The minimum quantity for %s is %s %s"
+msgstr "La cantidad mínima para %s es %s %s"
+
+#. module: purchase_portal
+#. odoo-python
 #: code:addons/purchase_portal/models/purchase_request.py:0
 #: code:addons/purchase_portal/models/purchase_request.py:0
 #, python-format
 msgid "The minimum quantity for this product is %s"
 msgstr "La cantidad mínima para este producto es %s"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/prequest_json.py:0
+#, python-format
+msgid "The quantity must be greater than 0"
+msgstr "La cantidad debe ser mayor que 0"
 
 #. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_product_product
@@ -1530,12 +1622,22 @@ msgid "Validate"
 msgstr "Validar"
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__seller_commercial_ids
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__seller_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__seller_commercial_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__seller_ids
 msgid "Vendors allowed in this property"
 msgstr "Proveedores permitidos en este hotel"
 
 #. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/main.py:0
+#, python-format
+msgid "Waiting for other operation"
+msgstr "Esperando otra operación"
+
+#. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__wharehouse_id
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__wharehouse_id
 msgid "Warehouse"
 msgstr "Almacén"
@@ -1546,6 +1648,13 @@ msgstr "Almacén"
 #, python-format
 msgid "YOU CAN'T CREATE RESCUE SESSIONS"
 msgstr "NO PUEDES CREAR SESIONES DE RESCATE"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/main.py:0
+#, python-format
+msgid "You can only delete draft purchase requests."
+msgstr "Sólo puedes borrar solicitudes de compra en borrador."
 
 #. module: purchase_portal
 #. odoo-python
