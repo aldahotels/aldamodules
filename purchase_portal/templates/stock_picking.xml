@@ -38,6 +38,7 @@
                     <th>Stock picking #</th>
                     <th>Date</th>
                     <th>Origin</th>
+                    <th>Supplier</th>
                     <th/>
                 </tr>
             </thead>
@@ -52,18 +53,19 @@
                         </td>
                         <td><span t-field="stock_picking.scheduled_date"/></td>
                         <td><span t-field="stock_picking.origin"/></td>
+                        <td><span t-field="stock_picking.partner_id.name"/></td>
                         <td class="tx_status">
                             <t t-if="stock_picking.state == 'draft'">
                                 <span class="badge rounded-pill text-bg-info"><i class="fa fa-fw fa-clock-o" aria-label="Draft" title="Draft" role="img"></i><span class="d-none d-md-inline"> Draft</span></span>
                             </t>
                             <t t-if="stock_picking.state == 'waiting'">
-                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="Waiting" title="Waiting" role="img"></i><span class="d-none d-md-inline"> Waiting</span></span>
+                                <span class="badge rounded-pill text-bg-secondary"><i class="fa fa-fw fa-check" aria-label="Waiting" title="Waiting" role="img"></i><span class="d-none d-md-inline"> Waiting</span></span>
                             </t>
                             <t t-if="stock_picking.state == 'assigned'">
-                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="Assigned" title="Assigned" role="img"></i><span class="d-none d-md-inline"> Assigned</span></span>
+                                <span class="badge rounded-pill text-bg-secondary"><i class="fa fa-fw fa-check" aria-label="Assigned" title="Assigned" role="img"></i><span class="d-none d-md-inline"> Assigned</span></span>
                             </t>
                             <t t-if="stock_picking.state == 'confirmed'">
-                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="Confirmed" title="Confirmed" role="img"></i><span class="d-none d-md-inline"> Confirmed</span></span>
+                                <span class="badge rounded-pill text-bg-primary"><i class="fa fa-fw fa-check" aria-label="Confirmed" title="Confirmed" role="img"></i><span class="d-none d-md-inline"> Confirmed</span></span>
                             </t>
                             <t t-if="stock_picking.state == 'done'">
                                 <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="Done" title="Done" role="img"></i><span class="d-none d-md-inline"> Done</span></span>
