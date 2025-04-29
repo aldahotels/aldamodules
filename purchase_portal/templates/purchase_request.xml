@@ -63,10 +63,13 @@
                                 <span class="badge rounded-pill text-bg-info"><i class="fa fa-fw fa-clock-o" aria-label="Draft" title="Draft" role="img"></i><span class="d-none d-md-inline"> Draft</span></span>
                             </t>
                             <t t-if="purchase_request.state == 'to_approve'">
-                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="To approve" title="To approve" role="img"></i><span class="d-none d-md-inline"> To approve</span></span>
+                                <span class="badge rounded-pill text-bg-secondary"><i class="fa fa-fw fa-check" aria-label="To approve" title="To approve" role="img"></i><span class="d-none d-md-inline"> To approve</span></span>
                             </t>
                             <t t-if="purchase_request.state == 'approved'">
-                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="Approved" title="Approved" role="img"></i><span class="d-none d-md-inline"> Approved</span></span>
+                                <span class="badge rounded-pill text-bg-secondary"><i class="fa fa-fw fa-check" aria-label="Approved" title="Approved" role="img"></i><span class="d-none d-md-inline"> Approved</span></span>
+                            </t>
+                            <t t-if="purchase_request.state == 'in_progress'">
+                                <span class="badge rounded-pill text-bg-primary"><i class="fa fa-fw fa-check" aria-label="In Progress" title="In Progress" role="img"></i><span class="d-none d-md-inline"> In Progress</span></span>
                             </t>
                             <t t-if="purchase_request.state == 'done'">
                                 <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="Done" title="Done" role="img"></i><span class="d-none d-md-inline"> Done</span></span>
