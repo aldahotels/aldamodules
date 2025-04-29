@@ -18,12 +18,20 @@
 #
 ##############################################################################
 
-from odoo import models, _
+from odoo import models, fields, _
 
 
 class StockPicking(models.Model):
     _name = 'stock.picking'
     _inherit = ['stock.picking', 'portal.mixin']
+
+    property_id = fields.Many2one(
+        'pms.property',
+        string='Hotel',
+        related='purchase_id.property_id',
+        store=True,
+        readonly=True,
+    )
 
     def _compute_access_url(self):
         super(StockPicking, self)._compute_access_url()
