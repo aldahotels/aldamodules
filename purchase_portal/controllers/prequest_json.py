@@ -306,18 +306,45 @@ class PurchaseRequestJsonMethods(http.Controller):
         try:
             for line in purchase_request.line_ids:
                 if line.product_qty <= 0:
-                    raise UserError(_('The quantity must be greater than 0'))
-                seller = line.product_id.seller_ids.filtered(
+                    raise UserError(_('The quantity for %s must be greater than 0') % (line.product_id.name))
+
+            seller_ids = request.env['product.supplierinfo']
+            for product in purchase_request.line_ids.mapped('product_id'):
+                seller = product.seller_ids.filtered(
                     lambda x: x.partner_id in (
                         purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids
                     )
                 )[0]
-                if seller.min_qty > line.product_qty:
+                if seller not in seller_ids:
+                    seller_ids += seller
+
+            for partner_id in seller_ids.mapped('partner_id'):
+                min_amount = partner_id.min_purchase_amount
+                if not min_amount:
+                    min_amount = partner_id.commercial_partner_id.min_purchase_amount
+                sellers = seller_ids.filtered(
+                    lambda x: x.partner_id == partner_id or x.partner_id == partner_id.commercial_partner_id
+                )
+                purchase_seller_amount = 0
+                for seller in sellers:
+                    purchase_seller_amount += purchase_request.line_ids.filtered(
+                        lambda x: x.product_id == seller.product_id or x.product_id in seller.product_tmpl_id.product_variant_ids
+                    ).estimated_cost
+
+                if min_amount > purchase_seller_amount:
+                    if seller.partner_id.property_purchase_currency_id:
+                        symbol = seller.partner_id.property_purchase_currency_id.symbol
+                    else:
+                        symbol = purchase_request.company_id.currency_id.symbol
+
                     raise UserError(
-                        _('The minimum quantity for %s is %s %s') % (
-                            line.product_id.name,
-                            seller.min_qty,
-                            seller.product_uom.name
+                        _('The minimum amount for %s is %s%s. Current amount %s%s.') % (
+                            partner_id.name,
+                            min_amount,
+                            symbol,
+                            purchase_seller_amount,
+                            symbol,
+
                         )
                     )
 
