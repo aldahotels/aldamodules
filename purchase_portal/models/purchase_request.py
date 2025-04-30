@@ -109,13 +109,12 @@ class PurchaseRequestLine(models.Model):
             if not min_cost_productinfo:
                 raise UserError(_('There are no sellers allowed for this request.'))
             min_cost_productinfo = min_cost_productinfo[0]
-            if min_cost_productinfo.partner_id not in request.property_id.seller_ids:
-                values['supplier_id'] = request.property_id.seller_ids.filtered(
+            if min_cost_productinfo.partner_id.id not in request.property_id.seller_ids.ids:
+                partner_id = request.property_id.seller_ids.filtered(
                     lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
-                ).id
-                values['suggested_supplier_id'] = request.property_id.seller_ids.filtered(
-                    lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
-                ).id
+                )
+                values['supplier_id'] = partner_id.id
+                values['suggested_supplier_id'] = partner_id.id
             else:
                 values['suggested_supplier_id'] = min_cost_productinfo.partner_id.id
             # min_qty = product.seller_ids.filtered(lambda x: x.partner_id.id == request.property_id.seller_id.id).min_qty
@@ -127,6 +126,7 @@ class PurchaseRequestLine(models.Model):
                 request.message_post(body=_(
                     'New line added by {user}: <strong> {product} ({quantity})</strong>'
                 ).format(user=self.env.user.name, product=product.name, quantity=product_qty))
+
         return super().create(values)
 
     def write(self, vals):
@@ -135,6 +135,8 @@ class PurchaseRequestLine(models.Model):
         product_qty = vals.get('product_qty', False)
         no_msg = ctx.get('no_msg', False)
         if portal and product_qty:
+            request = self.request_id
+            product = self.product_id
             pms_seller_ids = self.env['res.partner'].sudo().search([
                 ('id', 'in', self.request_id.property_id.seller_ids.ids + self.request_id.property_id.seller_commercial_ids.ids)
             ])
@@ -143,17 +145,20 @@ class PurchaseRequestLine(models.Model):
                 '&',
                 ('partner_id', 'in', pms_seller_ids.ids),
                 '|',
-                ('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
-                ('product_id', '=', self.product_id.id),
-            ]).sorted(key=lambda r: r.price)[0]
+                ('product_tmpl_id', '=', product.product_tmpl_id.id),
+                ('product_id', '=', product.id),
+            ]).sorted(key=lambda r: r.price)
+            if not min_cost_productinfo:
+                raise UserError(_('There are no sellers allowed for this request.'))
+            min_cost_productinfo = min_cost_productinfo[0]
 
-            if min_cost_productinfo.partner_id not in pms_seller_ids:
-                vals['supplier_id'] = self.request_id.property_id.seller_ids.filtered(
+            if min_cost_productinfo.partner_id not in request.property_id.seller_ids.ids:
+                partner_id = request.property_id.seller_ids.filtered(
                     lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
-                ).id
-                vals['suggested_supplier_id'] = self.request_id.property_id.seller_ids.filtered(
-                    lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
-                ).id
+                )
+
+                vals['supplier_id'] = partner_id.id
+                vals['suggested_supplier_id'] = partner_id.id
             else:
                 vals['suggested_supplier_id'] = min_cost_productinfo.partner_id.id
             # min_qty = self.product_id.seller_ids.filtered(lambda x: x.partner_id.id == self.request_id.property_id.seller_id.id).min_qty

@@ -63,10 +63,13 @@
                                 <span class="badge rounded-pill text-bg-info"><i class="fa fa-fw fa-clock-o" aria-label="Draft" title="Draft" role="img"></i><span class="d-none d-md-inline"> Draft</span></span>
                             </t>
                             <t t-if="purchase_request.state == 'to_approve'">
-                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="To approve" title="To approve" role="img"></i><span class="d-none d-md-inline"> To approve</span></span>
+                                <span class="badge rounded-pill text-bg-secondary"><i class="fa fa-fw fa-check" aria-label="To approve" title="To approve" role="img"></i><span class="d-none d-md-inline"> To approve</span></span>
                             </t>
                             <t t-if="purchase_request.state == 'approved'">
-                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="Approved" title="Approved" role="img"></i><span class="d-none d-md-inline"> Approved</span></span>
+                                <span class="badge rounded-pill text-bg-secondary"><i class="fa fa-fw fa-check" aria-label="Approved" title="Approved" role="img"></i><span class="d-none d-md-inline"> Approved</span></span>
+                            </t>
+                            <t t-if="purchase_request.state == 'in_progress'">
+                                <span class="badge rounded-pill text-bg-primary"><i class="fa fa-fw fa-check" aria-label="In Progress" title="In Progress" role="img"></i><span class="d-none d-md-inline"> In Progress</span></span>
                             </t>
                             <t t-if="purchase_request.state == 'done'">
                                 <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="Done" title="Done" role="img"></i><span class="d-none d-md-inline"> Done</span></span>
@@ -282,7 +285,6 @@
                                                 <th>Category</th>
                                                 <th class="text-right">Quantity</th>
                                                 <th class="text-right">UOM</th>
-                                                <th class="text-right">Minimun qty</th>
                                                 <th class="text-right">Seller</th>
                                                 <th></th>
                                             </tr>
@@ -325,13 +327,6 @@
                     <span t-field="product.uom_po_id"/>
                 </td>
                 <td class="text-right">
-                    <t t-foreach="product.seller_ids.filtered(lambda x: x.partner_id in (purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids))[0]" t-as="seller">
-                        <span class="ml-2">
-                            <t t-esc="seller.min_qty"/> <span t-field="seller.product_uom"/>
-                        </span>
-                    </t>
-                </td>
-                <td class="text-right">
                     <t t-if="product.mapped('seller_ids.partner_id') and purchase_request.property_id.seller_ids">
                         <t t-foreach="product.seller_ids.filtered(lambda x: x.partner_id in (purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids)).mapped('partner_id')[0]" t-as="seller">
                             <t t-if="seller not in purchase_request.property_id.seller_ids">
@@ -339,18 +334,45 @@
                                 <span class="ml-2">
                                     <t t-esc="seller_child.name"/><br/>
                                     <t t-esc="seller_child.email"/><br/>
-                                    <t t-esc="seller_child.phone"/>
+                                    <t t-esc="seller_child.phone"/><br/>
+                                    <t>Minimum purchase import: </t>
+                                    <t t-if="seller_child.min_purchase_amount">
+                                        <t t-esc="seller_child.min_purchase_amount"/>
+                                        <t t-esc="seller_child.property_purchase_currency_id.symbol"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-esc="seller_child.commercial_partner_id.min_purchase_amount"/>
+                                        <t t-esc="seller_child.commercial_partner_id.property_purchase_currency_id.symbol"/>
+                                    </t>
                                 </span>
                             </t>
                             <t t-else="">
                                 <span class="ml-2">
                                     <t t-esc="seller.name"/><br/>
                                     <t t-esc="seller.email"/><br/>
-                                    <t t-esc="seller.phone"/>
+                                    <t t-esc="seller.phone"/><br/>
+                                    <t>Minimum purchase import:</t>
+                                    <t t-if="seller.min_purchase_amount">
+                                        <t t-esc="seller.min_purchase_amount"/>
+                                        <t t-if="seller.property_purchase_currency_id">
+                                            <t t-esc="seller.property_purchase_currency_id.symbol"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="purchase_request.company_id.currency_id.symbol"/>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-esc="seller.commercial_partner_id.min_purchase_amount"/>
+                                        <t t-if="seller.commercial_partner_id.property_purchase_currency_id">
+                                            <t t-esc="seller.commercial_partner_id.property_purchase_currency_id.symbol"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="purchase_request.company_id.currency_id.symbol"/>
+                                        </t>
+                                    </t>
                                 </span>
                             </t>
                             <br  t-if="seller.id != product.mapped('seller_ids.partner_id')[-1].id" />
-                            <!-- <hr t-if="seller.id != product.mapped('seller_ids.partner_id')[-1].id" /> -->
                         </t>
                     </t>
                 </td>

@@ -75,14 +75,14 @@ class StockPickingJsonMethods(http.Controller):
     def stock_picking_validate(self, picking_id=None, **kw):
         if picking_id:
             # lang = get_lang(request.env).code
-            picking_id = request.env['stock.picking'].browse(picking_id)
+            picking_id = request.env['stock.picking'].sudo().browse(picking_id)
             if not picking_id:
                 return json.dumps({"error": True, "message": _("Picking not found")})
             try:
                 res = picking_id.button_validate()
                 if type(res) is dict and res.get('res_model', False) == 'stock.backorder.confirmation':
                     res['context']['default_send_mail_to_seller'] = True
-                    back_order_wizard = Form(request.env[(res.get('res_model'))].with_context(res['context'])).save()
+                    back_order_wizard = Form(request.env[(res.get('res_model'))].sudo().with_context(res['context'])).save()
                     res = back_order_wizard.process()
                 return res
             except Exception as e:

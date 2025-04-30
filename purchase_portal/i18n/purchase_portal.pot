@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-10 10:21+0000\n"
-"PO-Revision-Date: 2025-04-10 10:21+0000\n"
+"POT-Creation-Date: 2025-04-29 17:13+0000\n"
+"PO-Revision-Date: 2025-04-29 17:13+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -417,6 +417,22 @@ msgid ""
 msgstr ""
 
 #. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_stock_pickings
+msgid ""
+"<span class=\"badge rounded-pill text-bg-primary\"><i class=\"fa fa-fw fa-"
+"check\" aria-label=\"Confirmed\" title=\"Confirmed\" role=\"img\"/><span "
+"class=\"d-none d-md-inline\"> Confirmed</span></span>"
+msgstr ""
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_purchase_requests
+msgid ""
+"<span class=\"badge rounded-pill text-bg-primary\"><i class=\"fa fa-fw fa-"
+"check\" aria-label=\"In Progress\" title=\"In Progress\" role=\"img\"/><span"
+" class=\"d-none d-md-inline\"> In Progress</span></span>"
+msgstr ""
+
+#. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_saved_carts
 msgid ""
 "<span class=\"badge rounded-pill text-bg-secondary\"><i class=\"fa fa-cart-"
@@ -431,16 +447,9 @@ msgid ""
 msgstr ""
 
 #. module: purchase_portal
-#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_saved_carts
-msgid ""
-"<span class=\"badge rounded-pill text-bg-secondary\"><i class=\"fa fa-"
-"trash-o\"/> Delete</span>"
-msgstr ""
-
-#. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_purchase_requests
 msgid ""
-"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
+"<span class=\"badge rounded-pill text-bg-secondary\"><i class=\"fa fa-fw fa-"
 "check\" aria-label=\"Approved\" title=\"Approved\" role=\"img\"/><span "
 "class=\"d-none d-md-inline\"> Approved</span></span>"
 msgstr ""
@@ -448,17 +457,32 @@ msgstr ""
 #. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_stock_pickings
 msgid ""
-"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
+"<span class=\"badge rounded-pill text-bg-secondary\"><i class=\"fa fa-fw fa-"
 "check\" aria-label=\"Assigned\" title=\"Assigned\" role=\"img\"/><span "
 "class=\"d-none d-md-inline\"> Assigned</span></span>"
 msgstr ""
 
 #. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_purchase_requests
+msgid ""
+"<span class=\"badge rounded-pill text-bg-secondary\"><i class=\"fa fa-fw fa-"
+"check\" aria-label=\"To approve\" title=\"To approve\" role=\"img\"/><span "
+"class=\"d-none d-md-inline\"> To approve</span></span>"
+msgstr ""
+
+#. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_stock_pickings
 msgid ""
-"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
-"check\" aria-label=\"Confirmed\" title=\"Confirmed\" role=\"img\"/><span "
-"class=\"d-none d-md-inline\"> Confirmed</span></span>"
+"<span class=\"badge rounded-pill text-bg-secondary\"><i class=\"fa fa-fw fa-"
+"check\" aria-label=\"Waiting\" title=\"Waiting\" role=\"img\"/><span "
+"class=\"d-none d-md-inline\"> Waiting</span></span>"
+msgstr ""
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_saved_carts
+msgid ""
+"<span class=\"badge rounded-pill text-bg-secondary\"><i class=\"fa fa-"
+"trash-o\"/> Delete</span>"
 msgstr ""
 
 #. module: purchase_portal
@@ -468,22 +492,6 @@ msgid ""
 "<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
 "check\" aria-label=\"Done\" title=\"Done\" role=\"img\"/><span "
 "class=\"d-none d-md-inline\"> Done</span></span>"
-msgstr ""
-
-#. module: purchase_portal
-#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_purchase_requests
-msgid ""
-"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
-"check\" aria-label=\"To approve\" title=\"To approve\" role=\"img\"/><span "
-"class=\"d-none d-md-inline\"> To approve</span></span>"
-msgstr ""
-
-#. module: purchase_portal
-#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_stock_pickings
-msgid ""
-"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
-"check\" aria-label=\"Waiting\" title=\"Waiting\" role=\"img\"/><span "
-"class=\"d-none d-md-inline\"> Waiting</span></span>"
 msgstr ""
 
 #. module: purchase_portal
@@ -690,6 +698,13 @@ msgid "Approved"
 msgstr ""
 
 #. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/main.py:0
+#, python-format
+msgid "Assigned"
+msgstr ""
+
+#. module: purchase_portal
 #: model:ir.model,name:purchase_portal.model_stock_backorder_confirmation
 msgid "Backorder Confirmation"
 msgstr ""
@@ -794,6 +809,11 @@ msgid "Delete URL"
 msgstr ""
 
 #. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_new_purchase_request_page
+msgid "Delete request"
+msgstr ""
+
+#. module: purchase_portal
 #: model:ir.model.fields,field_description:purchase_portal.field_purchase_request_saved_cart_item__description
 msgid "Description"
 msgstr ""
@@ -878,6 +898,7 @@ msgid "History"
 msgstr ""
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_stock_picking__property_id
 #: model:ir.model.fields,field_description:purchase_portal.field_supplier_products_wizard__hotel_id
 msgid "Hotel"
 msgstr ""
@@ -1003,8 +1024,8 @@ msgid "Minimum purchase amount"
 msgstr ""
 
 #. module: purchase_portal
-#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_new_purchase_request_page
-msgid "Minimun qty"
+#: model_terms:ir.ui.view,arch_db:purchase_portal.purchase_request_product_table
+msgid "Minimum purchase import:"
 msgstr ""
 
 #. module: purchase_portal
@@ -1118,13 +1139,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_portal.field_purchase_request_saved_cart__access_url
 #: model:ir.model.fields,field_description:purchase_portal.field_stock_picking__access_url
 msgid "Portal Access URL"
-msgstr ""
-
-#. module: purchase_portal
-#. odoo-python
-#: code:addons/purchase_portal/controllers/main.py:0
-#, python-format
-msgid "Prepared"
 msgstr ""
 
 #. module: purchase_portal
@@ -1411,6 +1425,7 @@ msgstr ""
 
 #. module: purchase_portal
 #: model:ir.model.fields,field_description:purchase_portal.field_import_supplier_data_wizard__supplier_id
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_my_stock_pickings
 msgid "Supplier"
 msgstr ""
 
@@ -1453,16 +1468,16 @@ msgstr ""
 
 #. module: purchase_portal
 #. odoo-python
-#: code:addons/purchase_portal/models/purchase_order.py:0
+#: code:addons/purchase_portal/controllers/prequest_json.py:0
 #, python-format
-msgid "The minimum purchase amount for {} is {}"
+msgid "The minimum amount for %s is %s%s. Current amount %s%s."
 msgstr ""
 
 #. module: purchase_portal
 #. odoo-python
-#: code:addons/purchase_portal/controllers/prequest_json.py:0
+#: code:addons/purchase_portal/models/purchase_order.py:0
 #, python-format
-msgid "The minimum quantity for %s is %s %s"
+msgid "The minimum purchase amount for {} is {}"
 msgstr ""
 
 #. module: purchase_portal
@@ -1477,7 +1492,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/purchase_portal/controllers/prequest_json.py:0
 #, python-format
-msgid "The quantity must be greater than 0"
+msgid "The quantity for %s must be greater than 0"
 msgstr ""
 
 #. module: purchase_portal
@@ -1510,6 +1525,7 @@ msgstr ""
 
 #. module: purchase_portal
 #. odoo-python
+#: code:addons/purchase_portal/models/purchase_request.py:0
 #: code:addons/purchase_portal/models/purchase_request.py:0
 #, python-format
 msgid "There are no sellers allowed for this request."

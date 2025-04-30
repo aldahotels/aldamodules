@@ -67,7 +67,9 @@ class PortalAccount(CustomerPortal):
         return self._get_page_view_values(purchase_request, access_token, values, 'my_purchase_request_history', False, **kwargs)
 
     def _get_purchase_requests_domain(self):
-        return []
+        user = request.env['res.users'].sudo().browse(request.uid)
+
+        return [('property_id', 'in', user.pms_property_ids.ids)]
 
     @http.route(['/my/purchase_requests', '/my/purchase_requests/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_purchase_request(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
@@ -199,7 +201,12 @@ class PortalAccount(CustomerPortal):
         return self._get_page_view_values(stock_picking, access_token, values, 'my_stock_picking_history', False, **kwargs)
 
     def _get_stock_pickings_domain(self):
-        return [('picking_type_id.code', '=', 'incoming')]
+        user = request.env['res.users'].sudo().browse(request.uid)
+
+        return [
+            ('picking_type_id.code', '=', 'incoming'),
+            ('property_id', 'in', user.pms_property_ids.ids),
+        ]
 
     @http.route(['/my/stock_pickings', '/my/stock_pickings/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_stock_pickings(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
@@ -224,10 +231,23 @@ class PortalAccount(CustomerPortal):
             '01-draft': {'label': _('Draft'), 'domain': [('state', '=', 'draft')]},
             '02-waiting': {'label': _('Waiting for other operation'), 'domain': [('state', '=', 'waiting')]},
             '03-confirmed': {'label': _('On Wait'), 'domain': [('state', '=', 'confirmed')]},
-            '04-assigned': {'label': _('Prepared'), 'domain': [('state', '=', 'assigned')]},
+            '04-assigned': {'label': _('Assigned'), 'domain': [('state', '=', 'assigned')]},
             '05-done': {'label': _('Done'), 'domain': [('state', '=', 'done')]},
             '06-cancel': {'label': _('Cancelled'), 'domain': [('state', '=', 'cancel')]},
         }
+
+        user = request.env['res.users'].sudo().browse(request.uid)
+        count = len(searchbar_filters)
+        for property_id in user.pms_property_ids:
+            key = str(count) + "-" + property_id.name
+            if count < 10:
+                key = "0" + key
+            searchbar_filters[key] = {
+                'label': property_id.name,
+                'domain': [('property_id', '=', property_id.id)]
+            }
+            count += 1
+
         # default filter by value
         if not filterby:
             filterby = '00-all'
