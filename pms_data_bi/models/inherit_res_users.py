@@ -19,6 +19,7 @@ class ResUsers(models.Model):
     user_ftp_bi = fields.Char("User FTP DataBi", required=False)
     pass_ftp_bi = fields.Char("Password FTP DataBi", required=False)
     valid_ftp_bi = fields.Boolean("Valid FTP DataBi", default=False)
+    maestro_ftp_bi = fields.Char("Maestro name FTP DataBi", default="general_data_v3")
 
     def ftp_bi_test(self):
         _logger.info("Try FPT conection")
