@@ -1089,7 +1089,7 @@ class DataBi(models.Model):
         """send DataBI general data to ftp server"""
         _logger.info("Exporting FTP general DataBI")
         self.data_bi_ftp_write(
-            self.export_general_data(), "general_data_v3", "MaestraV3/"
+            self.export_general_data(), self.env.user.maestro_ftp_bi , "MaestraV3/"
         )
         return
 
