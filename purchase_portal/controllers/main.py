@@ -530,12 +530,23 @@ class PortalAccount(CustomerPortal):
                 ('product_tmpl_id.product_variant_ids', '=', line.product_id.id),
             ], order='price asc', limit=1)
 
+            supplier_id = False
+            if product_info:
+                if product_info.partner_id.id in purchase_r.property_id.seller_ids.ids:
+                    supplier_id = product_info.partner_id.id
+                elif product_info.partner_id.id in purchase_r.property_id.seller_commercial_ids.ids:
+                    supplier_id = purchase_r.sudo().property_id.seller_ids.filtered(
+                        lambda x: x.commercial_partner_id.id == product_info.partner_id.id
+                    )[0].id
+
             request.env['purchase.request.line'].create({
                 'request_id': purchase_r.id,
                 'product_id': line.product_id.id,
                 'product_qty': line.product_qty,
                 'product_uom_id': line.product_uom_id.id,
                 'estimated_cost': (product_info.price * line.product_qty) if product_info else 0,
+                'suggested_supplier_id': supplier_id,
+                'supplier_id': supplier_id,
                 'name': line.description,
             })
 
