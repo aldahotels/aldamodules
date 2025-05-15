@@ -207,7 +207,7 @@
                         </div>
                         <div class="col-lg-6 text-right">
                             <a type="button" t-if="purchase_request" t-att-href="'/save_purchase_request/' + str(purchase_request.id)" class="btn btn-primary" string="Save request" role="button">
-                                <span>Save </span><i class="fa fa-floppy-o" aria-hidden=""></i>
+                                <span>Save Cart </span><i class="fa fa-floppy-o" aria-hidden=""></i>
                             </a>
                             <a type="button" t-if="purchase_request" t-att-href="'/delete_purchase_request/' + str(purchase_request.id)" class="btn btn-primary" string="Delete request" role="button">
                                 <span>Delete </span><i class="fa fa-trash-o" aria-hidden=""></i>
