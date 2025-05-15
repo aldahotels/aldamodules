@@ -52,7 +52,7 @@ class PortalAccount(CustomerPortal):
             values['product_product_count'] = product_product_count
 
         # purchase.request.saved.cart
-        values['saved_carts_count'] = request.env['purchase.request.saved.cart'].search_count([])
+        values['saved_carts_count'] = request.env['purchase.request.saved.cart'].search_count(self._get_filter_domain())
         return values
 
     # ------------------------------------------------------------
@@ -410,14 +410,14 @@ class PortalAccount(CustomerPortal):
         return self._get_page_view_values(
             saved_cart, access_token, values, 'my_saved_carts_history', False, **kwargs)
 
-    def _get_filter_domain(self, kw):
-        return []
+    def _get_filter_domain(self):
+        return [('user_id', '=', request.env.user.id)]
 
     @http.route(['/my/saved_carts', '/my/saved_carts/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_saved_carts(self, page=1, date_begin=None, date_end=None, sortby=None, **kw):
         values = self._prepare_portal_layout_values()
         saved_cart_obj = request.env['purchase.request.saved.cart']
-        domain = self._get_filter_domain(kw)
+        domain = self._get_filter_domain()
         searchbar_sortings = {
             'date': {'label': _('Date'), 'order': 'create_date desc'},
             'name': {'label': _('Name'), 'order': 'name desc'},
