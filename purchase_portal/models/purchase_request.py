@@ -92,7 +92,7 @@ class PurchaseRequestLine(models.Model):
 
             request = self.env['purchase.request'].browse(request_id)
             product = self.env['product.product'].browse(product_id)
-            if not product.seller_ids:
+            if not product.sudo().seller_ids:
                 raise UserError(_('There are no sellers for this product in the current company.'))
 
             pms_seller_ids = self.env['res.partner'].sudo().search([
@@ -185,9 +185,13 @@ class PurchaseRequestLine(models.Model):
                 ctx = self.env.context.copy()
                 ctx['active_model'] = 'purchase.request.line'
                 ctx['active_ids'] = lines.filtered(lambda r: r.property_id == hotel).ids
-                supplier_id = lines.mapped('suggested_supplier_id')[0] if lines.mapped('suggested_supplier_id') else lines.mapped('supplier_id')[0]
+                supplier_id = lines.mapped('suggested_supplier_id')[0].id if lines.mapped('suggested_supplier_id') else \
+                    lines.mapped('supplier_id')[0].id if lines.mapped('supplier_id') else False
+                if not supplier_id:
+                    _logger.error(_('No supplier found for purchase request lines %s') % lines.ids)
+                    continue
                 wiz = self.env['purchase.request.line.make.purchase.order'].with_context(ctx).create({
-                    'supplier_id': supplier_id.id,
+                    'supplier_id': supplier_id,
                     'multiple_suppliers': True if len(hotel.seller_ids) > 1 else False,
                     'property_id': hotel.id,
                     'sync_data_planned': True,
