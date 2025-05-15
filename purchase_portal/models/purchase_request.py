@@ -74,6 +74,11 @@ class PurchaseRequest(models.Model):
                 )
         return res
 
+    def validate_tier(self):
+        res = super(PurchaseRequest, self).validate_tier()
+        self.write({'state': 'approved'})
+        return res
+
 
 class PurchaseRequestLine(models.Model):
     _inherit = 'purchase.request.line'
