@@ -52,7 +52,7 @@ class PortalAccount(CustomerPortal):
             values['product_product_count'] = product_product_count
 
         # purchase.request.saved.cart
-        values['saved_carts_count'] = request.env['purchase.request.saved.cart'].search_count([])
+        values['saved_carts_count'] = request.env['purchase.request.saved.cart'].search_count(self._get_filter_domain())
         return values
 
     # ------------------------------------------------------------
@@ -410,14 +410,14 @@ class PortalAccount(CustomerPortal):
         return self._get_page_view_values(
             saved_cart, access_token, values, 'my_saved_carts_history', False, **kwargs)
 
-    def _get_filter_domain(self, kw):
-        return []
+    def _get_filter_domain(self):
+        return [('user_id', '=', request.env.user.id)]
 
     @http.route(['/my/saved_carts', '/my/saved_carts/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_saved_carts(self, page=1, date_begin=None, date_end=None, sortby=None, **kw):
         values = self._prepare_portal_layout_values()
         saved_cart_obj = request.env['purchase.request.saved.cart']
-        domain = self._get_filter_domain(kw)
+        domain = self._get_filter_domain()
         searchbar_sortings = {
             'date': {'label': _('Date'), 'order': 'create_date desc'},
             'name': {'label': _('Name'), 'order': 'name desc'},
@@ -530,12 +530,23 @@ class PortalAccount(CustomerPortal):
                 ('product_tmpl_id.product_variant_ids', '=', line.product_id.id),
             ], order='price asc', limit=1)
 
+            supplier_id = False
+            if product_info:
+                if product_info.partner_id.id in purchase_r.property_id.seller_ids.ids:
+                    supplier_id = product_info.partner_id.id
+                elif product_info.partner_id.id in purchase_r.property_id.seller_commercial_ids.ids:
+                    supplier_id = purchase_r.sudo().property_id.seller_ids.filtered(
+                        lambda x: x.commercial_partner_id.id == product_info.partner_id.id
+                    )[0].id
+
             request.env['purchase.request.line'].create({
                 'request_id': purchase_r.id,
                 'product_id': line.product_id.id,
                 'product_qty': line.product_qty,
                 'product_uom_id': line.product_uom_id.id,
                 'estimated_cost': (product_info.price * line.product_qty) if product_info else 0,
+                'suggested_supplier_id': supplier_id,
+                'supplier_id': supplier_id,
                 'name': line.description,
             })
 

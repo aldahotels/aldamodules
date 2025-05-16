@@ -63,6 +63,8 @@
         'data/purchase_pos_send_template.xml',
         'data/purchase_order_rfq_template.xml',
         'data/purchase_order_remainder_template.xml',
+        'data/purchase_request_validation_template.xml',
+        'data/cron.xml',
     ],
     "assets": {
         "web.assets_frontend": [

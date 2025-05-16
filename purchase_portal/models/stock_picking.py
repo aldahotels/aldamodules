@@ -46,7 +46,13 @@ class StockPicking(models.Model):
             lines = ""
 
             for line in res.move_ids:
-                lines += _("Product: <b>{}</b>, quantity: <b>{}</b><br/>").format(line.product_id.display_name, line.product_qty)
+                lines += _("Product: <b>{}</b>, quantity: <b>{}</b><br/>").format(
+                    line.product_id.display_name,
+                    "{} {}".format(
+                        line.purchase_line_id.product_qty if line.purchase_line_id else line.product_qty,
+                        line.purchase_line_id.product_uom.display_name if line.purchase_line_id else line.product_uom_id.name,
+                    )
+                )
             message = _("Hi {}, <br/> {} {}").format(res.partner_id.name, text, lines)
 
             res.message_post(

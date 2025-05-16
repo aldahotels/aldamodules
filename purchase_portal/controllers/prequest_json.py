@@ -310,24 +310,27 @@ class PurchaseRequestJsonMethods(http.Controller):
 
             seller_ids = request.env['product.supplierinfo']
             for product in purchase_request.line_ids.mapped('product_id'):
-                seller = product.seller_ids.filtered(
-                    lambda x: x.partner_id in (
-                        purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids
-                    )
-                )[0]
+                partners = purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids
+                seller = seller_ids.sudo().search([
+                    '&',
+                    ('partner_id', 'in', partners.ids),
+                    '|',
+                    ('product_id', '=', product.id),
+                    ('product_tmpl_id.product_variant_ids', '=', product.id),
+                ], order='price asc', limit=1)
                 if seller not in seller_ids:
                     seller_ids += seller
 
-            for partner_id in seller_ids.mapped('partner_id'):
+            for partner_id in seller_ids.sudo().mapped('partner_id'):
                 min_amount = partner_id.min_purchase_amount
                 if not min_amount:
                     min_amount = partner_id.commercial_partner_id.min_purchase_amount
-                sellers = seller_ids.filtered(
+                sellers = seller_ids.sudo().filtered(
                     lambda x: x.partner_id == partner_id or x.partner_id == partner_id.commercial_partner_id
                 )
                 purchase_seller_amount = 0
                 for seller in sellers:
-                    purchase_seller_amount += purchase_request.line_ids.filtered(
+                    purchase_seller_amount += purchase_request.sudo().line_ids.filtered(
                         lambda x: x.product_id == seller.product_id or x.product_id in seller.product_tmpl_id.product_variant_ids
                     ).estimated_cost
 
