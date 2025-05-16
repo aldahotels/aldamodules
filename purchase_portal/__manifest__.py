@@ -56,6 +56,7 @@
         'views/res_users.xml',
         'views/res_partner.xml',
         "views/request_saved_cart.xml",
+        'views/stock_picking.xml',
         'wizard/purchase_request_line_make_purchase_order.xml',
         'wizard/stock_backorder_confirmation_views.xml',
         'wizard/import_supplier_data_wizard.xml',
@@ -64,6 +65,7 @@
         'data/purchase_order_rfq_template.xml',
         'data/purchase_order_remainder_template.xml',
         'data/purchase_request_validation_template.xml',
+        'data/picking_reception_status_template.xml',
         'data/cron.xml',
     ],
     "assets": {
