@@ -48,36 +48,28 @@ class PurchaseRequest(models.Model):
     def request_validation(self):
         res = super(PurchaseRequest, self).request_validation()
         if res.reviewer_ids:
-            base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
-            text = _("<span>A new <a href='{link}'>review {review}</a> has been asigned to you.</span>").format(
-                review=self.display_name, link='%s/web#id=%s&amp;model=purchase.request&amp;view_type=form' % (base_url, self.id)
+            mt_comment = self.env.ref("mail.mt_comment")
+            tpl = self.env.ref("purchase_portal.alda_purchase_request_validation")
+            self.message_post_with_template(
+                tpl.id,
+                composition_mode="mass_post",
+                subtype_id=mt_comment.id,
+                notify=True,
             )
-            message = html.DIV(
-                html.P(_('Hello,')),
-                html.P(etree.fromstring(text))
-            )
-            body = etree.tostring(message)
-            mail_factura = self.env['mail.mail'].sudo().with_context(wo_bounce_return_path=True).create({
-                'subject': _('A new review has been asigned to you'),
-                'body_html': body,
-                'recipient_ids': res.reviewer_ids.mapped('partner_id'),
-                'author_id': self.env.user.partner_id.id,
-            })
-            try:
-                mail_factura.send(raise_exception=True)
-                self.message_post(
-                    body=(_("Mail sent for requested review on %s by %s") % (fields.Datetime.now(), self.env.user.display_name))
-                )
-            except MailDeliveryException as error:
-                self.message_post(
-                    body=(_("Error when sending mail for requested review: %s") % (error.args[0]))
-                )
         return res
 
     def validate_tier(self):
         res = super(PurchaseRequest, self).validate_tier()
         self.write({'state': 'approved'})
         return res
+
+    def _check_completed_pr(self):
+        pr_to_check = self.env['purchase.request'].search([
+            ('state', '=', 'in_progress'),
+        ])
+        for pr in pr_to_check:
+            if all(line.pending_qty_to_receive == 0 for line in pr.line_ids):
+                pr.button_done()
 
 
 class PurchaseRequestLine(models.Model):
@@ -128,9 +120,12 @@ class PurchaseRequestLine(models.Model):
             if product_qty < min_qty:
                 raise UserError(_('The minimum quantity for this product is %s') % min_qty)
             if request.review_ids:
-                request.message_post(body=_(
+                request.message_post(
+                body=_(
                     'New line added by {user}: <strong> {product} ({quantity})</strong>'
-                ).format(user=self.env.user.name, product=product.name, quantity=product_qty))
+                ).format(user=self.env.user.name, product=product.name, quantity=product_qty),
+                message_type='comment'
+                )
 
         return super().create(values)
 
@@ -157,7 +152,7 @@ class PurchaseRequestLine(models.Model):
                 raise UserError(_('There are no sellers allowed for this request.'))
             min_cost_productinfo = min_cost_productinfo[0]
 
-            if min_cost_productinfo.partner_id not in request.property_id.seller_ids.ids:
+            if min_cost_productinfo.partner_id not in request.property_id.seller_ids:
                 partner_id = request.property_id.seller_ids.filtered(
                     lambda x: x.commercial_partner_id.id == min_cost_productinfo.partner_id.id
                 )
@@ -171,12 +166,18 @@ class PurchaseRequestLine(models.Model):
             if product_qty < min_qty:
                 raise UserError(_('The minimum quantity for this product is %s') % min_qty)
             if self.request_id.review_ids and not no_msg:
-                self.request_id.message_post(body=_('Line edited by {user}: <strong>{product} ({old_quantity} -> {quantity})</strong>').format(user=self.env.user.name, product=self.product_id.name, old_quantity=self.product_qty, quantity=product_qty))
+                self.request_id.message_post(
+                    body=_('Line edited by {user}: <strong>{product} ({old_quantity} -> {quantity})</strong>').format(user=self.env.user.name, product=self.product_id.name, old_quantity=self.product_qty, quantity=product_qty),
+                    message_type='comment'
+                )
         return super().write(vals)
 
     def unlink(self):
         if self.request_id.review_ids:
-            self.request_id.message_post(body=_('Line deleted by {user}: <strong> {product}</strong>').format(user=self.env.user.name, product=self.product_id.name))
+            self.request_id.message_post(
+                body=_('Line deleted by {user}: <strong> {product}</strong>').format(user=self.env.user.name, product=self.product_id.name),
+                message_type='comment',
+            )
         return super().unlink()
 
     def _autocreate_purchase_orders_from_lines(self):
