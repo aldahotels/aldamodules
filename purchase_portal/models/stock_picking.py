@@ -59,3 +59,13 @@ class StockPicking(models.Model):
                 body=message, subtype_id=self.env.ref("mail.mt_comment").id
             )
         return res
+
+    def picking_reception_status_mail(self):
+        mt_comment = self.env.ref("mail.mt_comment")
+        tpl = self.env.ref("purchase_portal.alda_picking_reception_status_email_template")
+        self.message_post_with_template(
+            tpl.id,
+            composition_mode="mass_post",
+            subtype_id=mt_comment.id,
+            notify=True,
+        )
