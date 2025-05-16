@@ -8,7 +8,7 @@
         >{{ object.property_id.name}}: Solicitud de compra (Ref {{ object.name or 'n/a' }}) - {{ object.company_id.name}}</field>
         <field
             name="email_from"
-        >{{ object.property_id.partner_id.email | safe}</field>
+        >{{ object.property_id.partner_id.email | safe}}</field>
         <field
             name="email_to"
         ></field>
