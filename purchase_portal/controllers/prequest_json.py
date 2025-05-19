@@ -275,6 +275,21 @@ class PurchaseRequestJsonMethods(http.Controller):
             "purchase_portal.purchase_request_details_table", values
         )
 
+    def _get_seller_ids(self, purchase_request):
+        seller_ids = request.env['product.supplierinfo']
+        for product in purchase_request.line_ids.mapped('product_id'):
+            partners = purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids
+            seller = seller_ids.sudo().search([
+                '&',
+                ('partner_id', 'in', partners.ids),
+                '|',
+                ('product_id', '=', product.id),
+                ('product_tmpl_id.product_variant_ids', '=', product.id),
+            ], order='price asc', limit=1)
+            if seller not in seller_ids:
+                seller_ids += seller
+        return seller_ids
+
     @http.route(
         ["/purchase_request_validation"],
         type="json",
@@ -308,18 +323,9 @@ class PurchaseRequestJsonMethods(http.Controller):
                 if line.product_qty <= 0:
                     raise UserError(_('The quantity for %s must be greater than 0') % (line.product_id.name))
 
-            seller_ids = request.env['product.supplierinfo']
-            for product in purchase_request.line_ids.mapped('product_id'):
-                partners = purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids
-                seller = seller_ids.sudo().search([
-                    '&',
-                    ('partner_id', 'in', partners.ids),
-                    '|',
-                    ('product_id', '=', product.id),
-                    ('product_tmpl_id.product_variant_ids', '=', product.id),
-                ], order='price asc', limit=1)
-                if seller not in seller_ids:
-                    seller_ids += seller
+            seller_ids = self._get_seller_ids(purchase_request)
+
+            error_msg = ""
 
             for partner_id in seller_ids.sudo().mapped('partner_id'):
                 min_amount = partner_id.min_purchase_amount
@@ -330,9 +336,10 @@ class PurchaseRequestJsonMethods(http.Controller):
                 )
                 purchase_seller_amount = 0
                 for seller in sellers:
-                    purchase_seller_amount += purchase_request.sudo().line_ids.filtered(
+                    lines = purchase_request.sudo().line_ids.filtered(
                         lambda x: x.product_id == seller.product_id or x.product_id in seller.product_tmpl_id.product_variant_ids
-                    ).estimated_cost
+                    )
+                    purchase_seller_amount += sum(line.estimated_cost for line in lines)
 
                 if min_amount > purchase_seller_amount:
                     if seller.partner_id.property_purchase_currency_id:
@@ -340,16 +347,22 @@ class PurchaseRequestJsonMethods(http.Controller):
                     else:
                         symbol = purchase_request.company_id.currency_id.symbol
 
-                    raise UserError(
-                        _('The minimum amount for %s is %s%s. Current amount %s%s.') % (
-                            partner_id.name,
-                            min_amount,
-                            symbol,
-                            purchase_seller_amount,
-                            symbol,
+                    name = partner_id.name
+                    if partner_id not in purchase_request.property_id.seller_ids:
+                        name = purchase_request.property_id.seller_ids.filtered(
+                            lambda x: x.commercial_partner_id == partner_id
+                        ).name
 
-                        )
+                    error_msg += _('The minimum amount for %s is %s%s. Current amount %s%s.<br/>') % (
+                        name,
+                        min_amount,
+                        symbol,
+                        purchase_seller_amount,
+                        symbol,
                     )
+
+            if error_msg:
+                raise UserError(error_msg)
 
             if purchase_request.estimated_cost <= 300:
                 purchase_request.button_approved()
