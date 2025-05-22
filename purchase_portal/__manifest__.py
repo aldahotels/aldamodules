@@ -48,6 +48,7 @@
         'templates/purchase_request.xml',
         'templates/stock_picking.xml',
         "templates/request_saved_cart.xml",
+        "templates/purchase_order.xml",
         'views/pms_property.xml',
         'views/product_product.xml',
         'views/purchase_request.xml',
