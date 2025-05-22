@@ -12,8 +12,9 @@ class PurchasePortal(purchase.controllers.portal.CustomerPortal):
         searchbar_filters = {
             '00-all': {'label': _('All'), 'domain': [('state', 'in', ['purchase', 'done', 'cancel'])]},
             '01-purchase': {'label': _('Purchase Order'), 'domain': [('state', '=', 'purchase')]},
-            '02-cancel': {'label': _('Cancelled'), 'domain': [('state', '=', 'cancel')]},
-            '03-done': {'label': _('Locked'), 'domain': [('state', '=', 'done')]},
+            '02-delivery': {'label': _('Wating for Delivery'), 'domain': [('wating_delivery', '=', True)]},
+            '03-cancel': {'label': _('Cancelled'), 'domain': [('state', '=', 'cancel')]},
+            '04-done': {'label': _('Locked'), 'domain': [('state', '=', 'done')]},
         }
 
         user = request.env['res.users'].sudo().browse(request.uid)

@@ -26,6 +26,18 @@ class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
     property_id = fields.Many2one('pms.property', string='Property')
+    wating_delivery = fields.Boolean(
+        string='Waiting Delivery',
+        default=False,
+        readonly=True,
+        compute='_compute_wating_delivery',
+        store=True
+    )
+
+    @api.depends('picking_ids.state', 'picking_ids')
+    def _compute_wating_delivery(self):
+        for purchase in self:
+            purchase.wating_delivery = any(picking.state not in ['done', 'cancel'] for picking in purchase.picking_ids)
 
     @api.model
     def create(self, values):
