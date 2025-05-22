@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-19 17:02+0000\n"
-"PO-Revision-Date: 2025-05-19 17:02+0000\n"
+"POT-Creation-Date: 2025-05-22 15:49+0000\n"
+"PO-Revision-Date: 2025-05-22 15:49+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -635,6 +635,13 @@ msgid "<i class=\"fa fa-fw fa-comments\"/><b>Send message</b>"
 msgstr ""
 
 #. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.purchase_portal_my_purchase_orders
+msgid ""
+"<i class=\"fa fa-fw fa-file-text\" role=\"img\" aria-label=\"Waiting for Delivery\" title=\"Waiting for Delivery\"/>\n"
+"                <span class=\"d-none d-md-inline\"> Waiting for Delivery</span>"
+msgstr ""
+
+#. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_new_purchase_request_page
 msgid "<option value=\"all\">All categories</option>"
 msgstr ""
@@ -989,8 +996,23 @@ msgid "Close"
 msgstr ""
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_purchase_report__commercial_partner_id
+msgid "Comercial Partner"
+msgstr ""
+
+#. module: purchase_portal
+#: model:ir.model.fields,help:purchase_portal.field_purchase_report__commercial_partner_id
+msgid "Comercial partner of the supplier"
+msgstr ""
+
+#. module: purchase_portal
 #: model:ir.model.fields,field_description:purchase_portal.field_supplier_products_wizard__supplier_commercial_ids
 msgid "Commercial Supplier"
+msgstr ""
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.view_purchase_order_search
+msgid "Commercial Vendor"
 msgstr ""
 
 #. module: purchase_portal
@@ -1471,6 +1493,11 @@ msgid "Purchase Portal"
 msgstr ""
 
 #. module: purchase_portal
+#: model:ir.model,name:purchase_portal.model_purchase_report
+msgid "Purchase Report"
+msgstr ""
+
+#. module: purchase_portal
 #: model:ir.model,name:purchase_portal.model_purchase_request
 msgid "Purchase Request"
 msgstr ""
@@ -1840,11 +1867,21 @@ msgid "Validate"
 msgstr ""
 
 #. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.purchase_portal_my_purchase_orders
+msgid "Vendor"
+msgstr ""
+
+#. module: purchase_portal
 #: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__seller_commercial_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__seller_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__seller_commercial_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__seller_ids
 msgid "Vendors allowed in this property"
+msgstr ""
+
+#. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_purchase_order__wating_delivery
+msgid "Waiting Delivery"
 msgstr ""
 
 #. module: purchase_portal
@@ -1858,6 +1895,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__wharehouse_id
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__wharehouse_id
 msgid "Warehouse"
+msgstr ""
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/purchase.py:0
+#, python-format
+msgid "Wating for Delivery"
 msgstr ""
 
 #. module: purchase_portal
