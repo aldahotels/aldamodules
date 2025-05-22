@@ -20,12 +20,8 @@
 
 import logging
 
-from lxml import etree
-from lxml.html import builder as html
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from odoo.addons.base.models.ir_mail_server import MailDeliveryException
 
 _logger = logging.getLogger(__name__)
 
@@ -60,7 +56,13 @@ class PurchaseRequest(models.Model):
 
     def validate_tier(self):
         res = super(PurchaseRequest, self).validate_tier()
-        self.write({'state': 'approved'})
+        self.button_approved()
+        return res
+
+    def button_approved(self):
+        res = super(PurchaseRequest, self).button_approved()
+        for pr in self:
+            pr.message_subscribe(partner_ids=pr.property_id.partner_id.ids)
         return res
 
     def _check_completed_pr(self):
@@ -121,10 +123,10 @@ class PurchaseRequestLine(models.Model):
                 raise UserError(_('The minimum quantity for this product is %s') % min_qty)
             if request.review_ids:
                 request.message_post(
-                body=_(
-                    'New line added by {user}: <strong> {product} ({quantity})</strong>'
-                ).format(user=self.env.user.name, product=product.name, quantity=product_qty),
-                message_type='comment'
+                    body=_(
+                        'New line added by {user}: <strong> {product} ({quantity})</strong>'
+                    ).format(user=self.env.user.name, product=product.name, quantity=product_qty),
+                    message_type='comment'
                 )
 
         return super().create(values)
