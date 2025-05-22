@@ -67,6 +67,7 @@
         'data/purchase_request_validation_template.xml',
         'data/picking_reception_status_template.xml',
         'data/cron.xml',
+        'reports/purchase_report_views.xml',
     ],
     "assets": {
         "web.assets_frontend": [
