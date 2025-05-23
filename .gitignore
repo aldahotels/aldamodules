@@ -73,3 +73,7 @@ docs/_build/
 
 # OCA rules
 !static/lib/
+setup/
+
+/pms_property_helpdesk_ticket/
+/setup/
