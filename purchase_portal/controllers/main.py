@@ -323,7 +323,8 @@ class PortalAccount(CustomerPortal):
     # ------------------------------------------------------------
 
     def _get_product_product_domain(self):
-        return []
+        user = request.env['res.users'].sudo().browse(request.uid)
+        return [('id', 'in', user.mapped('pms_property_ids.product_ids').ids)]
 
     def _get_product_searchbar_inputs(self):
         return {
@@ -394,6 +395,8 @@ class PortalAccount(CustomerPortal):
             'sortby': sortby,
             'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),
             'filterby': filterby,
+            'search_in': search_in,
+            'search': search,
             'searchbar_inputs': searchbar_inputs,
         })
         return request.render("purchase_portal.portal_product_product", values)

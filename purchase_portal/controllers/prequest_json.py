@@ -364,7 +364,7 @@ class PurchaseRequestJsonMethods(http.Controller):
             if error_msg:
                 raise UserError(error_msg)
 
-            if purchase_request.estimated_cost <= 300:
+            if purchase_request.estimated_cost <= 300 or not purchase_request.need_validation:
                 purchase_request.button_approved()
             else:
                 purchase_request.request_validation()

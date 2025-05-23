@@ -26,6 +26,18 @@ class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
     property_id = fields.Many2one('pms.property', string='Property')
+    wating_delivery = fields.Boolean(
+        string='Waiting Delivery',
+        default=False,
+        readonly=True,
+        compute='_compute_wating_delivery',
+        store=True
+    )
+
+    @api.depends('picking_ids.state', 'picking_ids')
+    def _compute_wating_delivery(self):
+        for purchase in self:
+            purchase.wating_delivery = any(picking.state not in ['done', 'cancel'] for picking in purchase.picking_ids)
 
     @api.model
     def create(self, values):
@@ -42,7 +54,16 @@ class PurchaseOrder(models.Model):
         force_confirm = self.env.context.get('force_confirm', False)
         if not force_confirm and self.partner_id.min_purchase_amount and self.amount_total < self.partner_id.min_purchase_amount:
             raise UserError(_('The minimum purchase amount for {} is {}').format(self.partner_id.name, self.partner_id.min_purchase_amount))
-        return super().button_confirm()
+
+        res = super().button_confirm()
+
+        for purchase in self:
+            if purchase.property_id:
+                purchase.message_subscribe(partner_ids=purchase.property_id.partner_id.ids)
+                for ps in purchase.picking_ids:
+                    ps.message_subscribe(partner_ids=purchase.property_id.partner_id.ids)
+
+        return res
 
     def _add_supplier_to_product(self):
         return True
