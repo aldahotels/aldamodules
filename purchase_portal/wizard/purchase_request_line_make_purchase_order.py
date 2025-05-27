@@ -160,6 +160,8 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                     date_required.year, date_required.month, date_required.day
                 )
                 res.append(purchase.id)
+        purchase_requests = self.item_ids.mapped("request_id")
+        purchase_requests.button_in_progress()
 
         return {
             "domain": [("id", "in", res)],
