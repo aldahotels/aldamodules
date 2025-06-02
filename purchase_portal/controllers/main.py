@@ -414,7 +414,8 @@ class PortalAccount(CustomerPortal):
             saved_cart, access_token, values, 'my_saved_carts_history', False, **kwargs)
 
     def _get_filter_domain(self):
-        return [('user_id', '=', request.env.user.id)]
+        user = request.env['res.users'].sudo().browse(request.uid)
+        return [('property_id', 'in', user.pms_property_ids.ids)]
 
     @http.route(['/my/saved_carts', '/my/saved_carts/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_saved_carts(self, page=1, date_begin=None, date_end=None, sortby=None, **kw):
@@ -520,7 +521,7 @@ class PortalAccount(CustomerPortal):
 
     def _add_saved_cart(self, saved_cart):
         purchase_r = request.env['purchase.request'].create({
-            'requested_by': saved_cart.user_id.id,
+            'requested_by': request.uid,
             'property_id': saved_cart.property_id.id,
         })
         for line in saved_cart.item_ids:
