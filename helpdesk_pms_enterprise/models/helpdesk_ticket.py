@@ -2,7 +2,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
-class HelpdeskPmsProperty(models.Model):
+class HelpdeskPmsEnterprise(models.Model):
     _inherit = "helpdesk.ticket"
 
     pms_property_id = fields.Many2one(

@@ -3,15 +3,15 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
-    "name": "PMS Helpdesk Alda Hotels",
+    "name": "Helpdesk PMS Entreprise",
     "summary": "Create tickets related with the property",
-    "version": "16.0.0.0.0",
+    "version": "16.0.1.0.0",
     "license": "AGPL-3",
     "author": "Odoo Community Association (OCA),"
     "Jose Luis Algara (Alda Hotels), Irlui Ramirez (Alda Hotels)",
-    "website": "https://github.com/OCA/pms",
     "depends": ["helpdesk", "pms", "hr", "pms_hr_property"],
-    "category": "Generic Modules/Property Management System",
+    "website": "https://github.com/OCA/pms",
+    "category": "PMS",
     "data": [
         "views/actions.xml",
         "views/pms_property_views.xml",

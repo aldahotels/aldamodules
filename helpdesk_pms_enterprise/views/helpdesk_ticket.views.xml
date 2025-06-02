@@ -19,7 +19,7 @@
         <field name="model">helpdesk.ticket</field>
         <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_tree" />
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="inside">
+            <xpath expr="//field[@name='name']" position="after">
                 <field name="pms_property_id" />
                 <field name="pms_room_id" />
             </xpath>
@@ -37,14 +37,20 @@
                     class="o_property_info"
                     style="display: flex; align-items: center; gap: 8px; margin: 2px 0;"
                 >
-                    <i class="fa fa-building-o" style="color: #875A7B;" />
+                    <span title="Property">
+                        <i class="fa fa-building-o" />
+                        <span class="sr-only">Property</span>
+                    </span>
                     <field name="pms_property_id" class="ml-2" />
                 </div>
                 <div
                     class="o_property_info"
                     style="display: flex; align-items: center; gap: 8px; margin: 2px 0;"
                 >
-                    <i class="fa fa-bed" style="color: #875A7B;" />
+                    <span title="Room">
+                        <i class="fa fa-bed" />
+                        <span class="sr-only">Room</span>
+                    </span>
                     <field name="pms_room_id" class="ml-2" />
                 </div>
             </xpath>

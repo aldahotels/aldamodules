@@ -1,4 +1,4 @@
-PMS Property Helpdesk Alda Hotels 🏨⚙️
+PMS Property Helpdesk Enterprise 🏨⚙️
 =====================================
 
 .. image:: https://img.shields.io/badge/license-LGPL--3-blue.svg
@@ -33,8 +33,6 @@ Principales Características
    - Integración con portal web para clientes
 
 🚀 **Optimizaciones Técnicas**
-   - Carga dinámica de habitaciones vía AJAX
-   - Dominios dinámicos en vistas
    - Conteo en tiempo real de tickets
    - Filtro para listar tickets por hotel y por habitación en las vistas de Helpdesk
    - Agrupar tickets por hotel y habitación en las vistas
@@ -72,21 +70,19 @@ Estructura del Módulo
 
 .. code-block:: text
 
-    pms_property_helpdesk_alda/
+    helpdesk_pms_enterprise/
     ├── models/
     │   ├── __init__.py
     │   ├── helpdesk_ticket.py          # Extensiones del modelo Helpdesk
     │   └── pms_property.py             # Extensiones del modelo Property
     ├── views/
-    │   ├── actions.xml                 # Acciones requeridad: abrir ventana con listado de 
-                                        tickets asociados al hotel dentro de la ficha del hotel
+    │   ├── actions.xml                 # Abrir vista de tickets sobre el hotel
     │   ├── helpdesk_ticket_views.xml   # Vistas de tickets
     │   ├── pms_property_views.xml      # Vistas de Hoteles
-    │   └── helpdesk_pms_portal.xml     # Vistas para portal web / por desarrollar
+    │  
     ├── static/
     │   └── src/
     │       └── js/
-    │           └── helpdesk_form.js    # Lógica JS para carga dinámica
     ├── __manifest__.py                 # Metadata del módulo
     └── README.rst                      # Este archivo
 
@@ -94,21 +90,10 @@ Requisitos de Instalación
 -------------------------
 
 1. Tener instalado el módulo ``helpdesk``
-2. Tener instalado el módulo ``pms`` (pms_hr_property)
+2. Tener instalado el módulo ``pms`` (y pms_hr_property)
 3. Tener instalado el módulo ``hr``
 4. Permisos adecuados para los usuarios
 
-Ejemplo de Uso
---------------
-
-.. code-block:: python
-
-    # Obtener tickets de una propiedad específica
-    hotel = env['pms.property'].browse(1)
-    tickets = hotel.helpdesk_ticket_ids
-    
-    # Abrir vista filtrada de tickets
-    action = hotel.action_view_tickets()
 
 Créditos y Contacto
 -------------------
