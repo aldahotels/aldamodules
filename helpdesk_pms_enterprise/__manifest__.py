@@ -10,7 +10,7 @@
     "author": "Odoo Community Association (OCA),"
     "Jose Luis Algara (Alda Hotels), Irlui Ramirez (Alda Hotels)",
     "depends": ["helpdesk", "pms", "hr", "pms_hr_property"],
-    "website": "https://github.com/OCA/helpdesk",
+    "website": "https://github.com/OCA/pms",
     "category": "PMS",
     "data": [
         "views/actions.xml",
