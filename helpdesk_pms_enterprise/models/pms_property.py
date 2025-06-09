@@ -21,9 +21,9 @@ class PmsProperty(models.Model):
 
     def action_view_tickets(self):
         self.ensure_one()
-        action = self.env.ref(
-            "pms_property_helpdesk_alda.action_helpdesk_ticket"
-        ).read()[0]
+        action = self.env.ref("helpdesk_pms_enterprise.action_helpdesk_ticket").read()[
+            0
+        ]
         action["domain"] = [("pms_property_id", "=", self.id)]
         action["context"] = {"create": False}
         return action
