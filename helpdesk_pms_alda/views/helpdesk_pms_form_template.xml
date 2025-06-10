@@ -1,0 +1,173 @@
+<odoo>
+    <!-- Formulario de creación de ticket -->
+    <template id="create_ticket_form" name="Formulario de Ticket">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <h2>Crear nuevo ticket</h2>
+                <form action="/helpdesk/ticket/submit" method="POST" class="mt-4">
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        t-att-value="request.csrf_token()"
+                    />
+                    <!-- Campos ocultos -->
+                    <input type="text" name="partner_id" t-att-value="partner_id" />
+                    <input type="text" name="team_id" t-att-value="team_id" />
+                    <input
+                        type="text"
+                        name="portal_user_id"
+                        t-att-value="portal_user_id"
+                    />
+
+
+
+                    <div class="mb-3">
+                        <label class="form-label">Usuario ID</label>
+
+                        <input
+                            type="text"
+                            name="user_name"
+                            class="form-control"
+                            t-att-value="user_name or ''"
+                            readonly="readonly"
+                        />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del contacto</label>
+                        <input
+                            type="text"
+                            name="partner_name"
+                            class="form-control"
+                            t-att-value="partner_name or ''"
+                            readonly="readonly"
+                        />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">ID de Propiedad</label>
+                        <input
+                            type="text"
+                            name="property_id"
+                            class="form-control"
+                            t-att-value="property_id or ''"
+                            readonly="readonly"
+                        />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Equipo / Departamento</label>
+                        <input
+                            type="text"
+                            name="team"
+                            class="form-control"
+                            t-att-value="team or ''"
+                            readonly="readonly"
+                        />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Clase</label>
+                        <select
+                            name="ticket_class_id"
+                            class="form-control"
+                            required="1"
+                        >
+                            <option value="">Selecciona una Clase</option>
+                            <t t-foreach="ticket_class_ids" t-as="ticket_class">
+                                <option t-att-value="ticket_class.id"><t
+                                        t-esc="ticket_class.name"
+                                    /></option>
+                            </t>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Asunto</label>
+                        <input
+                            type="text"
+                            name="subject"
+                            class="form-control"
+                            required="1"
+                        />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea name="description" class="form-control" rows="4" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Enviar ticket</button>
+                </form>
+            </div>
+        </t>
+    </template>
+                    <!-- Campos del formulario -->
+                <!--     <div class="mb-3">
+                        <label class="form-label">User</label>
+                        <input type="text" name="user_id" class="form-control" t-att-value="user_id or ''" required="1"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Property</label>
+                        <input type="" name="property_id" class="form-control" t-att-value="property_id or ''" required="1"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Team</label>
+                        <input type="" name="team" class="form-control" t-att-value="team or ''" required="1"/>
+                    </div>
+                     <div class="mb-3">
+                        <label class="form-label">Clase</label>
+                        <select name="ticket_class" class="form-control" required="1">
+                            <option value="">Selecciona una Clase</option>
+                            <t t-foreach="ticket_class_ids" t-as="ticket_class">
+                                <option t-att-value="ticket_class.id"><t t-esc="ticket_class.name"/></option>
+                            </t>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Asunto</label>
+                        <input type="text" name="subject" class="form-control" required="1"/>
+                    </div>
+ -->
+                    <!-- <div class="mb-3">
+                        <label class="form-label">Equipo / Departamento</label>
+                        <select name="team" class="form-control" required="1">
+                            <option value="">Selecciona un equipo</option>
+                            <t t-foreach="teams" t-as="team">
+                                <option t-att-value="team.id"><t t-esc="team.name"/></option>
+                            </t>
+                        </select>
+                    </div> -->
+<!--
+                    <div class="mb-3">
+                        <label class="form-label">Prioridad</label>
+                        <select name="priority" class="form-control" required="1">
+                            <t t-foreach="priorities" t-as="priority">
+                                <option t-att-value="priority.sequence"><t t-esc="priority.name"/></option>
+                            </t>
+                        </select>
+                    </div> -->
+
+<!--                     <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea name="description" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Enviar ticket</button>
+                </form>
+            </div>
+        </t>
+    </template> -->
+
+    <!-- Página de agradecimiento -->
+    <template id="thank_you_page" name="Gracias por tu ticket">
+        <t t-call="website.layout">
+            <div class="container mt-5 text-center">
+                <h3>Tu ticket ha sido enviado exitosamente.</h3>
+                <p>Nos pondremos en contacto contigo pronto.</p>
+                <a href="/" class="btn btn-secondary mt-3">Volver al inicio</a>
+            </div>
+        </t>
+    </template>
+</odoo>
