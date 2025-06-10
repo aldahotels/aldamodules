@@ -38,7 +38,6 @@
         "security/ir.model.access.csv",
         "views/pms_property_views.xml",
         "views/product_pricelist_views.xml",
-        "views/precheckin_portal_templates.xml",
         "views/account_payment_views.xml",
         "views/report_templates.xml",
         "views/account_payment_register_views.xml",
