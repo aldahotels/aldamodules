@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="helpdesk_ticket_class_view_form" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.class.form.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='priority']" position="after">
+                    <field name="ticket_class_id" options="{'no_open': True}" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista tree -->
+    <record id="helpdesk_ticket_class_view_tree" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.class.tree.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='priority']" position="after">
+                    <field name="ticket_class_id" options="{'no_open': True}" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista kanban -->
+    <record id="helpdesk_ticket_class_view_kanban" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.class.kanban.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_kanban" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='priority']" position="after">
+                <div>
+                    <field name="ticket_class_id" class="ml-2" />
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista graph -->
+    <record id="helpdesk_ticket_class_view_graph" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.class.graph.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_graph_main" />
+        <field name="arch" type="xml">
+            <xpath expr="//graph" position="inside">
+                <field name="ticket_class_id" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista pivot -->
+    <record id="helpdesk_ticket_class_view_pivot" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.class.pivot.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_pivot_main" />
+        <field name="arch" type="xml">
+            <xpath expr="//pivot" position="inside">
+                <field name="ticket_class_id" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista search -->
+    <record id="helpdesk_ticket_class_search_inherit" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.class.search.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='pms_room_id']" position="after">
+                <field name="ticket_class_id" />
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter
+                    string="Class"
+                    name="group_class"
+                    context="{'group_by': 'ticket_class_id'}"
+                />
+            </xpath>
+
+
+            <xpath expr="//filter[@name='my_ticket']" position="after">
+                <filter
+                    string="Class"
+                    name="filter_class_assigned"
+                    domain="[('ticket_class_id','!=',False)]"
+                />
+                <filter
+                    string="No Class"
+                    name="filter_class_unassigned"
+                    domain="[('ticket_class_id','=',False)]"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

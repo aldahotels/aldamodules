@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+   <!-- Vista Tree -->
+    <record id="helpdesk_ticket_classes_view_tree" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.classes.tree</field>
+        <field name="model">helpdesk.ticket.class</field>
+        <field name="arch" type="xml">
+            <tree default_order="sequence" editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field
+                    name="ticket_type_tag_ids"
+                    widget="many2many_tags"
+                    string="Tipos de Ticket"
+                    options="{'color_field': 'color'}"
+                />
+                <field name="color" widget="color_picker" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista Formulario -->
+    <record id="helpdesk_ticket_classes_view_form" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.classes.form</field>
+        <field name="model">helpdesk.ticket.class</field>
+        <field name="arch" type="xml">
+            <form string="Clase de Ticket">
+                <sheet>
+                    <group>
+                        <field name="sequence" invisible="1" />
+                        <field
+                            name="name"
+                            placeholder="Ej: Carpintería, Climatización..."
+                        />
+                        <field name="color" widget="color_picker" />
+                        <field name="ticket_type_ids" string="Tipo de Ticket">
+                            <tree>
+                                <field name="name" />
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

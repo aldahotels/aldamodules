@@ -1,3 +1,163 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* helpdesk_pms_alda
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-06 17:06+0000\n"
+"PO-Revision-Date: 2025-06-06 17:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.constraint,message:helpdesk_pms_alda.constraint_helpdesk_ticket_class_name_uniq
+msgid "A type with the same name already exists."
+msgstr "Ya existe un tipo con el mismo nombre."
+
+#. module: helpdesk_pms_alda
+#: model:helpdesk.ticket.class,name:helpdesk_pms_alda.helpdesk_ticket_class_administration
+msgid "Administration"
+msgstr "Administración"
+
+#. module: helpdesk_pms_alda
+#: model:ir.actions.act_window,name:helpdesk_pms_alda.helpdesk_ticket_class_action
+#: model:ir.ui.menu,name:helpdesk_pms_alda.helpdesk_ticket_class_menu
+#: model_terms:ir.ui.view,arch_db:helpdesk_pms_alda.helpdesk_ticket_class_search_inherit
+msgid "Class"
+msgstr "Clase"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model,name:helpdesk_pms_alda.model_helpdesk_ticket_class
+msgid "Class of Helpdesk Ticket"
+msgstr "Clase de ticket de ayuda"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class__color
+msgid "Color"
+msgstr "Color"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,help:helpdesk_pms_alda.field_helpdesk_ticket_class__color
+msgid ""
+"Color associated with the ticket class, used for visual distinction in the "
+"interface."
+msgstr "Color asociado a la clase de ticket, utilizado para distinguir visualmente en la interfaz."
+
+#. module: helpdesk_pms_alda
+#: model_terms:ir.actions.act_window,help:helpdesk_pms_alda.helpdesk_ticket_class_action
+msgid "Create your first ticket class"
+msgstr "Crea tu primera clase de ticket"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class__display_name
+msgid "Display Name"
+msgstr "Nombre mostrado"
+
+#. module: helpdesk_pms_alda
+#: model:helpdesk.ticket.class,name:helpdesk_pms_alda.helpdesk_ticket_class_functional
+msgid "Functional"
+msgstr "Funcional"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model,name:helpdesk_pms_alda.model_helpdesk_ticket
+msgid "Helpdesk Ticket"
+msgstr "Ticket de ayuda"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model,name:helpdesk_pms_alda.model_helpdesk_ticket_type
+msgid "Helpdesk Ticket Type"
+msgstr "Tipo de ticket de ayuda"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class__id
+msgid "ID"
+msgstr "ID"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: helpdesk_pms_alda
+#: model:helpdesk.ticket.class,name:helpdesk_pms_alda.helpdesk_ticket_class_procurement
+msgid "Maintenance"
+msgstr "Mantenimiento"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: helpdesk_pms_alda
+#: model_terms:ir.ui.view,arch_db:helpdesk_pms_alda.helpdesk_ticket_class_search_inherit
+msgid "No Class"
+msgstr "Sin clase"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class__sequence
+msgid "Sequence"
+msgstr "Secuencia"
+
+#. module: helpdesk_pms_alda
+#: model:helpdesk.ticket.class,name:helpdesk_pms_alda.helpdesk_ticket_class_technology
+msgid "Technology"
+msgstr "Tecnología"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,help:helpdesk_pms_alda.field_helpdesk_ticket__ticket_class_id
+msgid "The class to which this ticket belongs."
+msgstr "La clase a la que pertenece este ticket."
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,help:helpdesk_pms_alda.field_helpdesk_ticket_type__ticket_class_id
+msgid "The class to which this ticket type belongs."
+msgstr "La clase a la que pertenece este tipo de ticket."
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,help:helpdesk_pms_alda.field_helpdesk_ticket__ticket_type_id
+msgid ""
+"The type of ticket, which determines its specific characteristics and "
+"workflow."
+msgstr "El tipo de ticket, que determina sus características específicas y flujo de trabajo."
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket__ticket_class_id
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_type__ticket_class_id
+msgid "Ticket Class"
+msgstr "Clase de ticket"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket_class__ticket_type_ids
+msgid "Ticket Types"
+msgstr "Tipos de ticket"
+
+#. module: helpdesk_pms_alda
+#: model:ir.model.fields,field_description:helpdesk_pms_alda.field_helpdesk_ticket__ticket_type_id
+msgid "Type"
+msgstr "Tipo"

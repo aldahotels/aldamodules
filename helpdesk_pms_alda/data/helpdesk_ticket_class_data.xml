@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+        <record id="helpdesk_ticket_class_procurement" model="helpdesk.ticket.class">
+            <field name="name">Maintenance</field>
+            <field name="sequence">12</field>
+            <field name="color">3</field>
+        </record>
+        <record id="helpdesk_ticket_class_technology" model="helpdesk.ticket.class">
+            <field name="name">Technology</field>
+            <field name="sequence">14</field>
+            <field name="color">4</field>
+        </record>
+        <record id="helpdesk_ticket_class_administration" model="helpdesk.ticket.class">
+            <field name="name">Administration</field>
+            <field name="sequence">10</field>
+            <field name="color">2</field>
+        </record>
+        <record id="helpdesk_ticket_class_functional" model="helpdesk.ticket.class">
+            <field name="name">Functional</field>
+            <field name="sequence">16</field>
+            <field name="color">5</field>
+        </record>
+</odoo>

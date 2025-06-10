@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_helpdesk_ticket_type_tree_inherit" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.type.tree.inherit</field>
+        <field name="model">helpdesk.ticket.type</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_type_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field
+                    name="ticket_class_id"
+                    optional="show"
+                    options="{'no_create': True}"
+                />
+                <field name="color" widget="color_picker" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_helpdesk_ticket_type_form_inherit" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.type.form.inherit</field>
+        <field name="model">helpdesk.ticket.type</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_type_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="inside">
+                <field
+                    name="ticket_class_id"
+                    domain="[('id', '!=', False)]"
+                    required="1"
+                    options="{'no_create': True}"
+                />
+                <field name="color" widget="color_picker" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
