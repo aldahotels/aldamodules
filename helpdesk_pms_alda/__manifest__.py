@@ -19,6 +19,7 @@
         "views/helpdesk_ticket_class_views.xml",
         "views/helpdesk_ticket_type_views.xml",
         "views/helpdesk_ticket_views.xml",
+        "views/helpdesk_pms_form_template.xml",
     ],
     "assets": {},
     "installable": True,

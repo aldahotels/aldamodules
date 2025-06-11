@@ -5,21 +5,16 @@
             <div class="container mt-5 mb-5">
                 <h2>Crear nuevo ticket</h2>
                 <form action="/helpdesk/ticket/submit" method="POST" class="mt-4">
-                    <input
-                        type="hidden"
-                        name="csrf_token"
-                        t-att-value="request.csrf_token()"
-                    />
+                    <!-- <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/> -->
+
                     <!-- Campos ocultos -->
-                    <input type="text" name="partner_id" t-att-value="partner_id" />
-                    <input type="text" name="team_id" t-att-value="team_id" />
+                    <input type="hidden" name="partner_id" t-att-value="partner_id" />
+                    <input type="hidden" name="team_id" t-att-value="team_id" />
                     <input
                         type="text"
                         name="portal_user_id"
                         t-att-value="portal_user_id"
                     />
-
-
 
                     <div class="mb-3">
                         <label class="form-label">Usuario ID</label>
@@ -47,7 +42,7 @@
                     <div class="mb-3">
                         <label class="form-label">ID de Propiedad</label>
                         <input
-                            type="text"
+                            type="hidden"
                             name="property_id"
                             class="form-control"
                             t-att-value="property_id or ''"
@@ -55,16 +50,16 @@
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label class="form-label">Equipo / Departamento</label>
                         <input
-                            type="text"
+                            type="hidden"
                             name="team"
                             class="form-control"
-                            t-att-value="team or ''"
+                            t-att-value="team_id"
                             readonly="readonly"
                         />
-                    </div>
+                    </div> -->
 
                     <div class="mb-3">
                         <label class="form-label">Clase</label>
@@ -76,7 +71,7 @@
                             <option value="">Selecciona una Clase</option>
                             <t t-foreach="ticket_class_ids" t-as="ticket_class">
                                 <option t-att-value="ticket_class.id"><t
-                                        t-esc="ticket_class.name"
+                                        t-out="ticket_class.name"
                                     /></option>
                             </t>
                         </select>
@@ -120,7 +115,7 @@
                         <select name="ticket_class" class="form-control" required="1">
                             <option value="">Selecciona una Clase</option>
                             <t t-foreach="ticket_class_ids" t-as="ticket_class">
-                                <option t-att-value="ticket_class.id"><t t-esc="ticket_class.name"/></option>
+                                <option t-att-value="ticket_class.id"><t t-out="ticket_class.name"/></option>
                             </t>
                         </select>
                     </div>
@@ -135,7 +130,7 @@
                         <select name="team" class="form-control" required="1">
                             <option value="">Selecciona un equipo</option>
                             <t t-foreach="teams" t-as="team">
-                                <option t-att-value="team.id"><t t-esc="team.name"/></option>
+                                <option t-att-value="team.id"><t t-out="team.name"/></option>
                             </t>
                         </select>
                     </div> -->
@@ -144,7 +139,7 @@
                         <label class="form-label">Prioridad</label>
                         <select name="priority" class="form-control" required="1">
                             <t t-foreach="priorities" t-as="priority">
-                                <option t-att-value="priority.sequence"><t t-esc="priority.name"/></option>
+                                <option t-att-value="priority.sequence"><t t-out="priority.name"/></option>
                             </t>
                         </select>
                     </div> -->
@@ -166,7 +161,7 @@
             <div class="container mt-5 text-center">
                 <h3>Tu ticket ha sido enviado exitosamente.</h3>
                 <p>Nos pondremos en contacto contigo pronto.</p>
-                <a href="/" class="btn btn-secondary mt-3">Volver al inicio</a>
+                <!-- <a href="/" class="btn btn-secondary mt-3">Volver al inicio</a> -->
             </div>
         </t>
     </template>
