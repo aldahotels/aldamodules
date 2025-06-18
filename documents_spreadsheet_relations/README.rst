@@ -1,29 +1,3 @@
-- Document Spreadsheet Relation
-
-- Descripción
-Este modulo es una extensión del modulo de Documents, permite gestionar y sincronizar datos
-entre documentos de tipo hoja de cálculo, designando un archivo central, al cual se le vincularán
-los valores de las celdas de otros archivos.
-
-Requerimientos
-python
-pandas
-openpyxl
-
-
-Instalación
-Para instalar y ejecutar este proyecto, sigue estos pasos:
-
-Clona el repositorio
-Navega al directorio del proyecto
-Instala las dependencias
-Ejecuta el servidor
-
-Sayalex25
-
-
-
-
 rst
 ==========================
 Document Spreadsheet Relations
