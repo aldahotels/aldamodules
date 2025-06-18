@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- 1. Extensión de la vista de búsqueda para añadir el filtro -->
+    <record id="document_view_search_spreadsheet_relation" model="ir.ui.view">
+        <field name="model">documents.document</field>
+        <field name="inherit_id" ref="documents.document_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='pdf_doc']" position='after'>
+                <filter
+                    string="Con relaciones"
+                    name="with_relations"
+                    domain="[('relation_key', '!=', False)]"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- 2. Extensión de la vista kanban -->
+    <record id="spreadsheet_relation_document_view_kanban" model="ir.ui.view">
+        <field name="name">spreadsheet.relation.documents.document.kanban</field>
+        <field name="model">documents.document</field>
+        <field name="inherit_id" ref="documents.document_view_kanban" />
+        <field name="arch" type="xml">
+            <xpath expr="//templates" position="before">
+                <field name="relation_key" />
+                <field name="related_spreadsheet_count" />
+                <field name="is_spreadsheet" />
+            </xpath>
+            <xpath expr="//div[hasclass('oe_kanban_bottom_right')]" position="inside">
+                <div
+                    t-if="record.is_spreadsheet.raw_value and record.related_spreadsheet_count.raw_value > 0"
+                    class="ms-1"
+                >
+                    <span
+                        class="badge rounded-pill text-bg-info"
+                        title="Documentos relacionados"
+                    >
+                        <i class="fa fa-link" /> <t
+                            t-esc="record.related_spreadsheet_count.value"
+                        />
+                    </span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- 3. Extension de la vista de formulario -->
+    <record id="spreadsheet_relation_document_view_form" model="ir.ui.view">
+        <field name="name">spreadsheet.relation.documents.document.form</field>
+        <field name="model">documents.document</field>
+        <field name="inherit_id" ref="documents.document_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button
+                    name="find_related_spreadsheets"
+                    string="Buscar relacionados"
+                    type="object"
+                    attrs="{'invisible': ['|', ('is_spreadsheet', '=', False), ('relation_key', '=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//group[@groups='base.group_no_one']" position="after">
+                <group
+                    string="Relaciones de hojas de cálculo"
+                    attrs="{'invisible': [('is_spreadsheet', '=', False)]}"
+                >
+                    <field name="is_spreadsheet" invisible="1" />
+                    <field name="relation_key" />
+                    <field name="related_spreadsheet_count" />
+                    <button
+                        name="action_view_related_spreadsheets"
+                        string="Ver relacionados"
+                        type="object"
+                        class="oe_link"
+                        attrs="{'invisible': [('related_spreadsheet_count', '=', 0)]}"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- 4. Action del wizard -->
+    <record id="action_spreadsheet_relation_wizard" model="ir.actions.act_window">
+        <field name="name">Configurar relación</field>
+        <field name="res_model">spreadsheet.relation.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- 5. Action para el menú contextual -->
+    <record id="action_open_spreadsheet_relation_wizard" model="ir.actions.act_window">
+        <field name="name">Configurar relación de hoja de cálculo</field>
+        <field name="res_model">spreadsheet.relation.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="documents.model_documents_document" />
+        <field name="binding_view_types">form,list,kanban</field>
+        <field name="binding_type">action</field>
+        <field name="context">{'default_document_id': active_id}</field>
+    </record>
+</odoo>

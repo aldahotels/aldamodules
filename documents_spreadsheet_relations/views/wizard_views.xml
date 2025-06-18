@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Wizard para crear archivo central -->
+    <record id="view_spreadsheet_central_file_wizard_form" model="ir.ui.view">
+        <field name="name">spreadsheet.central.file.wizard.form</field>
+        <field name="model">spreadsheet.central.file.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Configurar Archivo Central">
+                <sheet>
+                    <group>
+                        <field name="document_id" options="{'no_create': True}" />
+                        <field name="name" />
+                    </group>
+                </sheet>
+                <footer>
+                    <button
+                        name="action_create_central_file"
+                        string="Crear"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancelar" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action para Wizard de Archivo Central -->
+    <record id="action_spreadsheet_central_file_wizard" model="ir.actions.act_window">
+        <field name="name">Crear Archivo Central</field>
+        <field name="res_model">spreadsheet.central.file.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Action de menú contextual para crear archivo central -->
+    <record id="action_create_central_file" model="ir.actions.act_window">
+        <field name="name">Convertir en Archivo Central</field>
+        <field name="res_model">spreadsheet.central.file.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="documents.model_documents_document" />
+        <field name="binding_view_types">form,list,kanban</field>
+        <field name="binding_type">action</field>
+        <field name="context">{'default_document_id': active_id}</field>
+    </record>
+
+    <!-- Wizard para añadir mapeo -->
+    <record id="view_spreadsheet_mapping_wizard_form" model="ir.ui.view">
+        <field name="name">spreadsheet.mapping.wizard.form</field>
+        <field name="model">spreadsheet.mapping.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Añadir Mapeo de Celdas">
+                <sheet>
+                    <group>
+                        <field name="central_file_id" readonly="1" />
+                        <field
+                            name="source_document_id"
+                            options="{'no_create': True}"
+                        />
+                        <field
+                            name="source_document_name"
+                            placeholder="Buscar documento por nombre"
+                        />
+                        <field name="source_cell" placeholder="Ej: A1, B2, etc." />
+                        <field name="target_cell" placeholder="Ej: A1, B2, etc." />
+                    </group>
+                </sheet>
+                <footer>
+                    <button
+                        name="action_add_mapping"
+                        string="Añadir y Sincronizar"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancelar" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action para Wizard de Mapeo -->
+    <record id="action_spreadsheet_mapping_wizard" model="ir.actions.act_window">
+        <field name="name">Añadir Mapeo</field>
+        <field name="res_model">spreadsheet.mapping.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

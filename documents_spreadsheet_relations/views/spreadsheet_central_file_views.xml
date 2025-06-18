@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Vista de formulario para Archivo Central -->
+    <record id="view_spreadsheet_central_file_form" model="ir.ui.view">
+        <field name="name">spreadsheet.central.file.form</field>
+        <field name="model">spreadsheet.central.file</field>
+        <field name="arch" type="xml">
+            <form string="Archivo Excel Central">
+                <header>
+                    <button
+                        name="action_sync_values"
+                        string="Sincronizar Todos"
+                        type="object"
+                        class="btn-primary"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" /></h1>
+                    </div>
+                    <group>
+                        <field name="document_id" />
+                        <field name="last_sync" />
+                    </group>
+                    <notebook>
+                        <page string="Mapeos de Celdas">
+                            <field name="mapping_ids">
+                                <tree
+                                    editable="bottom"
+                                    context="{'default_mapping_id': id}"
+                                >
+                                    <field name="name" />
+                                    <field name="source_document_id" />
+                                    <field name="source_cell" />
+                                    <field name="target_cell" />
+                                    <field name="last_value" />
+                                    <field name="active" />
+                                    <button
+                                        name="action_sync_now"
+                                        string="Sincronizar"
+                                        type="object"
+                                        icon="fa-refresh"
+                                    />
+                                </tree>
+                            </field>
+                            <button
+                                name="%(action_spreadsheet_mapping_wizard)d"
+                                string="Añadir Mapeo"
+                                type="action"
+                                context="{'default_central_file_id': active_id}"
+                                class="btn-secondary"
+                            />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de árbol para Archivos Centrales -->
+    <record id="view_spreadsheet_central_file_tree" model="ir.ui.view">
+        <field name="name">spreadsheet.central.file.tree</field>
+        <field name="model">spreadsheet.central.file</field>
+        <field name="arch" type="xml">
+            <tree name="Vincular Excel">
+                <field name="name" />
+                <field name="document_id" />
+                <field name="last_sync" />
+                <button
+                    name="action_sync_values"
+                    string="Sincronizar"
+                    type="object"
+                    icon="fa-refresh"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <!--acción para Archivos Centrales -->
+    <record id="action_spreadsheet_central_file" model="ir.actions.act_window">
+        <field name="name">Vincular Excel</field>
+        <field name="res_model">spreadsheet.central.file</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu para Archivos Centrales -->
+    <menuitem
+        id="menu_spreadsheet_central_file"
+        name="Vincular Excel"
+        parent="documents.Config"
+        action="action_spreadsheet_central_file"
+        sequence="50"
+    />
+</odoo>
