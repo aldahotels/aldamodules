@@ -152,8 +152,8 @@
                             <tr>
                                 <th>Products</th>
                                 <th class="text-right">Original Quantity</th>
-                                <th class="text-right">Quantity</th>
-                                <th class="text-right">Done</th>
+                                <th class="text-right">Quantity To Recive</th>
+                                <th class="text-right">Quantity Recived</th>
                             </tr>
                             </thead>
                             <tbody id="stock_picking_container">
