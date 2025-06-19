@@ -525,13 +525,16 @@ class PortalAccount(CustomerPortal):
             'property_id': saved_cart.property_id.id,
         })
         for line in saved_cart.item_ids:
-            product_info = request.env['product.supplierinfo'].sudo().search([
+            product_info = request.env['product.supplierinfo'].search([
                 '|',
                 ('partner_id', 'in', purchase_r.property_id.seller_ids.ids),
                 ('partner_id', 'in', purchase_r.property_id.seller_commercial_ids.ids),
                 '|',
                 ('product_id', '=', line.product_id.id),
                 ('product_tmpl_id.product_variant_ids', '=', line.product_id.id),
+                '|',
+                ('company_id', '=', purchase_r.company_id.id),
+                ('company_id', '=', False)
             ], order='price asc', limit=1)
 
             supplier_id = False
