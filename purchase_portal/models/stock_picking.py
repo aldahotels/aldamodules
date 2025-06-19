@@ -42,7 +42,9 @@ class StockPicking(models.Model):
         res = super(StockPicking, self)._create_backorder()
         text = self.env.context.get('backorder_message', False)
         if text:
-            text = str(text)
+            text = str(text) + "<br/> {}".format(
+                _("Ref.: <b>{}</b> <br/>").format(res.origin or res.name)
+            )
             lines = ""
 
             for line in res.move_ids:

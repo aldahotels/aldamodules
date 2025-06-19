@@ -367,7 +367,7 @@ class PurchaseRequestJsonMethods(http.Controller):
             if purchase_request.estimated_cost <= 300 or not purchase_request.need_validation:
                 purchase_request.button_approved()
             else:
-                purchase_request.request_validation()
+                purchase_request.sudo().request_validation()
         except Exception as e:
             return json.dumps(
                 {
