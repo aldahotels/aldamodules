@@ -15,13 +15,9 @@
     "data": [
         "views/actions.xml",
         "views/pms_property_views.xml",
-        "views/helpdesk_ticket.views.xml",
+        "views/helpdesk_ticket_views.xml",
     ],
-    "assets": {
-        "web.assets_frontend": [
-            "pms_property_helpdesk_ticket_alda/static/src/js/helpdesk_form.js"
-        ]
-    },
+    "assets": {},
     "installable": True,
     "application": True,
 }

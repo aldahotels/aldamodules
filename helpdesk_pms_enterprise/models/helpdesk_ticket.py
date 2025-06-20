@@ -24,8 +24,10 @@ class HelpdeskPmsEnterprise(models.Model):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super().fields_get(allfields, attributes)
-        employee = self.env["hr.employee"].search(
-            [("user_id", "=", self.env.uid)], limit=1
+        employee = (
+            self.env["hr.employee"]
+            .sudo()
+            .search([("user_id", "=", self.env.uid)], limit=1)
         )
         if employee and "pms_property_id" in res:
             res["pms_property_id"]["domain"] = [("id", "in", employee.property_ids.ids)]
@@ -44,14 +46,15 @@ class HelpdeskPmsEnterprise(models.Model):
     def _check_property_assignment(self):
         for ticket in self:
             if ticket.pms_property_id:
-                employee = self.env["hr.employee"].search(
-                    [("user_id", "=", ticket.env.uid)], limit=1
+                employee = (
+                    self.env["hr.employee"]
+                    .sudo()
+                    .search([("user_id", "=", ticket.env.uid)], limit=1)
                 )
                 if employee and ticket.pms_property_id not in employee.property_ids:
                     raise ValidationError(
                         _("You do not have permission to assign this property.")
                     )
-
             if (
                 ticket.pms_room_id
                 and ticket.pms_room_id.pms_property_id != ticket.pms_property_id
