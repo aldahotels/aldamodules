@@ -1,5 +1,6 @@
 import base64
 import io
+import json
 import logging
 import re
 import zipfile
@@ -14,6 +15,7 @@ class SpreadsheetCellMapping(models.Model):
     _name = "spreadsheet.cell.mapping"
     _description = "Mapeo de Celdas entre Hojas de Cálculo"
     name = fields.Char(string="Nombre", compute="_compute_name")
+
     central_file_id = fields.Many2one(
         "spreadsheet.central.file", string="Archivo Central", required=True
     )
@@ -26,6 +28,7 @@ class SpreadsheetCellMapping(models.Model):
     target_cell = fields.Char(
         string="Celda Destino", required=True, help="Ej: A1, B2, etc."
     )
+
     last_value = fields.Char(string="Último valor sincronizado", readonly=True)
     active = fields.Boolean(string="Activo", default=True)
 
@@ -37,6 +40,7 @@ class SpreadsheetCellMapping(models.Model):
                 f"{source_name} [{mapping.source_cell}] → [{mapping.target_cell}]"
             )
 
+    # Método para actualizar la celda en archivo XLSX
     @staticmethod
     def patch_xlsx_cell(binary_data, target_cell, new_value):
         in_memory_zip = io.BytesIO(binary_data)
@@ -46,6 +50,7 @@ class SpreadsheetCellMapping(models.Model):
         ) as zout:
             for item in zin.namelist():
                 file_data = zin.read(item)
+
                 if item == "xl/worksheets/sheet1.xml":
                     xml_content = file_data.decode("utf-8")
                     pattern = (
@@ -62,6 +67,28 @@ class SpreadsheetCellMapping(models.Model):
                 zout.writestr(item, file_data)
         return out_buffer.getvalue()
 
+    # Método para actualizar la celda en archivo clonado (JSON)
+    @staticmethod
+    def patch_o_spreadsheet_cell(binary_data, target_cell, new_value):
+        try:
+            json_str = binary_data.decode("utf-8")
+            data = json.loads(json_str)
+            xml_content = data.get("xl/worksheets/sheet1.xml", "")
+            pattern = r'(<c[^>]*r="' + re.escape(target_cell) + r'"[^>]*>)(.*?)(</c>)'
+
+            def repl(match):
+                cell_open = match.group(1)
+                new_v = f"<v>{new_value}</v>"
+                return cell_open + new_v + match.group(3)
+
+            xml_modified = re.sub(pattern, repl, xml_content, flags=re.DOTALL)
+            data["xl/worksheets/sheet1.xml"] = xml_modified
+            new_json = json.dumps(data)
+            return new_json.encode("utf-8")
+        except Exception as e:
+            raise UserError(_("Error al sincronizar documento clonado: %s") % str(e))
+
+    # sincronización de la celda
     def action_sync_now(self):
         self.ensure_one()
         if (
@@ -70,31 +97,33 @@ class SpreadsheetCellMapping(models.Model):
         ):
             raise UserError(_("Uno de los documentos no tiene un archivo adjunto"))
         try:
-            # Extraer el valor desde el documento fuente usando el método del archivo central.
             value = self.central_file_id._extract_cell_value(
                 self.source_document_id, self.source_cell
             )
             central_doc = self.central_file_id.document_id
             central_binary = base64.b64decode(central_doc.attachment_id.datas)
-            central_extension = self.central_file_id._get_file_extension(
-                central_doc.name
-            )
-            if central_extension == ".xlsx":
-                # Actualizar únicamente la celda especificada sin reescribir completamente el archivo.
+            try:
+                json_str = central_binary.decode("utf-8")
+                data = json.loads(json_str)
+                is_clone = "xl/worksheets/sheet1.xml" in data
+            except Exception:
+                is_clone = False
+
+            if is_clone:
+                patched_binary = self.patch_o_spreadsheet_cell(
+                    central_binary, self.target_cell, str(value)
+                )
+            elif self.central_file_id._get_file_extension(central_doc.name) == ".xlsx":
                 patched_binary = self.patch_xlsx_cell(
                     central_binary, self.target_cell, str(value)
                 )
-                # Actualizar el adjunto en Odoo con el nuevo contenido.
-                central_doc.attachment_id.write(
-                    {"datas": base64.b64encode(patched_binary)}
-                )
-                self.write({"last_value": str(value)})
             else:
                 raise UserError(
                     _(
-                        "Formato de archivo no soportado para el archivo central. Use XLSX."
+                        "Formato de archivo no soportado para el archivo central. Use XLSX o el formato clonado."
                     )
                 )
+            central_doc.attachment_id.write({"datas": base64.b64encode(patched_binary)})
         except Exception as e:
             raise UserError(_("Error al sincronizar: %s") % str(e))
         return {

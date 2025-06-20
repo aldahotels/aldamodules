@@ -24,8 +24,7 @@ class Document(models.Model):
         help="Número de hojas de cálculo relacionadas",
     )
 
-    # Determina si el documento es una hoja de caculo
-    @api.depends("mimetype", "handler")
+    @api.depends("mimetype", "handler", "raw")
     def _compute_is_spreadsheet(self):
         for document in self:
             spreadsheet_mimetypes = [
@@ -34,11 +33,13 @@ class Document(models.Model):
                 "application/vnd.oasis.opendocument.spreadsheet",  # ODS
                 "text/csv",  # CSV
                 "application/vnd.ms-excel.sheet.macroEnabled.12",  # XLSM
+                "application/o-spreadsheet",  # MIMEtype odoo
             ]
 
             document.is_spreadsheet = (
                 document.mimetype in spreadsheet_mimetypes
                 or document.handler == "spreadsheet"
+                or (document.mimetype == "application/o-spreadsheet" and document.raw)
             )
 
     # Calcula el número de hojas de cálculo relacionadas
@@ -60,7 +61,6 @@ class Document(models.Model):
         if not self.relation_key:
             return
 
-        # Actualizar el contador de documentos relacionados
         self._compute_related_spreadsheet_count()
 
         # Notificar al usuario que se encontraron documentos relacionados
