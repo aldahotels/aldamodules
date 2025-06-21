@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-22 15:49+0000\n"
-"PO-Revision-Date: 2025-05-22 15:49+0000\n"
+"POT-Creation-Date: 2025-06-19 15:03+0000\n"
+"PO-Revision-Date: 2025-06-19 15:03+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1103,7 +1103,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/purchase_portal/controllers/main.py:0
 #: code:addons/purchase_portal/controllers/main.py:0
-#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
 #, python-format
 msgid "Done"
 msgstr ""
@@ -1527,8 +1526,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_new_purchase_request_page
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_purchase_request_page
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_saved_cart_page
-#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
 msgid "Quantity"
+msgstr ""
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
+msgid "Quantity Recived"
+msgstr ""
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
+msgid "Quantity To Recive"
 msgstr ""
 
 #. module: purchase_portal
@@ -1541,6 +1549,13 @@ msgstr ""
 #. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_product_product
 msgid "Ref."
+msgstr ""
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/models/stock_picking.py:0
+#, python-format
+msgid "Ref.: <b>{}</b> <br/>"
 msgstr ""
 
 #. module: purchase_portal

@@ -133,14 +133,18 @@ class PurchaseRequestJsonMethods(http.Controller):
                 }
             )
         try:
-            product_info = request.env['product.supplierinfo'].sudo().search([
+            product_info = request.env['product.supplierinfo'].search([
                 '|',
                 ('partner_id', 'in', purchase_request.property_id.seller_ids.ids),
                 ('partner_id', 'in', purchase_request.property_id.seller_commercial_ids.ids),
                 '|',
                 ('product_id', '=', int(product_id)),
                 ('product_tmpl_id.product_variant_ids', '=', int(product_id)),
+                '|',
+                ('company_id', '=', purchase_request.company_id.id),
+                ('company_id', '=', False)
             ], order='price asc', limit=1)
+
             request_line = request.env['purchase.request.line'].with_context(portal=True).create({
                 'request_id': purchase_request.id,
                 'product_id': int(product_id),
@@ -279,12 +283,15 @@ class PurchaseRequestJsonMethods(http.Controller):
         seller_ids = request.env['product.supplierinfo']
         for product in purchase_request.line_ids.mapped('product_id'):
             partners = purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids
-            seller = seller_ids.sudo().search([
+            seller = seller_ids.search([
                 '&',
                 ('partner_id', 'in', partners.ids),
                 '|',
                 ('product_id', '=', product.id),
                 ('product_tmpl_id.product_variant_ids', '=', product.id),
+                '|',
+                ('company_id', '=', purchase_request.company_id.id),
+                ('company_id', '=', False)
             ], order='price asc', limit=1)
             if seller not in seller_ids:
                 seller_ids += seller
@@ -367,7 +374,7 @@ class PurchaseRequestJsonMethods(http.Controller):
             if purchase_request.estimated_cost <= 300 or not purchase_request.need_validation:
                 purchase_request.button_approved()
             else:
-                purchase_request.request_validation()
+                purchase_request.sudo().request_validation()
         except Exception as e:
             return json.dumps(
                 {
