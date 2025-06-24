@@ -243,7 +243,7 @@ class CashDailyReportWizard(models.TransientModel):
         event_date = pytz.UTC.localize(event_date)
 
         event_date = event_date.astimezone(timezone)
-        event_date = event_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        event_date = event_date.strftime("%d/%m/%Y %H:%M:%S")
 
         worksheet.write(line + 2, 1, event_date, cell_format)
         # CJACT - ignored journal restaurant Toro
