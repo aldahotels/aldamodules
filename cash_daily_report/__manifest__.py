@@ -1,10 +1,8 @@
 ##############################################################################
 #
-#    Odoo, Open Source Management Solution
-#    Copyright (C) 2020-2024  CommitSun (<http://www.commitsun.com>)
-#                  2018-2024 Jose Luis Algara Toledo <osotranquilo@gmail.com>
-#                  2024 Irlui Ramírez <irlui@aldahotels.com>
-#                  Consultores hoteleros integrales - Alda Hotels
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2018 Alexandre Díaz <dev@redneboa.es>
+#
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
@@ -19,28 +17,26 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
 {
-    "name": "PMS Alda Hotels",
-    "version": "16.0.1.0.0",
-    "author": "Aldamodules, Commit [Sun], Odoo Community Association (OCA)",
-    "license": "AGPL-3",
-    "application": True,
-    "category": "pms",
+    "name": "Cash Daily Report",
+    "version": "16.0.0.1.0",
+    "author": "Alexandre Díaz <dev@redneboa.es>",
     "website": "https://github.com/OCA/pms",
-    "depends": [
-        "pms",
-    ],
+    "category": "reports",
+    "summary": "Export payments report in xls format",
+    "description": "Cash Daily Report",
+    "depends": ["pms"],
+    "external_dependencies": {"python": ["xlsxwriter"]},
     "data": [
-        "data/confirmation_template.xml",
-        "data/exit_template.xml",
-        "data/cancelation_template.xml",
-        "data/modification_template.xml",
+        "wizard/cash_daily_report.xml",
+        "data/menus.xml",
         "security/ir.model.access.csv",
-        "views/pms_property_views.xml",
-        "views/product_pricelist_views.xml",
-        "views/account_payment_views.xml",
-        "views/report_templates.xml",
-        "views/account_payment_register_views.xml",
     ],
+    "qweb": [],
+    "test": [],
     "installable": True,
+    "auto_install": False,
+    "application": False,
+    "license": "AGPL-3",
 }
