@@ -38,6 +38,21 @@ repos:
         entry: found a en.po file
         language: fail
         files: '[a-zA-Z0-9_]*/i18n/en\.po$'
+      - id: oca-fix-manifest-website
+        name: "OCA Fix Manifest Website"  
+        entry: oca-fix-manifest-website  
+        language: system                
+        files: \.py$                    
+        types: [file]                   
+        exclude: |
+          (?x)^(
+            # Excluir todos los módulos personalizados fuera del patrón OCA
+            alda_.*|custom_.*|local_.*|
+            # Otros paths del repo que no queremos tocar
+            connector_docuware/|
+            custom_login_by_token/|
+            purchase_portal/
+          )
   - repo: https://github.com/oca/maintainer-tools
     rev: 9a170331575a265c092ee6b24b845ec508e8ef75
     hooks:
