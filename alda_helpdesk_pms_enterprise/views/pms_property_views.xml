@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="views_pms_property_form_inherit_tickets" model="ir.ui.view">
+        <field name="name">pms.property.form.inherit.tickets.alda</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/label[@for='name']" position="before">
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                        class="oe_stat_button"
+                        type="object"
+                        name="action_view_tickets"
+                        icon="fa-line-chart"
+                    >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="ticket_count" nolabel="1" />
+                                    <span class="text-secondary fw-normal"> Tick</span>
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
