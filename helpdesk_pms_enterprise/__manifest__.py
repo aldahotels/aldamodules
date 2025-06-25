@@ -9,7 +9,7 @@
     "license": "AGPL-3",
     "author": "Odoo Community Association (OCA),"
     "Jose Luis Algara (Alda Hotels), Irlui Ramirez (Alda Hotels)",
-    "depends": ["helpdesk", "pms", "hr", "pms_hr_property"],
+    "depends": ["helpdesk", "pms", "hr", "pms_hr_property", "mail"],
     "website": "https://github.com/OCA/pms",
     "category": "PMS",
     "data": [

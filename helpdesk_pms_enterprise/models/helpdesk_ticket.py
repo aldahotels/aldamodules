@@ -10,15 +10,16 @@ class HelpdeskPmsEnterprise(models.Model):
         string="Property",
         store=True,
         required=True,
-        index=True,
+        tracking=True,
+        help="The hotel associated with this ticket.",
     )
 
     pms_room_id = fields.Many2one(
         comodel_name="pms.room",
         string="Room",
         domain="[('pms_property_id', '=', pms_property_id)]",
-        store=True,
-        index=True,
+        tracking=True,
+        help="The room associated with this ticket. It must belong to the selected property.",
     )
 
     @api.model
