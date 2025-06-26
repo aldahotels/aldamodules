@@ -1,104 +1,305 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* helpdesk_pms_enterprise
+# 	* alda_helpdesk_pms
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-20 20:27+0000\n"
-"PO-Revision-Date: 2025-06-20 20:27+0000\n"
+"POT-Creation-Date: 2025-06-26 15:09+0000\n"
+"PO-Revision-Date: 2025-06-26 15:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#. module: helpdesk_pms_enterprise
-#: model_terms:ir.ui.view,arch_db:helpdesk_pms_enterprise.pms_helpdesk_ticket_view_kanban
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "(Blocked)"
+msgstr "(Bloqueado)"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid ".&amp;nbsp;&amp;nbsp;"
+msgstr ".  "
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "<option value=\"\">Select Place</option>"
+msgstr "<option value=\"\">Seleccionar lugar</option>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "<option value=\"\">Select Room</option>"
+msgstr "<option value=\"\">Seleccionar habitación</option>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "<option value=\"\">Select a Team</option>"
+msgstr "<option value=\"\">Seleccionar un equipo</option>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "<option value=\"\">Select a Ticket Type</option>"
+msgstr "<option value=\"\">Seleccionar tipo de ticket</option>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid ""
-"<span title=\"Property\">\n"
-"                        <i class=\"fa fa-building-o\"/>\n"
-"                        <span class=\"sr-only\">Property</span>\n"
-"                    </span>"
+"<select name=\"bathroom_type\" class=\"form-control\">\n"
+"                                        <option value=\"\">None</option>\n"
+"                                        <option value=\"bathroom\">Bathroom</option>\n"
+"                                    </select>"
 msgstr ""
-"<span title=\"Property\">\n"
-"                        <i class=\"fa fa-building-o\"/>\n"
-"                        <span class=\"sr-only\">Hotel</span>\n"
-"                    </span>"
+"<select name=\"bathroom_type\" class=\"form-control\">\n"
+"                                        <option value=\"\">Ninguno</option>\n"
+"                                        <option value=\"bathroom\">Baño</option>\n"
+"                                    </select>"
 
-#. module: helpdesk_pms_enterprise
-#: model_terms:ir.ui.view,arch_db:helpdesk_pms_enterprise.pms_helpdesk_ticket_view_kanban
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid ""
-"<span title=\"Room\">\n"
-"                        <i class=\"fa fa-bed\"/>\n"
-"                        <span class=\"sr-only\">Room</span>\n"
-"                    </span>"
+"<span style=\"font-size: 36px;\">📑</span>\n"
+"                                You're submitting a support request for:"
 msgstr ""
-"<span title=\"Room\">\n"
-"                        <i class=\"fa fa-bed\"/>\n"
-"                        <span class=\"sr-only\">Habitación</span>\n"
-"                    </span>"
+"<span style=\"font-size: 36px;\">📑</span>\n"
+"                                Estás enviando una solicitud de soporte para:"
 
-#. module: helpdesk_pms_enterprise
-#: model:ir.model,name:helpdesk_pms_enterprise.model_helpdesk_ticket
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "<strong>Hi&amp;nbsp;</strong>"
+msgstr "<strong>Hola&amp;nbsp;</strong>"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/main.py:0
+#, python-format
+msgid "Access denied. Please start from the valid link."
+msgstr "Acceso denegado. Por favor, empieza desde el enlace válido."
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "Asunto"
+msgstr "Asunto"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__bathroom_type__bathroom
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "Bathroom"
+msgstr "Baño"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__bathroom_type
+msgid "Bathroom Type"
+msgstr "Tipo de baño"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid ""
+"Both Room and Bathroom selection are required when location type is "
+"'Bathroom'"
+msgstr ""
+"Ambos campos Habitación y Tipo de baño son obligatorios cuando el tipo de ubicación es 'Baño'"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_type__color
+msgid "Color"
+msgstr "Color"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket_type__color
+msgid "Color associated with the ticket type."
+msgstr "Color asociado al tipo de ticket."
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "Descripción"
+msgstr "Descripción"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "Enviar ticket"
+msgstr "Enviar ticket"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "Form New Ticket"
+msgstr "Formulario nuevo ticket"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model,name:alda_helpdesk_pms.model_helpdesk_ticket
 msgid "Helpdesk Ticket"
 msgstr "Ticket de asistencia"
 
-#. module: helpdesk_pms_enterprise
-#: model:ir.model.fields,help:helpdesk_pms_enterprise.field_helpdesk_ticket__pms_room_blocked
+#. module: alda_helpdesk_pms
+#: model:ir.model,name:alda_helpdesk_pms.model_helpdesk_ticket_type
+msgid "Helpdesk Ticket Type"
+msgstr "Tipo de ticket de servicio de asistencia"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__pms_room_blocked
 msgid "Indicates if the room is blocked for this ticket."
-msgstr ""
+msgstr "Indica si la habitación está bloqueada por este ticket."
 
-#. module: helpdesk_pms_enterprise
-#: model_terms:ir.ui.view,arch_db:helpdesk_pms_enterprise.pms_helpdesk_ticket_search_inherit
-msgid "No Property"
-msgstr "Hotel no relacionado"
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__company_external_id
+msgid "Indicates if the ticket is linked to an external repair ID."
+msgstr "Indica si el ticket está vinculado a un ID de reparación externo."
 
-#. module: helpdesk_pms_enterprise
-#: model:ir.model,name:helpdesk_pms_enterprise.model_pms_property
-#: model:ir.model.fields,field_description:helpdesk_pms_enterprise.field_helpdesk_ticket__pms_property_id
-#: model_terms:ir.ui.view,arch_db:helpdesk_pms_enterprise.pms_helpdesk_ticket_search_inherit
-msgid "Property"
-msgstr "Hotel"
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__is_room
+msgid "Indicates if the ticket is related to a room."
+msgstr "Indica si el ticket está relacionado con una habitación."
 
-#. module: helpdesk_pms_enterprise
-#: model:ir.model.fields,field_description:helpdesk_pms_enterprise.field_helpdesk_ticket__pms_room_id
-#: model_terms:ir.ui.view,arch_db:helpdesk_pms_enterprise.pms_helpdesk_ticket_search_inherit
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/main.py:0
+#, python-format
+msgid "Invalid parameters"
+msgstr "Parámetros inválidos"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/main.py:0
+#, python-format
+msgid "Invalid token"
+msgstr "Token inválido"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__is_room
+msgid "Is Room"
+msgstr "Es habitación"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "Location"
+msgstr "Ubicación"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__location_type
+msgid "Location type"
+msgstr "Tipo de ubicación"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "No"
+msgstr "No"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__bathroom_type__none
+msgid "None"
+msgstr "Ninguno"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.thank_you_page
+msgid "Nos pondremos en contacto contigo pronto."
+msgstr "Nos pondremos en contacto contigo pronto."
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__pms_room_blocked
+msgid "Pms Room Blocked"
+msgstr "Habitación del PMS bloqueada"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__company_external_id
+msgid "Repair External ID"
+msgstr "ID externo de reparación"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Room"
 msgstr "Habitación"
 
-#. module: helpdesk_pms_enterprise
-#: model:ir.model.fields,field_description:helpdesk_pms_enterprise.field_helpdesk_ticket__pms_room_blocked
-msgid "Room Blocked"
-msgstr "Habitación Bloqueada"
-
-#. module: helpdesk_pms_enterprise
+#. module: alda_helpdesk_pms
 #. odoo-python
-#: code:addons/helpdesk_pms_enterprise/models/helpdesk_ticket.py:0
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
-msgid "The selected room does not belong to the specified hotel."
-msgstr "La habitación seleccionada no pertenece al hotel especificado"
+msgid "Room is required when location type is 'Room'"
+msgstr "La habitación es obligatoria cuando el tipo de ubicación es 'Habitación'"
 
-#. module: helpdesk_pms_enterprise
-#: model:ir.actions.act_window,name:helpdesk_pms_enterprise.action_helpdesk_ticket
-#: model:ir.model.fields,field_description:helpdesk_pms_enterprise.field_pms_property__helpdesk_ticket_ids
-#: model:ir.model.fields,field_description:helpdesk_pms_enterprise.field_pms_property__ticket_count
-#: model_terms:ir.ui.view,arch_db:helpdesk_pms_enterprise.views_pms_property_form_inherit_tickets
-msgid "Tickets"
-msgstr "Tickets"
-
-#. module: helpdesk_pms_enterprise
+#. module: alda_helpdesk_pms
 #. odoo-python
-#: code:addons/helpdesk_pms_enterprise/models/helpdesk_ticket.py:0
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
-msgid "You do not have permission to assign this property."
-msgstr "No tienes permisos para asignar esta propiedad"
+msgid "Room status changed"
+msgstr "Estado de la habitación cambiado"
 
-#. module: helpdesk_pms_enterprise
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__bathroom_type
+msgid "Select if it's specifically the bathroom."
+msgstr "Seleccione si específicamente es el baño."
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__location_type
+msgid "Select where this issue is located"
+msgstr "Seleccione dónde se encuentra este problema"
+
+#. module: alda_helpdesk_pms
 #. odoo-python
-#: code:addons/helpdesk_pms_enterprise/models/helpdesk_ticket.py:0
+#: code:addons/alda_helpdesk_pms/controllers/main.py:0
 #, python-format
-msgid "You must select a hotel before assigning a room."
-msgstr "Debe seleccionar un hotel antes de asignar una habitación"
+msgid "Session expired or invalid. Please start from the valid link."
+msgstr "Sesión expirada o inválida. Por favor, empiece desde el enlace válido."
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_type__team_id
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "Team"
+msgstr "Equipo"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket_type__team_id
+msgid "The team to which this ticket type belongs."
+msgstr "El equipo al que pertenece este tipo de ticket."
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__ticket_type_id
+msgid ""
+"The type of ticket, which determines its specific characteristics and "
+"workflow."
+msgstr ""
+"El tipo de ticket, que determina sus características específicas y flujo de trabajo."
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "Ticket Type"
+msgstr "Tipo de ticket"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.thank_you_page
+msgid "Tu ticket ha sido enviado exitosamente."
+msgstr "Tu ticket ha sido enviado exitosamente."
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__ticket_type_id
+msgid "Type"
+msgstr "Tipo"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/main.py:0
+#, python-format
+msgid "User not found"
+msgstr "Usuario no encontrado"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/main.py:0
+#, python-format
+msgid "Wrong authentication"
+msgstr "Autenticación incorrecta"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "Yes"
+msgstr "Sí"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+msgid "will this be fixed by an external company?"
+msgstr "¿Será reparado por una empresa externa?"
