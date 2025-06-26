@@ -70,7 +70,7 @@ Estructura del Módulo
 
 .. code-block:: text
 
-    helpdesk_pms_enterprise/
+    alda_helpdesk_pms_enterprise/
     ├── models/
     │   ├── __init__.py
     │   ├── helpdesk_ticket.py          # Extensiones del modelo Helpdesk

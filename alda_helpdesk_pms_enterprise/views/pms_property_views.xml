@@ -16,7 +16,9 @@
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
                                     <field name="ticket_count" nolabel="1" />
-                                    <span class="text-secondary fw-normal"> Tick</span>
+                                    <span
+                                    class="text-secondary fw-normal"
+                                > Ticket</span>
                                 </span>
                             </div>
                         </button>
