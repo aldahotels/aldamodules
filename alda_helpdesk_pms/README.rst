@@ -27,7 +27,7 @@ Estructura del Módulo
 
 .. code-block:: text
 
-    helpdesk_pms_enterprise/
+    alda_helpdesk_pms_enterprise/
     ├── models/
     │   ├── __init__.py
     │   ├── 
@@ -43,7 +43,7 @@ Estructura del Módulo
 Requisitos de Instalación
 -------------------------
 
-1. Tener instalado el módulo ``helpdesk`` (y helpdesk_pms_enterprise)
+1. Tener instalado el módulo ``helpdesk`` (y alda_helpdesk_pms_enterprise)
 2. Tener instalado el módulo ``pms`` (y pms_hr_property)
 3. Tener instalado el módulo ``hr``
 4. Permisos adecuados para los usuarios

@@ -1,10 +1,9 @@
 import logging
+
 import werkzeug
 from werkzeug.exceptions import Unauthorized
 
-from odoo import http, _
-
-from odoo.exceptions import AccessDenied
+from odoo import http
 from odoo.http import request
 
 from odoo.addons.web.controllers.utils import ensure_db
@@ -14,16 +13,17 @@ _logger = logging.getLogger(__name__)
 
 class HelpdeskFormController(http.Controller):
     @http.route(
-        [
-            "/portal_login_by_token/<int:user_id>/<int:property_id>/<string:signup_token>"
-        ],
+        "/portal_ticket_login_by_token",
         type="http",
         auth="public",
         website=True,
     )
-    def portal_purchase_login_by_token(
-        self, user_id=None, property_id=None, signup_token=None, **kw):
+    def portal_ticket_login_by_token(self, **kwargs):
         ensure_db()
+        user_id = int(kwargs.get("user_id"))
+        property_id = int(kwargs.get("property_id"))
+        signup_token = kwargs.get("signup_token")
+
         if not user_id or not signup_token:
             raise Unauthorized("Wrong authentication")
         portal_user = request.env["res.users"].sudo().browse(user_id)
@@ -78,7 +78,7 @@ class HelpdeskFormController(http.Controller):
         company_external_id = False
 
         return request.render(
-            "helpdesk_pms_alda.create_ticket_form",
+            "alda_helpdesk_pms.create_ticket_form",
             {
                 "portal_user_id": user_id.id,
                 "user_name": user_id.name,
@@ -108,6 +108,7 @@ class HelpdeskFormController(http.Controller):
     def helpdesk_ticket_submit(self, **post):
         ensure_db()
         room_id = post.get("room_ids", "")
+        post.get("ticket_type_ids", "")
         pms_room_id = int(room_id) if room_id else False
         location_type = post.get("location_type_options")
         bathroom_type = post.get("bathroom_type")
@@ -121,7 +122,7 @@ class HelpdeskFormController(http.Controller):
                     "partner_name": post.get("partner_name"),
                     "pms_property_id": int(post.get("property_id")),
                     "team_id": int(post.get("team_id")),
-                    "ticket_type_id": int(post.get("ticket_type_ids")),
+                    "ticket_type_id": int(post.get("ticket_type_id")),
                     "location_type": location_type,
                     "bathroom_type": bathroom_type
                     if location_type == "bathroom"
@@ -138,4 +139,4 @@ class HelpdeskFormController(http.Controller):
 
     @http.route("/helpdesk/ticket/thankyou", type="http", auth="public", website=True)
     def helpdesk_ticket_thankyou(self, **kwargs):
-        return request.render("helpdesk_pms_alda.thank_you_page")
+        return request.render("alda_helpdesk_pms.thank_you_page")
