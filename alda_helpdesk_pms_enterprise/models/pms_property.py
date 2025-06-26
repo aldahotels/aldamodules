@@ -22,7 +22,7 @@ class PmsProperty(models.Model):
     def action_view_tickets(self):
         self.ensure_one()
         action = (
-            self.env.ref("helpdesk_pms_enterprise.action_helpdesk_ticket")
+            self.env.ref("alda_helpdesk_pms_enterprise.action_helpdesk_ticket")
             .sudo()
             .read()[0]
         )
