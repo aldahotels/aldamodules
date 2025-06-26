@@ -1,9 +1,10 @@
 import logging
+from datetime import datetime, timedelta
 
 import werkzeug
-from werkzeug.exceptions import Unauthorized
+from werkzeug.exceptions import BadRequest, Unauthorized
 
-from odoo import http
+from odoo import _, fields, http
 from odoo.http import request
 
 from odoo.addons.web.controllers.utils import ensure_db
@@ -12,6 +13,8 @@ _logger = logging.getLogger(__name__)
 
 
 class HelpdeskFormController(http.Controller):
+    SESSION_EXPIRATION_MINUTES = 30
+
     @http.route(
         "/portal_ticket_login_by_token",
         type="http",
@@ -20,13 +23,36 @@ class HelpdeskFormController(http.Controller):
     )
     def portal_ticket_login_by_token(self, **kwargs):
         ensure_db()
-        user_id = int(kwargs.get("user_id"))
-        property_id = int(kwargs.get("property_id"))
-        signup_token = kwargs.get("signup_token")
+        try:
+            user_id = int(kwargs.get("user_id", 0))
+            property_id = int(kwargs.get("property_id", 0))
+            signup_token = kwargs.get("signup_token", "").strip()
+        except (ValueError, TypeError) as err:
+            raise BadRequest(_("Invalid parameters")) from err
 
         if not user_id or not signup_token:
-            raise Unauthorized("Wrong authentication")
+            raise Unauthorized(_("Wrong authentication"))
+
         portal_user = request.env["res.users"].sudo().browse(user_id)
+        if not portal_user.exists():
+            raise Unauthorized(_("User not found"))
+
+        if signup_token != portal_user.signup_token:
+            raise Unauthorized(_("Invalid token"))
+
+        if property_id:
+            property_access = (
+                request.env["pms.property"]
+                .sudo()
+                .search_count(
+                    [
+                        ("id", "=", property_id),
+                        ("id", "in", portal_user.pms_property_ids.ids),
+                    ]
+                )
+            )
+            if not property_access:
+                raise Unauthorized("Property access denied")
 
         if portal_user:
             cur_user = request.env["res.users"].browse(request.env.uid)
@@ -38,17 +64,47 @@ class HelpdeskFormController(http.Controller):
                 request.session.authenticate(
                     request.db, portal_user.login, signup_token
                 )
-        url = "/helpdesk/ticket/new/?user_id={}&property_id={}&signup_token={}".format(
-            user_id, property_id, signup_token
-        )
+        request.session["helpdesk_auth"] = {
+            "user_id": user_id,
+            "property_id": property_id,
+            "token": signup_token,
+            "validated": True,
+            "timestamp": fields.Datetime.now(),
+        }
+        url = "/helpdesk/ticket/new"
         return werkzeug.utils.redirect(url)
 
     @http.route("/helpdesk/ticket/new", type="http", auth="public", website=True)
     def helpdesk_ticket_form(self, **kwargs):
         ensure_db()
-        user_id = int(kwargs.get("user_id"))
-        property_id = int(kwargs.get("property_id"))
-        access_token = kwargs.get("signup_token")
+        helpdesk_auth = request.session.get("helpdesk_auth")
+        if not helpdesk_auth or not helpdesk_auth.get("validated"):
+            if (
+                request.session.uid
+                and request.session.uid != request.env.ref("base.public_user").id
+            ):
+                request.session.logout(keep_db=True)
+            raise Unauthorized(_("Access denied. Please start from the valid link."))
+
+        user_id = helpdesk_auth["user_id"]
+        property_id = helpdesk_auth["property_id"]
+        access_token = helpdesk_auth["token"]
+        session_time = fields.Datetime.from_string(helpdesk_auth.get("timestamp"))
+
+        if datetime.now() - session_time > timedelta(
+            minutes=self.SESSION_EXPIRATION_MINUTES
+        ):
+            _logger.warning(
+                "Helpdesk session expired for user %s", helpdesk_auth.get("user_id")
+            )
+            if (
+                request.session.uid
+                and request.session.uid != request.env.ref("base.public_user").id
+            ):
+                request.session.logout(keep_db=True)
+            raise Unauthorized(
+                _("Session expired or invalid. Please start from the valid link.")
+            )
 
         user_id = request.env["res.users"].sudo().browse(user_id)
         partner_id = (
