@@ -28,6 +28,7 @@ class HelpdeskFormController(http.Controller):
             property_id = int(kwargs.get("property_id", 0))
             signup_token = kwargs.get("signup_token", "").strip()
         except (ValueError, TypeError) as err:
+            _logger.exception("Error en parámetros")
             raise BadRequest(_("Invalid parameters")) from err
 
         if not user_id or not signup_token:
