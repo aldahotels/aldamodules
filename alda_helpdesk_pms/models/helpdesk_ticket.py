@@ -16,6 +16,7 @@ class HelpdeskTicket(models.Model):
     )
 
     pms_room_blocked = fields.Boolean(
+        string="Blocked",
         compute="_compute_pms_room_blocked",
         store=True,
         help="Indicates if the room is blocked for this ticket.",
