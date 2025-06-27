@@ -1,7 +1,8 @@
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError, AccessDenied
 import json
 import os
+
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class HelpdeskTicket(models.Model):
@@ -26,12 +27,10 @@ class HelpdeskTicket(models.Model):
         help="Indicates if the ticket is related to a room.",
     )
 
-    bathroom_type = fields.Selection(
-        selection=[("bathroom", "Bathroom"), ("none", "None")],
-        help="Select if it's specifically the bathroom.",
+    is_bathroom = fields.Boolean(
+        compute="_compute_is_bathroom",
         store=True,
-        default="none",
-        traking=True,
+        help="Indicates if the ticket is related to a bathroom.",
     )
 
     company_external_id = fields.Boolean(
@@ -58,9 +57,9 @@ class HelpdeskTicket(models.Model):
             return selection
         except Exception:
             return [
-                ("bathroom", "Bathroom"),
-                ("room", "Room"),
-                ("reception", "Reception"),
+                ("bathroom", _("Bathroom")),
+                ("room", _("Room")),
+                ("reception", _("Reception")),
             ]
 
     location_type = fields.Selection(
@@ -110,7 +109,7 @@ class HelpdeskTicket(models.Model):
             if ticket.is_room != bool(ticket.pms_room_id):
                 ticket.is_room = bool(ticket.pms_room_id)
                 if ticket.is_room:
-                    ticket.location_type = False
+                    ticket.location_type = "room"
                 if ticket.id:
                     msg = "Related to:" if ticket.is_room else "Unrelated to:"
                     ticket.message_post(
@@ -123,37 +122,30 @@ class HelpdeskTicket(models.Model):
                         subtype_xmlid="mail.mt_comment",
                         content_subtype="html",
                     )
-            else:
-                if ticket.id:
-                    msg = "Unrelated to:" if not ticket.is_room else ""
-                    ticket.message_post(
-                        body=(
-                            f"{msg}</b> Not room in ticket -> "
-                            f"Property: {ticket.pms_property_id.name}"
-                        ),
-                        subject=_("Room status changed"),
-                        message_type="comment",
-                        subtype_xmlid="mail.mt_comment",
-                        content_subtype="html",
-                    )
+
+    @api.depends("location_type")
+    def _compute_is_bathroom(self):
+        for ticket in self:
+            ticket.is_bathroom = ticket.location_type == "Bathroom"
 
     @api.onchange("pms_room_id")
     def _onchange_pms_room_id(self):
         pass
 
     @api.constrains("location_type", "pms_room_id", "bathroom_type")
-    def _check_room_location_consistency(self):
+    def _check_location_consistency(self):
         for ticket in self:
             if ticket.location_type == "room" and not ticket.pms_room_id:
                 raise ValidationError(
                     _("Room is required when location type is 'Room'")
                 )
-            if ticket.location_type == "bathroom" and (
-                not ticket.pms_room_id or not ticket.bathroom_type
-            ):
-                raise ValidationError(
-                    _(
-                        "Both Room and Bathroom selection are required "
-                        "when location type is 'Bathroom'"
+
+            if ticket.location_type == "bathroom":
+                if not ticket.pms_room_id:
+                    raise ValidationError(
+                        _("Room is required when location type is 'Bathroom'")
                     )
-                )
+                if not ticket.location_type:
+                    raise ValidationError(
+                        _("Bathroom type is required when location type is 'Bathroom'")
+                    )

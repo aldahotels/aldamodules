@@ -21,7 +21,7 @@
     ],
     "assets": {
         "web.assets_frontend": [
-            "/helpdesk_pms_alda/static/src/js/ticket_form.js",
+            "alda_helpdesk_pms/static/src/js/ticket_form.js",
         ],
     },
     "installable": True,

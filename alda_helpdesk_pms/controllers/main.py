@@ -165,10 +165,9 @@ class HelpdeskFormController(http.Controller):
     def helpdesk_ticket_submit(self, **post):
         ensure_db()
         room_id = post.get("room_ids", "")
-        post.get("ticket_type_ids", "")
+        ticket_type_id = post.get("ticket_type_id", "")
         pms_room_id = int(room_id) if room_id else False
-        location_type = post.get("location_type_options")
-        bathroom_type = post.get("bathroom_type")
+        location_type = post.get("location_type")
         ticket = (
             request.env["helpdesk.ticket"]
             .sudo()
@@ -179,11 +178,8 @@ class HelpdeskFormController(http.Controller):
                     "partner_name": post.get("partner_name"),
                     "pms_property_id": int(post.get("property_id")),
                     "team_id": int(post.get("team_id")),
-                    "ticket_type_id": int(post.get("ticket_type_id")),
+                    "ticket_type_id": ticket_type_id,
                     "location_type": location_type,
-                    "bathroom_type": bathroom_type
-                    if location_type == "bathroom"
-                    else False,
                     "pms_room_id": pms_room_id,
                     "company_external_id": post.get("company_external_id"),
                     "description": post.get("description"),
