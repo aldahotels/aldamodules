@@ -23,12 +23,14 @@ class HelpdeskTicket(models.Model):
     )
 
     is_room = fields.Boolean(
+        string="Room's ticket",
         compute="_compute_is_room",
         store=True,
         help="Indicates if the ticket is related to a room.",
     )
 
     is_bathroom = fields.Boolean(
+        string="Bathroom's room",
         compute="_compute_is_bathroom",
         store=True,
         help="Indicates if the ticket is related to a bathroom.",

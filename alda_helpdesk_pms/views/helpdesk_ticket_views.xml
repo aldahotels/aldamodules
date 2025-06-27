@@ -39,6 +39,13 @@
             <xpath expr="//field[@name='ticket_type_id']" position="attributes">
                 <attribute name="options">{'color_field': 'color'}</attribute>
             </xpath>
+            <xpath expr="//field[@name='team_id']" position="before">
+                <field name="is_room" optional="hide" />
+                <field name="pms_room_blocked" optional="hide" />
+                <field name="is_bathroom" optional="hide" />
+                <field name="company_external_id" optional="hide" />
+                <field name="location_type" optional="hide" />
+            </xpath>
         </field>
     </record>
 </odoo>
