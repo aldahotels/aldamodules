@@ -9,6 +9,7 @@
             <xpath expr="//field[@name='priority']" position="after">
                 <field name="pms_room_blocked" />
                 <field name="is_room" />
+                <field name="is_bathroom" />
                 <field
                     name="location_type"
                     attrs="{'invisible': [('is_room', '=', True)]}"
@@ -45,6 +46,77 @@
                 <field name="is_bathroom" optional="hide" />
                 <field name="company_external_id" optional="hide" />
                 <field name="location_type" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+    <!-- Vista search -->
+    <record id="pms_helpdesk_ticket_search_inherit" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.search.inherit.pms</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="pms_room_blocked" />
+                <field name="is_room" />
+                <field name="company_external_id" />
+                <field name="location_type" />
+
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter
+                    string="Blocked"
+                    name="group_blocked"
+                    context="{'group_by': 'pms_room_blocked'}"
+                />
+                <filter
+                    string="Room's ticket"
+                    name="group_is_room"
+                    context="{'group_by': 'is_room'}"
+                />
+                <filter
+                    string="Bathroom's room"
+                    name="group_is_bathroom"
+                    context="{'group_by': 'is_bathroom'}"
+                />
+                <filter
+                    string="Location type"
+                    name="group_location_type"
+                    context="{'group_by': 'location_type'}"
+                />
+                <filter
+                    string="Repair External ID"
+                    name="group_company_external"
+                    context="{'group_by': 'company_external_id'}"
+                />
+            </xpath>
+
+
+            <xpath expr="//filter[@name='my_follow_ticket']" position="before">
+                <filter
+                    string="Room Blocked"
+                    name="filter_blocked"
+                    domain="[('pms_room_blocked','!=', False)]"
+                />
+                <filter
+                    string="Room's ticket"
+                    name="filter_is_room"
+                    domain="[('is_room','!=', False)]"
+                />
+                <filter
+                    string="Bathroom's room"
+                    name="filter_is_bathroom"
+                    domain="[('is_bathroom','!=', False)]"
+                />
+                <filter
+                    string="Location type"
+                    name="filter_location_type"
+                    domain="[('location_type','!=', False)]"
+                />
+                <filter
+                    string="Repair External ID"
+                    name="filter_company_external"
+                    domain="[('company_external_id','!=', False)]"
+                />
             </xpath>
         </field>
     </record>

@@ -69,7 +69,7 @@ class HelpdeskTicket(models.Model):
         selection=_get_location_selection,
         string="Location type",
         help="Select where this issue is located",
-        default="room",
+        store=True,
     )
 
     def _is_room_blocked(self, room_id):
@@ -112,8 +112,13 @@ class HelpdeskTicket(models.Model):
             if ticket.is_room != bool(ticket.pms_room_id):
                 ticket.is_room = bool(ticket.pms_room_id)
                 if ticket.is_room:
+                    if ticket.location_type == "bathroom":
+                        ticket.location_type = "bathroom"
+                    else:
+                        if ticket.location_type != "room":
+                            ticket.is_room = False
+                if ticket.id and ticket.is_room:
                     ticket.location_type = "room"
-                if ticket.id:
                     msg = "Related to:" if ticket.is_room else "Unrelated to:"
                     ticket.message_post(
                         body=(
@@ -129,13 +134,25 @@ class HelpdeskTicket(models.Model):
     @api.depends("location_type")
     def _compute_is_bathroom(self):
         for ticket in self:
-            ticket.is_bathroom = ticket.location_type == "Bathroom"
+            if ticket.location_type == "bathroom":
+                ticket.is_bathroom = True
+            else:
+                ticket.is_bathroom = False
 
     @api.onchange("pms_room_id")
     def _onchange_pms_room_id(self):
         pass
 
-    @api.constrains("location_type", "pms_room_id", "bathroom_type")
+    @api.onchange("pms_room_id")
+    def _onchange_location_type_clear_room(self):
+        for ticket in self:
+            if ticket.location_type not in ["room", "bathroom"]:
+                if ticket.is_bathroom:
+                    ticket.location_type = "bathroom"
+                else:
+                    ticket.location_type = "room"
+
+    @api.constrains("location_type", "pms_room_id")
     def _check_location_consistency(self):
         for ticket in self:
             if ticket.location_type == "room" and not ticket.pms_room_id:

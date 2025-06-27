@@ -26,6 +26,7 @@ odoo.define("alda_helpdesk_pms.ticket_form", function () {
                 roomContainer.style.display = "none";
                 roomField.required = false;
             }
+            roomField.value = "";
         };
 
         handleLocationChange();

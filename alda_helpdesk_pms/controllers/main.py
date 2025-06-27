@@ -95,9 +95,6 @@ class HelpdeskFormController(http.Controller):
         if datetime.now() - session_time > timedelta(
             minutes=self.SESSION_EXPIRATION_MINUTES
         ):
-            _logger.warning(
-                "Helpdesk session expired for user %s", helpdesk_auth.get("user_id")
-            )
             if (
                 request.session.uid
                 and request.session.uid != request.env.ref("base.public_user").id
@@ -181,7 +178,6 @@ class HelpdeskFormController(http.Controller):
         room_id = post.get("room_ids", "")
         ticket_type_id = post.get("ticket_type_id", "")
         pms_room_id = int(room_id) if room_id else False
-        location_type = post.get("location_type")
         ticket = (
             request.env["helpdesk.ticket"]
             .sudo()
@@ -193,7 +189,7 @@ class HelpdeskFormController(http.Controller):
                     "pms_property_id": int(post.get("property_id")),
                     "team_id": int(post.get("team_id")),
                     "ticket_type_id": ticket_type_id,
-                    "location_type": location_type,
+                    "location_type": post.get("location_type"),
                     "pms_room_id": pms_room_id,
                     "company_external_id": post.get("company_external_id"),
                     "description": post.get("description"),
