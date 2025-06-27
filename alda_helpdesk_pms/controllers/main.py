@@ -113,7 +113,7 @@ class HelpdeskFormController(http.Controller):
             .sudo()
             .search([("id", "=", user_id.partner_id.id)])
         )
-        
+
         property_record = request.env["pms.property"].sudo().browse(property_id)
         team_ids = request.env["helpdesk.team"].sudo().search([])
         ticket_type_ids = (
@@ -121,18 +121,22 @@ class HelpdeskFormController(http.Controller):
             .sudo()
             .search([("team_id", "in", team_ids.ids)])
         )
-        is_overnight_room = request.env["pms.room.type"].sudo().search([
-            ("overnight_room", "=", True)
-        ]).ids
-        _logger.debug("Overnight room types: %s", is_overnight_room)
-        room_ids = (
-            request.env["pms.room"] 
+        is_overnight_room = (
+            request.env["pms.room.type"]
             .sudo()
-            .search([
-                ("pms_property_id", "=", property_record.id),
-                ("room_type_id", "in", is_overnight_room),
-                ("active", "=", True),
-            ])
+            .search([("overnight_room", "=", True)])
+            .ids
+        )
+        room_ids = (
+            request.env["pms.room"]
+            .sudo()
+            .search(
+                [
+                    ("pms_property_id", "=", property_record.id),
+                    ("room_type_id", "in", is_overnight_room),
+                    ("active", "=", True),
+                ]
+            )
         )
 
         location_type_options = request.env["helpdesk.ticket"]._get_location_selection()
@@ -143,7 +147,6 @@ class HelpdeskFormController(http.Controller):
             )
 
         company_external_id = False
-
 
         return request.render(
             "alda_helpdesk_pms.create_ticket_form",
