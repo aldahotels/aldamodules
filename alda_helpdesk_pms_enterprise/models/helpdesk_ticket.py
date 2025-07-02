@@ -1,5 +1,9 @@
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
 
 
 class HelpdeskPmsEnterprise(models.Model):
@@ -9,8 +13,8 @@ class HelpdeskPmsEnterprise(models.Model):
         comodel_name="pms.property",
         string="Property",
         store=True,
-        required=True,
         tracking=True,
+        domain=lambda self: [("id", "in", self._get_allowed_property_ids())],
         help="The hotel associated with this ticket.",
     )
 
@@ -23,16 +27,32 @@ class HelpdeskPmsEnterprise(models.Model):
     )
 
     @api.model
-    def fields_get(self, allfields=None, attributes=None):
-        res = super().fields_get(allfields, attributes)
+    def _get_allowed_property_ids(self):
         employee = (
             self.env["hr.employee"]
             .sudo()
-            .search([("user_id", "=", self.env.uid)], limit=1)
+            .search([("user_id", "=", self.env.user.id)], limit=1)
         )
-        if employee and "pms_property_id" in res:
-            res["pms_property_id"]["domain"] = [("id", "in", employee.property_ids.ids)]
-        return res
+        return employee.property_ids.ids if employee else []
+
+    @api.onchange("pms_property_id")
+    def _onchange_pms_property_domain(self):
+        employee = (
+            self.env["hr.employee"]
+            .sudo()
+            .search([("user_id", "=", self.env.user.id)], limit=1)
+        )
+        if employee:
+            return {
+                "domain": {
+                    "pms_property_id": [("id", "in", employee.property_ids.ids)],
+                }
+            }
+        return {
+            "domain": {
+                "pms_property_id": [("id", "=", False)],
+            }
+        }
 
     @api.onchange("pms_property_id")
     def _onchange_pms_property(self):
