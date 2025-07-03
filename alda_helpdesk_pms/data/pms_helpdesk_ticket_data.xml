@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+        <record id="pms_helpdesk_ticket_is_room" model="helpdesk.ticket.detail.tag">
+            <field name="name">Room</field>
+            <field name="color">3</field>
+        </record>
+        <record
+        id="pms_helpdesk_ticket_is_blocked_room"
+        model="helpdesk.ticket.detail.tag"
+    >
+            <field name="name">Blocked Room</field>
+            <field name="color">9</field>
+        </record>
+        <record id="pms_helpdesk_ticket_Bathroom" model="helpdesk.ticket.detail.tag">
+            <field name="name">Bathroom</field>
+            <field name="color">11</field>
+        </record>
+        <record
+        id="pms_helpdesk_ticket_external_company"
+        model="helpdesk.ticket.detail.tag"
+    >
+            <field name="name">External Company</field>
+            <field name="color">10</field>
+        </record>
+</odoo>

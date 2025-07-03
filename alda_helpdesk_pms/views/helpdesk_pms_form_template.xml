@@ -67,7 +67,7 @@
                                 t-att-value="is_room or ''"
                             />
                                 <div class="mb-3">
-                                    <label class="form-label">Asunto</label>
+                                    <label class="form-label">Subject</label>
                                     <input
                                     type="text"
                                     name="subject"
@@ -172,7 +172,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Descripción</label>
+                                    <label class="form-label">Description</label>
                                     <textarea
                                     name="description"
                                     class="form-control"
@@ -183,7 +183,7 @@
                                 <button
                                 type="submit"
                                 class="btn btn-primary"
-                            >Enviar ticket</button>
+                            >Send ticket</button>
                             </form>
                         </div>
                     </div>
@@ -194,8 +194,8 @@
     <template id="thank_you_page" name="Gracias por tu ticket">
         <t t-call="website.layout">
             <div class="container mt-5 text-center">
-                <h3>Tu ticket ha sido enviado exitosamente.</h3>
-                <p>Nos pondremos en contacto contigo pronto.</p>
+                <h3>Your ticket has been successfully submitted.</h3>
+                <p>We will contact you soon.</p>
             </div>
         </t>
     </template>
