@@ -1,7 +1,10 @@
 import json
 import logging
 import os
+from datetime import timedelta
 from random import randint
+
+from dateutil.easter import easter
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -21,11 +24,20 @@ class HelpdeskPmsTicketDetailsTag(models.Model):
         return randint(1, 11)
 
     name = fields.Char(required=True, translate=True)
+    tag_key = fields.Char(required=True, unique=True)
     color = fields.Integer(default=_get_default_color)
 
 
 class HelpdeskTicket(models.Model):
     _inherit = "helpdesk.ticket"
+
+    def _get_tag_translations(self):
+        return {
+            "is_room": {"name": _("Room"), "color": 3},
+            "is_blocked_room": {"name": _("Blocked Room"), "color": 9},
+            "is_bathroom": {"name": _("Bathroom"), "color": 11},
+            "external_company": {"name": _("External Company"), "color": 10},
+        }
 
     ticket_type_id = fields.Many2one(
         comodel_name="helpdesk.ticket.type",
@@ -74,6 +86,41 @@ class HelpdeskTicket(models.Model):
         tracking=True,
         help="Indicates if the ticket is linked to an external repair ID.",
     )
+
+    season_type = fields.Selection(
+        [
+            ("high", "High Season"),
+            ("low", "Low Season"),
+        ],
+        string="Season",
+        compute="_compute_season_type",
+        store=False,
+    )
+
+    def _compute_season_type(self):
+        for ticket in self:
+            if not ticket.create_date:
+                ticket.season_type = False
+                continue
+            create_date = fields.Date.from_string(ticket.create_date.date())
+            year = ticket.create_date.year
+            easter_date = easter(year)
+            palm_sunday = easter_date - timedelta(days=7)
+            holy_start = palm_sunday - timedelta(days=4)
+            holy_end = easter_date + timedelta(days=4)
+
+            is_holy_period = holy_start <= create_date <= holy_end
+
+            month = create_date.month
+
+            if 6 <= month <= 9:
+                ticket.season_type = "high"
+            elif is_holy_period:
+                ticket.season_type = "high"
+            elif month == 12 or (month == 1 and ticket.create_date.day <= 7):
+                ticket.season_type = "high"
+            else:
+                ticket.season_type = "low"
 
     def _get_location_selection(self):
         file_path = os.path.join(
@@ -197,42 +244,35 @@ class HelpdeskTicket(models.Model):
                         _("Room is required when location type is 'Bathroom'")
                     )
 
+    def _prepare_tag_detail_pms(self, tag_key, tag_ids):
+        tag = self.env["helpdesk.ticket.detail.tag"].search(
+            [("tag_key", "=", tag_key)], limit=1
+        )
+        if not tag:
+            tag_data = self._get_tag_translations()[tag_key]
+            tag = self.env["helpdesk.ticket.detail.tag"].create(
+                {
+                    "name": tag_data["name"],
+                    "tag_key": tag_key,
+                    "color": tag_data["color"],
+                }
+            )
+        tag_ids.append(tag.id)
+        return tag_ids
+
     @api.depends("is_room", "is_room_blocked", "is_bathroom", "company_external_id")
     def _compute_tag_detail(self):
         for ticket in self:
             try:
                 tag_ids = []
                 if ticket.is_room:
-                    room_tag = self.env.ref(
-                        "alda_helpdesk_pms.pms_helpdesk_ticket_is_room",
-                        raise_if_not_found=False,
-                    )
-                    if room_tag:
-                        tag_ids.append(room_tag.id)
-
+                    self._prepare_tag_detail_pms("is_room", tag_ids)
                 if ticket.is_room_blocked:
-                    blocked_tag = self.env.ref(
-                        "alda_helpdesk_pms.pms_helpdesk_ticket_is_blocked_room",
-                        raise_if_not_found=False,
-                    )
-                    if blocked_tag:
-                        tag_ids.append(blocked_tag.id)
-
+                    self._prepare_tag_detail_pms("is_blocked_room", tag_ids)
                 if ticket.is_bathroom:
-                    bathroom_tag = self.env.ref(
-                        "alda_helpdesk_pms.pms_helpdesk_ticket_Bathroom",
-                        raise_if_not_found=False,
-                    )
-                    if bathroom_tag:
-                        tag_ids.append(bathroom_tag.id)
-
+                    self._prepare_tag_detail_pms("is_bathroom", tag_ids)
                 if ticket.company_external_id:
-                    company_tag = self.env.ref(
-                        "alda_helpdesk_pms.pms_helpdesk_ticket_external_company",
-                        raise_if_not_found=False,
-                    )
-                    if company_tag:
-                        tag_ids.append(company_tag.id)
+                    self._prepare_tag_detail_pms("external_company", tag_ids)
 
                 ticket.tag_detail = [(6, 0, tag_ids)] if tag_ids else False
 

@@ -30,7 +30,6 @@
     "depends": ["website", "helpdesk", "alda_helpdesk_pms_enterprise"],
     "category": "PMS",
     "data": [
-        "data/pms_helpdesk_ticket_data.xml",
         "security/ir.model.access.csv",
         "views/menu_item.xml",
         "views/helpdesk_ticket_type_views.xml",

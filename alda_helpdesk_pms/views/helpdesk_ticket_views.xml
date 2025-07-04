@@ -25,6 +25,14 @@
                         options="{'color_field': 'color'}"
                     />
                 </div>
+                <field name="season_type" invisible="1" />
+                <widget
+                    name="web_ribbon"
+                    title="High Season"
+                    bg_color="text-bg-warning"
+                    attrs="{'invisible': [('season_type', '!=', 'high')]}"
+                />
+
             </xpath>
             <xpath expr="//field[@name='ticket_type_id']" position="attributes">
                 <attribute
@@ -42,7 +50,6 @@
             </xpath>
         </field>
     </record>
-
     <record id="helpdesk_ticket_type_view_form_pms" model="ir.ui.view">
         <field name="name">helpdesk.ticket.type.form.inherit.pms</field>
         <field name="model">helpdesk.ticket</field>

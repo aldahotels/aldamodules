@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-03 16:48+0000\n"
-"PO-Revision-Date: 2025-07-03 16:48+0000\n"
+"POT-Creation-Date: 2025-07-04 16:49+0000\n"
+"PO-Revision-Date: 2025-07-04 16:49+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -69,7 +69,7 @@ msgstr "Acceso denegado. Por favor, empieza desde el enlace válido."
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
-#: model:helpdesk.ticket.detail.tag,name:alda_helpdesk_pms.pms_helpdesk_ticket_Bathroom
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Bathroom"
 msgstr "Baño"
@@ -87,9 +87,11 @@ msgid "Blocked"
 msgstr "Habitación del PMS bloqueada"
 
 #. module: alda_helpdesk_pms
-#: model:helpdesk.ticket.detail.tag,name:alda_helpdesk_pms.pms_helpdesk_ticket_is_blocked_room
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
 msgid "Blocked Room"
-msgstr "Habitación bloqueada"
+msgstr "Habitación Bloqueada"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__color
@@ -113,7 +115,9 @@ msgid "Display Name"
 msgstr "Mostrar el nombre"
 
 #. module: alda_helpdesk_pms
-#: model:helpdesk.ticket.detail.tag,name:alda_helpdesk_pms.pms_helpdesk_ticket_external_company
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
 msgid "External Company"
 msgstr "Empresa Externa"
 
@@ -136,6 +140,12 @@ msgstr "Ticket de asistencia"
 #: model:ir.model,name:alda_helpdesk_pms.model_helpdesk_ticket_type
 msgid "Helpdesk Ticket Type"
 msgstr "Tipo de ticket de servicio de asistencia"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__season_type__high
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "High Season"
+msgstr "Temporada Alta"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__id
@@ -195,6 +205,11 @@ msgid "Location type"
 msgstr "Tipo de ubicación"
 
 #. module: alda_helpdesk_pms
+#: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__season_type__low
+msgid "Low Season"
+msgstr "Temporada Baja"
+
+#. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
@@ -222,7 +237,7 @@ msgstr ""
 #. module: alda_helpdesk_pms
 #: model:ir.ui.menu,name:alda_helpdesk_pms.menu_pms_root
 msgid "PMS"
-msgstr "PMS"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -247,7 +262,7 @@ msgstr "ID externo de reparación"
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
-#: model:helpdesk.ticket.detail.tag,name:alda_helpdesk_pms.pms_helpdesk_ticket_is_room
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 #, python-format
 msgid "Room"
@@ -289,6 +304,11 @@ msgid "Room's ticket"
 msgstr "Es habitación"
 
 #. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__season_type
+msgid "Season"
+msgstr "Temporada"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__location_type
 msgid "Select where this issue is located"
 msgstr "Seleccione dónde se encuentra este problema"
@@ -315,6 +335,11 @@ msgstr "Asunto"
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__tag_detail
 msgid "Tag Details"
 msgstr "Etiquetas detalles del PMS"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__tag_key
+msgid "Tag Key"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_type__team_id
@@ -355,7 +380,7 @@ msgstr "Actualizar Bloqueos"
 #. module: alda_helpdesk_pms
 #: model:ir.actions.server,name:alda_helpdesk_pms.ir_cron_update_pms_ticket_info_ir_actions_server
 #: model:ir.cron,cron_name:alda_helpdesk_pms.ir_cron_update_pms_ticket_info
-msgid "Update PMS ticket state "
+msgid "Update PMS ticket state"
 msgstr "Actualizar el estado del ticket con el PMS"
 
 #. module: alda_helpdesk_pms
