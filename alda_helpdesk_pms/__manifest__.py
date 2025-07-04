@@ -30,13 +30,13 @@
     "depends": ["website", "helpdesk", "alda_helpdesk_pms_enterprise"],
     "category": "PMS",
     "data": [
+        "data/pms_helpdesk_ticket_data.xml",
         "security/ir.model.access.csv",
         "views/menu_item.xml",
-        "data/ir_cron.xml",
-        "data/pms_helpdesk_ticket_data.xml",
         "views/helpdesk_ticket_type_views.xml",
         "views/helpdesk_ticket_views.xml",
         "views/helpdesk_pms_form_template.xml",
+        "data/ir_cron.xml",
     ],
     "assets": {
         "web.assets_frontend": [

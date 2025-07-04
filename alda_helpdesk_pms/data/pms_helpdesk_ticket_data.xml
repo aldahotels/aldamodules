@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo noupdate="1">
+<odoo noupdate="0">
         <record id="pms_helpdesk_ticket_is_room" model="helpdesk.ticket.detail.tag">
             <field name="name">Room</field>
             <field name="color">3</field>
