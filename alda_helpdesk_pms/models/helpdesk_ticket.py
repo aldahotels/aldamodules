@@ -1,9 +1,12 @@
 import json
+import logging
 import os
 from random import randint
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
 
 
 class HelpdeskPmsTicketDetailsTag(models.Model):
@@ -197,20 +200,47 @@ class HelpdeskTicket(models.Model):
     @api.depends("is_room", "is_room_blocked", "is_bathroom", "company_external_id")
     def _compute_tag_detail(self):
         for ticket in self:
-            tags = self.env["helpdesk.ticket.detail.tag"].sudo().browse()
-            if ticket.is_room:
-                tags |= self.env.ref("alda_helpdesk_pms.pms_helpdesk_ticket_is_room")
-            if ticket.is_room_blocked:
-                tags |= self.env.ref(
-                    "alda_helpdesk_pms.pms_helpdesk_ticket_is_blocked_room"
+            try:
+                tag_ids = []
+                if ticket.is_room:
+                    room_tag = self.env.ref(
+                        "alda_helpdesk_pms.pms_helpdesk_ticket_is_room",
+                        raise_if_not_found=False,
+                    )
+                    if room_tag:
+                        tag_ids.append(room_tag.id)
+
+                if ticket.is_room_blocked:
+                    blocked_tag = self.env.ref(
+                        "alda_helpdesk_pms.pms_helpdesk_ticket_is_blocked_room",
+                        raise_if_not_found=False,
+                    )
+                    if blocked_tag:
+                        tag_ids.append(blocked_tag.id)
+
+                if ticket.is_bathroom:
+                    bathroom_tag = self.env.ref(
+                        "alda_helpdesk_pms.pms_helpdesk_ticket_Bathroom",
+                        raise_if_not_found=False,
+                    )
+                    if bathroom_tag:
+                        tag_ids.append(bathroom_tag.id)
+
+                if ticket.company_external_id:
+                    company_tag = self.env.ref(
+                        "alda_helpdesk_pms.pms_helpdesk_ticket_external_company",
+                        raise_if_not_found=False,
+                    )
+                    if company_tag:
+                        tag_ids.append(company_tag.id)
+
+                ticket.tag_detail = [(6, 0, tag_ids)] if tag_ids else False
+
+            except Exception as e:
+                _logger.error(
+                    "Error al calcular tags del ticket %s: %s", ticket.id, str(e)
                 )
-            if ticket.is_bathroom:
-                tags |= self.env.ref("alda_helpdesk_pms.pms_helpdesk_ticket_Bathroom")
-            if ticket.company_external_id:
-                tags |= self.env.ref(
-                    "alda_helpdesk_pms.pms_helpdesk_ticket_external_company"
-                )
-            ticket.tag_detail = [(6, 0, tags.ids)]
+                ticket.tag_detail = False
 
     def action_update_is_room_blocked(self):
         tickets = self.search([("pms_room_id", "!=", False)])
