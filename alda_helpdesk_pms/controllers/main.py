@@ -140,7 +140,7 @@ class HelpdeskFormController(http.Controller):
         room_state_ids = {}
         for room in room_ids:
             room_state_ids[room.id] = (
-                request.env["helpdesk.ticket"].sudo()._is_room_blocked(room.id)
+                request.env["helpdesk.ticket"].sudo()._is_room_blocked(room)
             )
 
         company_external_id = False
