@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-19 15:03+0000\n"
-"PO-Revision-Date: 2025-06-19 15:03+0000\n"
+"POT-Creation-Date: 2025-07-08 10:02+0000\n"
+"PO-Revision-Date: 2025-07-08 10:02+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1914,6 +1914,11 @@ msgid ""
 msgstr ""
 "Este asistente permite importar un archivo CSV con el stock de los productos.<br/>\n"
 "                    El archivo CSV debe contener las columnas referencia y stock, siendo la referencia el código del proveedor para el producto."
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_new_purchase_request_page
+msgid "Total Qty"
+msgstr "Cantidad total"
 
 #. module: purchase_portal
 #: model:ir.model,name:purchase_portal.model_stock_picking
