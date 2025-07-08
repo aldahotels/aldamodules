@@ -6,7 +6,7 @@
                 <t t-else="">Stock pickings</t>
             </li>
             <li t-if="stock_picking" class="breadcrumb-item active">
-                <t t-esc="stock_picking.name" t-if="stock_picking.name != '/'"/>
+                <t t-out="stock_picking.name" t-if="stock_picking.name != '/'"/>
                 <t t-else=""><em>Draft stock picking</em></t>
             </li>
         </xpath>
@@ -47,7 +47,7 @@
                     <tr>
                         <td>
                             <a t-att-href="stock_picking.get_portal_url()">
-                                <t t-esc="stock_picking.name" t-if="stock_picking.name != '/'"/>
+                                <t t-out="stock_picking.name" t-if="stock_picking.name != '/'"/>
                                 <em t-else="">Draft stock picking</em>
                             </a>
                         </td>
@@ -183,18 +183,18 @@
             <tr>
                 <td>
                     <img t-att-src="'/web/image/product.product/%s/image_128' % ol.product_id.id" alt="Product" class="d-none d-lg-inline"/>
-                    <span t-esc="ol.name"/>
+                    <span t-out="ol.name"/>
                 </td>
                 <td class="text-right">
-                    <span t-esc="ol.product_original_qty"/> <span  t-if="ol.product_original_qty_uom" t-esc="ol.product_original_qty_uom.name"/>
+                    <span t-out="ol.product_original_qty"/> <span  t-if="ol.product_original_qty_uom" t-out="ol.product_original_qty_uom.name"/>
                 </td>
                 <td class="text-right">
-                    <span t-esc="ol.product_uom_qty"/> <span t-if="ol.product_uom" t-esc="ol.product_uom.name"/>
+                    <span t-out="ol.product_qty"/> <span t-if="ol.product_uom" t-out="ol.product_uom.name"/>
                 </td>
                 <td class="text-right">
                     <span
                         t-att-class="'set_quantity_done' if stock_picking.state not in ['cancel', 'done'] else ''"
-                        t-esc="ol.quantity_done"
+                        t-out="ol.quantity_done"
                     />
                     <input
                         t-if="stock_picking.state not in ['cancel', 'done']"
@@ -204,7 +204,7 @@
                         t-att-data-line_id="ol.id"
                         t-att-value="ol.quantity_done"
                     />
-                    <span t-if="ol.product_uom" t-esc="ol.product_uom.name"/>
+                    <span t-if="ol.product_uom" t-out="ol.product_uom.name"/>
                 </td>
             </tr>
         </t>
@@ -236,7 +236,7 @@
                     <tr>
                         <td>
                             <img t-att-src="'/web/image/product.product/%s/image_128' % product_product.id" alt="Product" class="d-none d-lg-inline"/>
-                            <span t-esc="product_product.name"/>
+                            <span t-out="product_product.name"/>
                         </td>
                         <td>
                             <span t-field="product_product.default_code"/><br/>
@@ -251,9 +251,9 @@
                             <t t-if="product_product.mapped('seller_ids')">
                                 <t t-set="seller" t-value="product_product.mapped('seller_ids')[0]"/>
                                 <span>
-                                    <t t-esc="seller.partner_id.name"/><br/>
+                                    <t t-out="seller.partner_id.name"/><br/>
                                     <span t-if="seller.product_code">
-                                        Ref. <t t-esc="seller.product_code"/>
+                                        Ref. <t t-out="seller.product_code"/>
                                     </span>
                                 </span>
                             </t>
@@ -263,11 +263,11 @@
                         </td>
                         <td>
                             <span t-att-class="product_product.active and 'text-success' or 'text-danger'">
-                                <t t-esc="product_product.active and 'Yes' or 'No'"/>
+                                <t t-out="product_product.active and 'Yes' or 'No'"/>
                             </span>
                         </td>
                         <td class="tx_status">
-                            <span t-esc="product_product.get_supplier_lowest_price()"/>
+                            <span t-out="product_product.get_supplier_lowest_price()"/>
                         </td>
                     </tr>
                 </t>
