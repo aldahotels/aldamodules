@@ -14,7 +14,6 @@ odoo.define("alda_helpdesk_pms.ticket_form", function () {
             return;
         }
 
-        // Usamos una expresión de función para evitar problemas con no-inner-declarations
         const handleLocationChange = function () {
             const selectedValue = locationSelect.value.trim().toLowerCase();
             const isRoomOrBathroom = ["room", "bathroom"].includes(selectedValue);
@@ -32,23 +31,36 @@ odoo.define("alda_helpdesk_pms.ticket_form", function () {
         handleLocationChange();
         $(locationSelect).on("change", handleLocationChange);
 
-        // Filtro de tipos de ticket por equipo
         const teamSelect = document.querySelector("[name='team_id']");
         const typeSelect = document.querySelector("[name='ticket_type_id']");
 
         if (teamSelect && typeSelect) {
-            const options = Array.from(typeSelect.querySelectorAll("option")).filter(
-                (opt) => opt.dataset.teamId !== undefined
-            );
+            const allOptions = Array.from(typeSelect.querySelectorAll("option"));
 
             const filterTicketTypes = function () {
                 const selectedTeam = teamSelect.value;
 
-                options.forEach((option) => {
+                if (!selectedTeam) {
+                    typeSelect.value = "";
+                    typeSelect.disabled = true;
+                    return;
+                }
+
+                typeSelect.disabled = false;
+
+                allOptions.forEach((option) => {
                     const teamId = option.dataset.teamId;
-                    option.style.display =
-                        !selectedTeam || teamId === selectedTeam ? "block" : "none";
+                    if (option.value === "") {
+                        option.hidden = false;
+                    } else {
+                        option.hidden = teamId !== selectedTeam;
+                    }
                 });
+
+                const currentOption = typeSelect.options[typeSelect.selectedIndex];
+                if (currentOption && currentOption.value && currentOption.hidden) {
+                    typeSelect.value = "";
+                }
             };
 
             teamSelect.addEventListener("change", filterTicketTypes);

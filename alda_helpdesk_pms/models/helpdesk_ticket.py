@@ -244,6 +244,26 @@ class HelpdeskTicket(models.Model):
                         _("Room is required when location type is 'Bathroom'")
                     )
 
+    @api.constrains("team_id", "ticket_type_id")
+    def _check_team_ticket_type(self):
+        for ticket in self:
+            if (
+                ticket.ticket_type_id
+                and ticket.ticket_type_id.team_id != ticket.team_id
+            ):
+                raise ValidationError(
+                    _(
+                        "The selected ticket type doesn't belong to the current team. "
+                        "Please select a type that corresponds to the selected team."
+                    )
+                )
+
+    @api.onchange("team_id")
+    def _onchange_team_id(self):
+        """Clear ticket type when team changes if they don't match"""
+        if self.ticket_type_id and self.ticket_type_id.team_id != self.team_id:
+            self.ticket_type_id = False
+
     def _prepare_tag_detail_pms(self, tag_key, tag_ids):
         tag = self.env["helpdesk.ticket.detail.tag"].search(
             [("tag_key", "=", tag_key)], limit=1
