@@ -1,0 +1,139 @@
+<odoo>
+  <!-- Vista Tree -->
+  <record id="view_budget_fb_tree" model="ir.ui.view">
+    <field name="name">budget.fb.tree</field>
+    <field name="model">budget.fb</field>
+    <field name="arch" type="xml">
+      <tree editable="bottom">
+        <field name="responsible" />
+        <field name="description" />
+        <field name="accounting_account" />
+        <field name="company" />
+        <field name="hotel" />
+        <field name="year" />
+        <field name="oct" />
+        <field name="nov" />
+        <field name="dec" />
+        <field name="jan" />
+        <field name="feb" />
+        <field name="mar" />
+        <field name="apr" />
+        <field name="may" />
+        <field name="jun" />
+        <field name="jul" />
+        <field name="aug" />
+        <field name="sep" />
+        <field name="total" readonly="1" />
+      </tree>
+    </field>
+  </record>
+  <!-- Vista Form -->
+  <record id="view_budget_fb_form" model="ir.ui.view">
+    <field name="name">budget.fb.form</field>
+    <field name="model">budget.fb</field>
+    <field name="arch" type="xml">
+      <form string="Budget fb">
+        <sheet>
+          <group>
+            <field name="year" />
+            <field name="responsible" />
+            <field name="description" />
+            <field name="accounting_account" />
+            <field name="company" />
+            <field name="hotel" />
+          </group>
+          <notebook>
+            <page string="Months">
+              <group>
+                <field name="oct" />
+                <field name="nov" />
+                <field name="dec" />
+                <field name="jan" />
+                <field name="feb" />
+                <field name="mar" />
+                <field name="apr" />
+                <field name="may" />
+                <field name="jun" />
+                <field name="jul" />
+                <field name="aug" />
+                <field name="sep" />
+              </group>
+            </page>
+            <page string="Totals">
+              <field name="total" readonly="1" />
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  <!-- Vista Pivot -->
+  <record id="view_budget_fb_pivot" model="ir.ui.view">
+    <field name="name">budget.fb.pivot</field>
+    <field name="model">budget.fb</field>
+    <field name="arch" type="xml">
+      <pivot string="fb Pivot">
+        <field name="year" type="row" />
+        <field name="hotel" type="row" />
+        <field name="responsible" type="row" />
+        <field name="total" type="measure" sum="True" />
+      </pivot>
+    </field>
+  </record>
+
+    <!-- Vista Search -->
+  <record id="view_budget_fb_search" model="ir.ui.view">
+    <field name="name">budget.fb.search</field>
+    <field name="model">budget.fb</field>
+    <field name="arch" type="xml">
+      <search string="FB Budget Search">
+        <field name="responsible" />
+        <field name="hotel" />
+        <field name="year" />
+        <field name="company" />
+        <separator />
+        <filter name="group_by_year" string="Year" context="{'group_by': 'year'}" />
+        <filter name="group_by_hotel" string="Hotel" context="{'group_by': 'hotel'}" />
+        <filter
+                    name="group_by_responsible"
+                    string="Responsible"
+                    context="{'group_by': 'responsible'}"
+                />
+        <filter
+                    name="group_by_company"
+                    string="Company"
+                    context="{'group_by': 'company'}"
+                />
+      </search>
+    </field>
+  </record>
+
+  <!-- Menú Principal -->
+  <menuitem id="menu_budget_root" name="Budget" sequence="10" />
+
+  <!-- Submenú -->
+  <menuitem id="menu_budget_fb" name="fb" parent="menu_budget_root" sequence="1" />
+
+  <!-- Action-->
+  <record id="action_budget_fb" model="ir.actions.act_window">
+    <field name="name">fb</field>
+    <field name="res_model">budget.fb</field>
+    <field name="view_mode">tree,form,pivot</field>
+    <field
+            name="context"
+        >{'search_default_group_by_year': 1, 'search_default_group_by_hotel': 1}</field>
+    <field name="help" type="html">
+      <p class="oe_view_nocontent_smiling_face">
+        Create records for each hotel.
+      </p>
+    </field>
+  </record>
+
+  <menuitem
+        id="menu_budget_fb_action"
+        parent="menu_budget_fb"
+        action="action_budget_fb"
+        sequence="1"
+    />
+
+</odoo>

@@ -1,0 +1,136 @@
+<odoo>
+  <record id="view_budget_operaciones_tree" model="ir.ui.view">
+    <field name="name">budget.operaciones.tree</field>
+    <field name="model">budget.operaciones</field>
+    <field name="arch" type="xml">
+      <tree editable="bottom">
+        <field name="responsible" />
+        <field name="description" />
+        <field name="accounting_account" />
+        <field name="company" />
+        <field name="hotel" />
+        <field name="year" />
+        <field name="oct" />
+        <field name="nov" />
+        <field name="dec" />
+        <field name="jan" />
+        <field name="feb" />
+        <field name="mar" />
+        <field name="apr" />
+        <field name="may" />
+        <field name="jun" />
+        <field name="jul" />
+        <field name="aug" />
+        <field name="sep" />
+        <field name="total" readonly="1" />
+      </tree>
+    </field>
+  </record>
+  <record id="view_budget_operaciones_form" model="ir.ui.view">
+    <field name="name">budget.operaciones.form</field>
+    <field name="model">budget.operaciones</field>
+    <field name="arch" type="xml">
+      <form string="Budget operaciones">
+        <sheet>
+          <group>
+            <field name="responsible" />
+            <field name="description" />
+            <field name="accounting_account" />
+            <field name="company" />
+            <field name="hotel" />
+            <field name="year" />
+          </group>
+          <notebook>
+            <page string="Months">
+              <group>
+                <field name="oct" />
+                <field name="nov" />
+                <field name="dec" />
+                <field name="jan" />
+                <field name="feb" />
+                <field name="mar" />
+                <field name="apr" />
+                <field name="may" />
+                <field name="jun" />
+                <field name="jul" />
+                <field name="aug" />
+                <field name="sep" />
+              </group>
+            </page>
+            <page string="Totals">
+              <field name="total" readonly="1" />
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  <record id="view_budget_operaciones_pivot" model="ir.ui.view">
+    <field name="name">budget.operaciones.pivot</field>
+    <field name="model">budget.operaciones</field>
+    <field name="arch" type="xml">
+      <pivot string="operaciones Pivot">
+        <field name="year" type="row" />
+        <field name="hotel" type="row" />
+        <field name="responsible" type="row" />
+        <field name="total" type="measure" sum="True" />
+      </pivot>
+    </field>
+  </record>
+  <record id="view_budget_operaciones_search" model="ir.ui.view">
+    <field name="name">budget.operaciones.search</field>
+    <field name="model">budget.operaciones</field>
+    <field name="arch" type="xml">
+      <search string="Operaciones Budget Search">
+        <field name="responsible" />
+        <field name="hotel" />
+        <field name="year" />
+        <field name="company" />
+        <separator />
+        <filter name="group_by_year" string="Year" context="{'group_by': 'year'}" />
+        <filter name="group_by_hotel" string="Hotel" context="{'group_by': 'hotel'}" />
+        <filter
+                    name="group_by_responsible"
+                    string="Responsible"
+                    context="{'group_by': 'responsible'}"
+                />
+        <filter
+                    name="group_by_company"
+                    string="Company"
+                    context="{'group_by': 'company'}"
+                />
+      </search>
+    </field>
+  </record>
+
+  <menuitem id="menu_budget_root" name="Budget" sequence="10" />
+  <menuitem
+        id="menu_budget_operaciones"
+        name="operaciones"
+        parent="menu_budget_root"
+        sequence="1"
+    />
+
+  <!-- Action -->
+  <record id="action_budget_operaciones" model="ir.actions.act_window">
+    <field name="name">operaciones</field>
+    <field name="res_model">budget.operaciones</field>
+    <field name="view_mode">tree,form,pivot</field>
+    <field
+            name="context"
+        >{'search_default_group_by_year': 1, 'search_default_group_by_hotel': 1}</field>
+    <field name="help" type="html">
+      <p class="oe_view_nocontent_smiling_face">
+        Create records for each hotel.
+      </p>
+    </field>
+  </record>
+
+  <menuitem
+        id="menu_budget_operaciones_action"
+        parent="menu_budget_operaciones"
+        action="action_budget_operaciones"
+        sequence="1"
+    />
+
+</odoo>

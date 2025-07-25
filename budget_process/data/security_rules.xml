@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+        <function model="ir.rule" name="write">
+            <value
+            model="ir.rule"
+            search="[('name', '=', 'Analytic distribution model multi company rule')]"
+        />
+            <value eval="{'active': False}" />
+        </function>
+
+        <record id="analytic_distribution_unrestricted" model="ir.rule">
+            <field name="name">Analytic Distribution Model - Unrestricted Access</field>
+            <field
+            name="model_id"
+            ref="account.model_account_analytic_distribution_model"
+        />
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="global" eval="True" />
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="True" />
+            <field name="perm_create" eval="True" />
+            <field name="perm_unlink" eval="True" />
+        </record>
+</odoo>
