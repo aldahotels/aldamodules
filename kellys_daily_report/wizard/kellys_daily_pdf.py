@@ -18,7 +18,8 @@
 #
 ##############################################################################
 import base64
-from datetime import date
+import datetime
+from datetime import date, timedelta
 from io import BytesIO
 
 import xlsxwriter
@@ -77,16 +78,20 @@ class KellysWizard(models.TransientModel):
         for x in grids:
             reservations = self.env["pms.reservation"].search(
                 [
-                    "&",
-                    "&",
+                    ("pms_property_id", "=", self.pms_property_id.id),
                     ("checkin", "<=", fechalimpieza),
                     ("checkout", ">=", fechalimpieza),
                     ("state", "!=", "cancel"),
-                    ("preferred_room_id", "=", x.id),
                 ],
                 order="checkin ASC",
             )
-
+            # Filter by room in date target
+            reservations = reservations.filtered(
+                lambda r: any(
+                    l.date == fechalimpieza and l.room_id.id == x.id
+                    for l in r.reservation_line_ids
+                )
+            )
             tipos = False
             if len(reservations) != 0:
                 if len(reservations) == 2:
@@ -95,7 +100,17 @@ class KellysWizard(models.TransientModel):
                     checkinhour = reservations[1].checkin
                     checkouthour = reservations[1].checkout
                 else:
-                    if reservations[0].checkin == fechalimpieza:
+                    room_id_today = reservations[0].reservation_line_ids.filtered(
+                        lambda l: l.date == fechalimpieza
+                    ).room_id
+
+                    room_id_yesterday = reservations[0].reservation_line_ids.filtered(
+                        lambda l: l.date == fechalimpieza - timedelta(days=1)
+                    ).room_id
+                    if (
+                        reservations[0].checkin == fechalimpieza
+                        or (room_id_today and room_id_yesterday and room_id_today != room_id_yesterday)
+                    ):
                         checkinhour = reservations[0].checkin
                         checkouthour = reservations[0].checkout
                         tipos = "3"
@@ -121,13 +136,22 @@ class KellysWizard(models.TransientModel):
                     tipos = "5"
                     # Averiada
             if tipos is not False:
+                reservation = reservations[0]
+                if reservation.checkout == fechalimpieza:
+                    room = reservation.reservation_line_ids.filtered(
+                        lambda l: l.date == (fechalimpieza - datetime.timedelta(days=1))
+                    ).room_id
+                else:
+                    room = reservation.reservation_line_ids.filtered(
+                        lambda l: l.date == fechalimpieza
+                    ).room_id
                 listid.append(
                     grids2.create(
                         {
-                            "habitacion": reservations[0].preferred_room_id.name,
-                            "habitacionid": reservations[0].preferred_room_id.id,
+                            "habitacion": room.name,
+                            "habitacionid": room.id,
                             "tipo": tipos,
-                            "notas": "",
+                            "notas": " / ".join(str(p) for p in reservations.mapped("partner_name") if p),
                             "checkin": checkinhour,
                             # 'checkin': rooms[0].checkin[:10],
                             # 'checkout': rooms[0].checkout[:10],
@@ -141,7 +165,7 @@ class KellysWizard(models.TransientModel):
 
     def print_rooms_report(self):
         rooms = self.env["kellysrooms"].search(
-            [("id", "in", self.habitaciones.ids)], order=self.order
+            [("id", "in", self.habitaciones.ids)], order="habitacion ASC"
         )
 
         return self.env.ref("kellys_daily_report.report_kellysrooms").report_action(
@@ -192,7 +216,7 @@ class KellysWizard(models.TransientModel):
         worksheet.set_column("F:F", 10)
 
         rooms = self.env["kellysrooms"].search(
-            [("id", "in", self.habitaciones.ids)], order=self.order
+            [("id", "in", self.habitaciones.ids)], order="habitacion ASC"
         )
 
         offset = 1
