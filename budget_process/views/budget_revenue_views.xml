@@ -1,0 +1,247 @@
+<odoo>
+    <!-- Vista Tree -->
+  <record id="view_budget_revenue_tree" model="ir.ui.view">
+    <field name="name">budget.revenue.tree</field>
+    <field name="model">budget.revenue</field>
+    <field name="arch" type="xml">
+      <tree editable="bottom">
+        <field name="record_type" />
+        <field name="responsible" />
+        <field name="description" />
+        <field name="accounting_account" />
+        <field name="company" />
+        <field name="hotel" />
+        <field name="year" />
+        <field
+                    name="rooms_available_ly"
+                    attrs="{'invisible': [('record_type', '!=', 'pms_data')]}"
+                />
+        <field
+                    name="rooms_available_current"
+                    attrs="{'invisible': [('record_type', '!=', 'pms_data')]}"
+                />
+        <!-- <field name="rooms_available" readonly="1" attrs="{'invisible': [('record_type', '!=', 'pms_data')]}" /> -->
+        <field
+                    name="room_nights_budget"
+                    readonly="1"
+                    attrs="{'invisible': [('record_type', '!=', 'pms_data')]}"
+                />
+        <field
+                    name="occupancy_budget"
+                    readonly="1"
+                    attrs="{'invisible': [('record_type', '!=', 'pms_data')]}"
+                />
+        <field
+                    name="adr_budget"
+                    readonly="1"
+                    attrs="{'invisible': [('record_type', '!=', 'pms_data')]}"
+                />
+        <field
+                    name="room_revenue_budget"
+                    readonly="1"
+                    attrs="{'invisible': [('record_type', '!=', 'pms_data')]}"
+                />
+        <field name="oct" />
+        <field name="nov" />
+        <field name="dec" />
+        <field name="jan" />
+        <field name="feb" />
+        <field name="mar" />
+        <field name="apr" />
+        <field name="may" />
+        <field name="jun" />
+        <field name="jul" />
+        <field name="aug" />
+        <field name="sep" />
+        <field name="total" readonly="1" />
+      </tree>
+    </field>
+  </record>
+  <!-- Vista Form  -->
+  <record id="view_budget_revenue_form" model="ir.ui.view">
+    <field name="name">budget.revenue.form</field>
+    <field name="model">budget.revenue</field>
+    <field name="arch" type="xml">
+      <form string="Budget Revenue">
+        <header>
+          <button
+                        name="get_historical_data_from_pms"
+                        type="object"
+                        string="Refresh Monthly PMS Data"
+                        class="btn-primary"
+                        attrs="{'invisible': [('record_type', '!=', 'pms_data')]}"
+                        help="Update historical data from the same month of the previous year and current data from the PMS"
+                    />
+        </header>
+        <sheet>
+          <group>
+            <group name="basic_info" string="Basic Information">
+              <field name="record_type" />
+              <field name="year" />
+              <field name="responsible" />
+              <field name="description" />
+            </group>
+            <group name="hotel_info" string="Hotel &amp; Company">
+              <field name="company" />
+              <field name="hotel" />
+              <field
+                                name="accounting_account"
+                                attrs="{'invisible': [('record_type', '!=', 'account_budget')]}"
+                            />
+            </group>
+          </group>
+          <notebook>
+            <page
+                            string="Growth Factors"
+                            attrs="{'invisible': [('record_type', '!=', 'pms_data')]}"
+                        >
+              <group string="Growth Parameters">
+                <field name="rn_growth_factor" />
+                <field name="adr_growth_factor" />
+                <field name="services_growth_factor" />
+              </group>
+            </page>
+            <page
+                            string="Historical Data (PMS)"
+                            attrs="{'invisible': [('record_type', '!=', 'pms_data')]}"
+                        >
+              <group string="Last Year Data for Same Month (Auto from PMS)" col="2">
+                <field name="rooms_available_ly" readonly="1" />
+                <field name="room_nights_ly" readonly="1" />
+                <field name="room_revenue_ly" readonly="1" />
+                <field name="pax_ly" readonly="1" />
+              </group>
+              <group string="Current Year Data for This Month (Auto from PMS)" col="2">
+                <field name="rooms_available_current" readonly="1" />
+              </group>
+            </page>
+            <page
+                            string="Calculated KPIs"
+                            attrs="{'invisible': [('record_type', '!=', 'pms_data')]}"
+                        >
+              <group string="Calculated Values" col="2">
+                <!-- <field name="rooms_available" readonly="1" /> -->
+                <field name="room_nights_budget" readonly="1" />
+                <field name="occupancy_budget" readonly="1" />
+                <field name="adr_ly" readonly="1" />
+                <field name="adr_budget" readonly="1" />
+                <field name="pax_budget" readonly="1" />
+                <field name="room_revenue_budget" readonly="1" />
+              </group>
+            </page>
+            <page string="Monthly Budget">
+              <group>
+                <field name="oct" />
+                <field name="nov" />
+                <field name="dec" />
+                <field name="jan" />
+                <field name="feb" />
+                <field name="mar" />
+                <field name="apr" />
+                <field name="may" />
+                <field name="jun" />
+                <field name="jul" />
+                <field name="aug" />
+                <field name="sep" />
+              </group>
+            </page>
+            <page string="Totals">
+              <field name="total" readonly="1" />
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  <!-- Vista Pivot -->
+  <record id="view_budget_revenue_pivot" model="ir.ui.view">
+    <field name="name">budget.revenue.pivot</field>
+    <field name="model">budget.revenue</field>
+    <field name="arch" type="xml">
+      <pivot string="Revenue Pivot">
+        <field name="year" type="row" />
+        <field name="hotel" type="row" />
+        <field name="responsible" type="row" />
+        <field name="total" type="measure" sum="True" />
+      </pivot>
+    </field>
+  </record>
+
+  <!-- Vista Search -->
+  <record id="view_budget_revenue_search" model="ir.ui.view">
+    <field name="name">budget.revenue.search</field>
+    <field name="model">budget.revenue</field>
+    <field name="arch" type="xml">
+      <search string="Revenue Budget Search">
+        <field name="responsible" />
+        <field name="hotel" />
+        <field name="year" />
+        <field name="company" />
+        <field name="record_type" />
+        <field name="accounting_account" />
+        <separator />
+        <filter
+                    name="filter_pms_data"
+                    string="PMS Data"
+                    domain="[('record_type', '=', 'pms_data')]"
+                />
+        <filter
+                    name="filter_account_budget"
+                    string="Account Budget"
+                    domain="[('record_type', '=', 'account_budget')]"
+                />
+        <separator />
+        <filter
+                    name="group_by_record_type"
+                    string="Record Type"
+                    context="{'group_by': 'record_type'}"
+                />
+        <filter name="group_by_year" string="Year" context="{'group_by': 'year'}" />
+        <filter name="group_by_hotel" string="Hotel" context="{'group_by': 'hotel'}" />
+        <filter
+                    name="group_by_responsible"
+                    string="Responsible"
+                    context="{'group_by': 'responsible'}"
+                />
+        <filter
+                    name="group_by_company"
+                    string="Company"
+                    context="{'group_by': 'company'}"
+                />
+      </search>
+    </field>
+  </record>
+
+  <!-- Menú Principal -->
+  <menuitem id="menu_budget_root" name="Budget" sequence="10" />
+
+  <!-- Submenú  -->
+  <menuitem
+        id="menu_budget_revenue"
+        name="Revenue"
+        parent="menu_budget_root"
+        sequence="1"
+    />
+
+  <!-- Action -->
+  <record id="action_budget_revenue" model="ir.actions.act_window">
+    <field name="name">Revenue</field>
+    <field name="res_model">budget.revenue</field>
+    <field name="view_mode">tree,form,pivot</field>
+    <field
+            name="context"
+        >{'search_default_group_by_year': 1, 'search_default_group_by_hotel': 1}</field>
+    <field name="help" type="html">
+      <p class="oe_view_nocontent_smiling_face">
+        Create records for each hotel.
+      </p>
+    </field>
+  </record>
+
+  <menuitem
+        id="menu_budget_revenue_action"
+        parent="menu_budget_revenue"
+        action="action_budget_revenue"
+        sequence="1"
+    />
+  </odoo>

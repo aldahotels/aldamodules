@@ -1,0 +1,193 @@
+<odoo>
+  <!-- Vista Tree -->
+  <record id="view_budget_marketing_tree" model="ir.ui.view">
+    <field name="name">budget.marketing.tree</field>
+    <field name="model">budget.marketing</field>
+    <field name="arch" type="xml">
+      <tree editable="bottom">
+        <field name="responsible" />
+        <field name="description" />
+        <field name="accounting_account" />
+        <field name="company" />
+        <field name="hotel" />
+        <field name="year" />
+
+        <!-- Campos presupuestados (editables) -->
+        <field name="oct" string="Oct" />
+        <field name="nov" string="Nov" />
+        <field name="dec" string="Dec" />
+        <field name="jan" string="Jan" />
+        <field name="feb" string="Feb" />
+        <field name="mar" string="Mar" />
+        <field name="apr" string="Apr" />
+        <field name="may" string="May" />
+        <field name="jun" string="Jun" />
+        <field name="jul" string="Jul" />
+        <field name="aug" string="Aug" />
+        <field name="sep" string="Sep" />
+
+        <!-- Campos actuales desde contabilidad (readonly) -->
+        <field name="oct_actual" readonly="1" string="Oct Actual" />
+        <field name="nov_actual" readonly="1" string="Nov Actual" />
+        <field name="dec_actual" readonly="1" string="Dec Actual" />
+        <field name="jan_actual" readonly="1" string="Jan Actual" />
+        <field name="feb_actual" readonly="1" string="Feb Actual" />
+        <field name="mar_actual" readonly="1" string="Mar Actual" />
+        <field name="apr_actual" readonly="1" string="Apr Actual" />
+        <field name="may_actual" readonly="1" string="May Actual" />
+        <field name="jun_actual" readonly="1" string="Jun Actual" />
+        <field name="jul_actual" readonly="1" string="Jul Actual" />
+        <field name="aug_actual" readonly="1" string="Aug Actual" />
+        <field name="sep_actual" readonly="1" string="Sep Actual" />
+
+        <!-- Totales -->
+        <field name="total" readonly="1" string="Total Budget" />
+        <field name="total_actual" readonly="1" string="Total Actual" />
+      </tree>
+    </field>
+  </record>
+  <!-- Vista Form -->
+  <record id="view_budget_marketing_form" model="ir.ui.view">
+    <field name="name">budget.marketing.form</field>
+    <field name="model">budget.marketing</field>
+    <field name="arch" type="xml">
+      <form string="Budget Marketing">
+        <header>
+          <button
+                        name="refresh_accounting_data"
+                        type="object"
+                        string="Refresh Accounting Data"
+                        class="btn-primary"
+                        help="Actualizar datos contables desde account.move.line"
+                    />
+        </header>
+        <sheet>
+          <group>
+            <group name="basic_info" string="Basic Information">
+              <field name="responsible" />
+              <field name="description" />
+              <field name="accounting_account" placeholder="e.g. 627001" />
+            </group>
+            <group name="location_info" string="Location &amp; Year">
+              <field name="company" />
+              <field name="hotel" />
+              <field name="year" />
+            </group>
+          </group>
+          <notebook>
+            <page string="Budget vs Actual">
+              <group string="Budget Planning (Editable)" col="4">
+                <field name="oct" string="Oct" />
+                <field name="nov" string="Nov" />
+                <field name="dec" string="Dec" />
+                <field name="jan" string="Jan" />
+                <field name="feb" string="Feb" />
+                <field name="mar" string="Mar" />
+                <field name="apr" string="Apr" />
+                <field name="may" string="May" />
+                <field name="jun" string="Jun" />
+                <field name="jul" string="Jul" />
+                <field name="aug" string="Aug" />
+                <field name="sep" string="Sep" />
+              </group>
+              <group string="Actual from Accounting (Auto)" col="4">
+                <field name="oct_actual" readonly="1" string="Oct Actual" />
+                <field name="nov_actual" readonly="1" string="Nov Actual" />
+                <field name="dec_actual" readonly="1" string="Dec Actual" />
+                <field name="jan_actual" readonly="1" string="Jan Actual" />
+                <field name="feb_actual" readonly="1" string="Feb Actual" />
+                <field name="mar_actual" readonly="1" string="Mar Actual" />
+                <field name="apr_actual" readonly="1" string="Apr Actual" />
+                <field name="may_actual" readonly="1" string="May Actual" />
+                <field name="jun_actual" readonly="1" string="Jun Actual" />
+                <field name="jul_actual" readonly="1" string="Jul Actual" />
+                <field name="aug_actual" readonly="1" string="Aug Actual" />
+                <field name="sep_actual" readonly="1" string="Sep Actual" />
+              </group>
+              <group string="Totals" col="2">
+                <field name="total" readonly="1" string="Total Budget" />
+                <field name="total_actual" readonly="1" string="Total Actual" />
+              </group>
+            </page>
+            <page string="Totals">
+              <field name="total" readonly="1" />
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  <!-- Vista Pivot -->
+  <record id="view_budget_marketing_pivot" model="ir.ui.view">
+    <field name="name">budget.marketing.pivot</field>
+    <field name="model">budget.marketing</field>
+    <field name="arch" type="xml">
+      <pivot string="marketing Pivot">
+        <field name="year" type="row" />
+        <field name="hotel" type="row" />
+        <field name="responsible" type="row" />
+        <field name="total" type="measure" sum="True" />
+      </pivot>
+    </field>
+  </record>
+
+  <!-- Vista Search -->
+  <record id="view_budget_marketing_search" model="ir.ui.view">
+    <field name="name">budget.marketing.search</field>
+    <field name="model">budget.marketing</field>
+    <field name="arch" type="xml">
+      <search string="Marketing Budget Search">
+        <field name="responsible" />
+        <field name="hotel" />
+        <field name="year" />
+        <field name="company" />
+        <separator />
+        <filter name="group_by_year" string="Year" context="{'group_by': 'year'}" />
+        <filter name="group_by_hotel" string="Hotel" context="{'group_by': 'hotel'}" />
+        <filter
+                    name="group_by_responsible"
+                    string="Responsible"
+                    context="{'group_by': 'responsible'}"
+                />
+        <filter
+                    name="group_by_company"
+                    string="Company"
+                    context="{'group_by': 'company'}"
+                />
+      </search>
+    </field>
+  </record>
+  <!-- Menú Principal -->
+  <menuitem id="menu_budget_root" name="Budget" sequence="10" />
+
+  <!-- Submenú -->
+  <menuitem
+        id="menu_budget_marketing"
+        name="marketing"
+        parent="menu_budget_root"
+        sequence="1"
+    />
+
+  <!-- Action -->
+  <record id="action_budget_marketing" model="ir.actions.act_window">
+    <field name="name">marketing</field>
+    <field name="res_model">budget.marketing</field>
+    <field name="view_mode">tree,form,pivot</field>
+    <field
+            name="context"
+        >{'search_default_group_by_year': 1, 'search_default_group_by_hotel': 1}</field>
+    <field name="help" type="html">
+      <p class="oe_view_nocontent_smiling_face">
+        Create records for each hotel.
+      </p>
+    </field>
+  </record>
+
+  <menuitem
+        id="menu_budget_marketing_action"
+        parent="menu_budget_marketing"
+        action="action_budget_marketing"
+        sequence="1"
+    />
+
+</odoo>

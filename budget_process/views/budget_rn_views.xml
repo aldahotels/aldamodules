@@ -1,0 +1,198 @@
+<odoo>
+    <!-- Vista Tree para Room Nights -->
+    <record id="view_budget_rn_tree" model="ir.ui.view">
+        <field name="name">budget.rn.tree</field>
+        <field name="model">budget.rn</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" create="true" delete="true">
+                <field name="hotel" options="{'no_create': True}" />
+                <field name="hotel_id" readonly="1" string="Hotel ID" />
+                <field name="year" />
+
+                <!-- Room Nights por mes desde PMS -->
+                <field name="oct_actual" readonly="1" string="Oct RN" />
+                <field name="nov_actual" readonly="1" string="Nov RN" />
+                <field name="dec_actual" readonly="1" string="Dec RN" />
+                <field name="jan_actual" readonly="1" string="Jan RN" />
+                <field name="feb_actual" readonly="1" string="Feb RN" />
+                <field name="mar_actual" readonly="1" string="Mar RN" />
+                <field name="apr_actual" readonly="1" string="Apr RN" />
+                <field name="may_actual" readonly="1" string="May RN" />
+                <field name="jun_actual" readonly="1" string="Jun RN" />
+                <field name="jul_actual" readonly="1" string="Jul RN" />
+                <field name="aug_actual" readonly="1" string="Aug RN" />
+                <field name="sep_actual" readonly="1" string="Sep RN" />
+
+                <!-- Total -->
+                <field name="total_actual" readonly="1" string="Total RN" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista Form para Room Nights -->
+    <record id="view_budget_rn_form" model="ir.ui.view">
+        <field name="name">budget.rn.form</field>
+        <field name="model">budget.rn</field>
+        <field name="arch" type="xml">
+            <form string="Room Nights Budget">
+                <header>
+                    <button
+                        name="refresh_pms_data"
+                        type="object"
+                        string="Refresh PMS Data"
+                        class="btn-primary"
+                        help="Actualizar datos desde el PMS"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group name="basic_info" string="Basic Information">
+                            <field name="hotel" options="{'no_create': True}" />
+                            <field name="hotel_id" readonly="1" string="Hotel ID" />
+                            <field name="year" />
+                            <field name="hotel_code" readonly="1" />
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Room Nights Data (PMS)">
+                            <group string="Monthly Room Nights from PMS" col="4">
+                                <field
+                                    name="oct_actual"
+                                    readonly="1"
+                                    string="October"
+                                />
+                                <field
+                                    name="nov_actual"
+                                    readonly="1"
+                                    string="November"
+                                />
+                                <field
+                                    name="dec_actual"
+                                    readonly="1"
+                                    string="December"
+                                />
+                                <field
+                                    name="jan_actual"
+                                    readonly="1"
+                                    string="January"
+                                />
+                                <field
+                                    name="feb_actual"
+                                    readonly="1"
+                                    string="February"
+                                />
+                                <field name="mar_actual" readonly="1" string="March" />
+                                <field name="apr_actual" readonly="1" string="April" />
+                                <field name="may_actual" readonly="1" string="May" />
+                                <field name="jun_actual" readonly="1" string="June" />
+                                <field name="jul_actual" readonly="1" string="July" />
+                                <field name="aug_actual" readonly="1" string="August" />
+                                <field
+                                    name="sep_actual"
+                                    readonly="1"
+                                    string="September"
+                                />
+                            </group>
+                            <group string="Total">
+                                <field name="total_actual" readonly="1" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista Pivot para Room Nights -->
+    <record id="view_budget_rn_pivot" model="ir.ui.view">
+        <field name="name">budget.rn.pivot</field>
+        <field name="model">budget.rn</field>
+        <field name="arch" type="xml">
+            <pivot string="Room Nights Pivot">
+                <field name="year" type="row" />
+                <field name="hotel" type="row" />
+                <field name="total_actual" type="measure" sum="True" />
+                <field name="oct_actual" type="measure" sum="True" />
+                <field name="nov_actual" type="measure" sum="True" />
+                <field name="dec_actual" type="measure" sum="True" />
+                <field name="jan_actual" type="measure" sum="True" />
+                <field name="feb_actual" type="measure" sum="True" />
+                <field name="mar_actual" type="measure" sum="True" />
+                <field name="apr_actual" type="measure" sum="True" />
+                <field name="may_actual" type="measure" sum="True" />
+                <field name="jun_actual" type="measure" sum="True" />
+                <field name="jul_actual" type="measure" sum="True" />
+                <field name="aug_actual" type="measure" sum="True" />
+                <field name="sep_actual" type="measure" sum="True" />
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Vista Search para Room Nights -->
+    <record id="view_budget_rn_search" model="ir.ui.view">
+        <field name="name">budget.rn.search</field>
+        <field name="model">budget.rn</field>
+        <field name="arch" type="xml">
+            <search string="Room Nights Search">
+                <field name="hotel" />
+                <field name="year" />
+                <separator />
+                <filter
+                    name="group_by_year"
+                    string="Year"
+                    context="{'group_by': 'year'}"
+                />
+                <filter
+                    name="group_by_hotel"
+                    string="Hotel"
+                    context="{'group_by': 'hotel'}"
+                />
+            </search>
+        </field>
+    </record>
+
+    <!-- Acción para Room Nights -->
+    <record id="action_budget_rn" model="ir.actions.act_window">
+        <field name="name">Room Nights</field>
+        <field name="res_model">budget.rn</field>
+        <field name="view_mode">tree,form,pivot</field>
+        <field
+            name="context"
+        >{'search_default_group_by_year': 1, 'search_default_group_by_hotel': 1}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_smiling_face">
+                Create Room Nights records for each hotel.
+            </p>
+            <p>
+                This view allows you to track both actual room nights data from PMS and budget forecasts.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menú para Room Nights -->
+    <menuitem
+        id="menu_budget_rn"
+        name="Room Nights"
+        parent="menu_budget_root"
+        sequence="2"
+        action="action_budget_rn"
+    />
+
+    <!-- Acción de servidor para crear registros automáticamente -->
+    <record id="action_create_rn_for_all_hotels" model="ir.actions.server">
+        <field name="name">Create RN Records for All Hotels</field>
+        <field name="model_id" ref="model_budget_rn" />
+        <field name="binding_model_id" ref="model_budget_rn" />
+        <field name="state">code</field>
+        <field name="code">
+
+        </field>
+    </record>
+</odoo>
