@@ -87,9 +87,15 @@ class KellysWizard(models.TransientModel):
             )
             # Filter by room in date target
             reservations = reservations.filtered(
-                lambda r: any(
-                    l.date == fechalimpieza and l.room_id.id == x.id
-                    for l in r.reservation_line_ids
+                lambda r: (
+                    any(
+                        line.date == fechalimpieza and line.room_id.id == x.id
+                        for line in r.reservation_line_ids
+                    )
+                    or (
+                        r.checkout == fechalimpieza
+                        and r.reservation_line_ids[-1].room_id.id == x.id
+                    )
                 )
             )
             tipos = False
@@ -139,7 +145,7 @@ class KellysWizard(models.TransientModel):
                 reservation = reservations[0]
                 if reservation.checkout == fechalimpieza:
                     room = reservation.reservation_line_ids.filtered(
-                        lambda l: l.date == (fechalimpieza - datetime.timedelta(days=1))
+                        lambda l: l.date == (fechalimpieza - timedelta(days=1))
                     ).room_id
                 else:
                     room = reservation.reservation_line_ids.filtered(
