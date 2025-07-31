@@ -1,7 +1,11 @@
 # Copyright 2025 Alexandra Suarez Graterol (Alda hotels) <saya.alex20@gmail.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import logging
+
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 def get_years():
@@ -64,8 +68,8 @@ class BudgetBase(models.AbstractModel):
             ):
                 active_property_id = self.env.user.get_active_property_ids()[0]
                 return active_property_id
-        except Exception:
-            pass
+        except Exception as e:
+            _logger.error(f"Error en _get_default_hotel: {e}")
         return False
 
     @api.constrains("hotel")
@@ -106,3 +110,64 @@ class BudgetBase(models.AbstractModel):
                     rec.sep,
                 ]
             )
+
+    @api.onchange("hotel")
+    def _onchange_hotel_sync_company(self):
+        if self.hotel:
+            company_id = self._get_company_from_pms_property(self.hotel)
+            if company_id:
+                self.company = company_id
+            else:
+                self.company = self.env.company.id
+
+    def _get_company_from_pms_property(self, pms_property):
+        if not pms_property:
+            return False
+
+        try:
+            company_fields = ["company_id", "company", "res_company_id"]
+
+            for field_name in company_fields:
+                if hasattr(pms_property, field_name):
+                    company_field = getattr(pms_property, field_name)
+                    if company_field:
+                        if hasattr(company_field, "id"):
+                            _logger.info(
+                                f"Hotel {pms_property.name}: Company synchronized "
+                                f"from {field_name} -> {company_field.name}"
+                            )
+                            return company_field.id
+                        elif isinstance(company_field, int):
+                            _logger.info(
+                                f"Hotel {pms_property.name}: Company ID synchronized "
+                                f"from {field_name} -> {company_field}"
+                            )
+                            return company_field
+
+            _logger.warning(
+                f"Hotel {pms_property.name}: No company field found in PMS property"
+            )
+            return False
+
+        except Exception as e:
+            _logger.error(
+                f"Error synchronizing company for hotel {pms_property.name}: {e}"
+            )
+            return False
+
+    @api.model
+    def create(self, vals):
+        record = super().create(vals)
+
+        if record.hotel and not record.company:
+            record._onchange_hotel_sync_company()
+
+        return record
+
+    def write(self, vals):
+        result = super().write(vals)
+        fields_to_check = {"record_type", "manual_amount", "rooms_available_current"}
+        if fields_to_check.intersection(vals.keys()):
+            for record in self:
+                record._compute_monthly_amounts()
+        return result

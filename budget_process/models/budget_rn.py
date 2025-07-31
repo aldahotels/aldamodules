@@ -180,10 +180,20 @@ class BudgetRN(models.Model):
             else:
                 record.name = "New Room Nights"
 
-    # Lista de meses del año fiscal 
+    # Lista de meses del año fiscal
     fiscal_months = [
-        "oct", "nov", "dec", "jan", "feb", "mar",
-        "apr", "may", "jun", "jul", "aug", "sep"
+        "oct",
+        "nov",
+        "dec",
+        "jan",
+        "feb",
+        "mar",
+        "apr",
+        "may",
+        "jun",
+        "jul",
+        "aug",
+        "sep",
     ]
 
     @api.depends("hotel", "year")
@@ -210,11 +220,7 @@ class BudgetRN(models.Model):
 
     # Determina si se deben calcular los datos actuales
     def _should_compute_actual_data(self):
-        return (
-            self.hotel 
-            and self.year 
-            and self.record_type == "actual_data"
-        )
+        return self.hotel and self.year and self.record_type == "actual_data"
 
     # Resetea todos los campos mensuales actuales a cero
     def _reset_monthly_actual_fields(self):
@@ -269,13 +275,19 @@ class BudgetRN(models.Model):
 
         PmsReservation = self.env["pms.reservation"]
         monthly_data = {}
-        
-        # Mapeo de meses fiscales a números
         month_mapping = {
-            "oct": 10, "nov": 11, "dec": 12,
-            "jan": 1, "feb": 2, "mar": 3,
-            "apr": 4, "may": 5, "jun": 6,
-            "jul": 7, "aug": 8, "sep": 9
+            "oct": 10,
+            "nov": 11,
+            "dec": 12,
+            "jan": 1,
+            "feb": 2,
+            "mar": 3,
+            "apr": 4,
+            "may": 5,
+            "jun": 6,
+            "jul": 7,
+            "aug": 8,
+            "sep": 9,
         }
 
         for month_name in self.fiscal_months:
@@ -315,13 +327,12 @@ class BudgetRN(models.Model):
         ]
 
         reservations = PmsReservation.search(domain)
-        
+
         total_nights = sum(
             reservation.nights
             for reservation in reservations
             if hasattr(reservation, "nights")
         )
-        
         return total_nights
 
     @api.model

@@ -4,24 +4,24 @@
         <field name="name">budget.rn.tree</field>
         <field name="model">budget.rn</field>
         <field name="arch" type="xml">
-            <tree editable="bottom" create="true" delete="true">
+            <tree>
                 <field name="hotel" options="{'no_create': True}" />
                 <field name="hotel_id" readonly="1" string="Hotel ID" />
                 <field name="year" />
 
                 <!-- Room Nights por mes desde PMS -->
-                <field name="oct_actual" readonly="1" string="Oct RN" />
-                <field name="nov_actual" readonly="1" string="Nov RN" />
-                <field name="dec_actual" readonly="1" string="Dec RN" />
-                <field name="jan_actual" readonly="1" string="Jan RN" />
-                <field name="feb_actual" readonly="1" string="Feb RN" />
-                <field name="mar_actual" readonly="1" string="Mar RN" />
-                <field name="apr_actual" readonly="1" string="Apr RN" />
-                <field name="may_actual" readonly="1" string="May RN" />
-                <field name="jun_actual" readonly="1" string="Jun RN" />
-                <field name="jul_actual" readonly="1" string="Jul RN" />
-                <field name="aug_actual" readonly="1" string="Aug RN" />
-                <field name="sep_actual" readonly="1" string="Sep RN" />
+                <field name="oct_actual" readonly="1" string="Oct" />
+                <field name="nov_actual" readonly="1" string="Nov" />
+                <field name="dec_actual" readonly="1" string="Dec" />
+                <field name="jan_actual" readonly="1" string="Jan" />
+                <field name="feb_actual" readonly="1" string="Feb" />
+                <field name="mar_actual" readonly="1" string="Mar" />
+                <field name="apr_actual" readonly="1" string="Apr" />
+                <field name="may_actual" readonly="1" string="May" />
+                <field name="jun_actual" readonly="1" string="Jun" />
+                <field name="jul_actual" readonly="1" string="Jul" />
+                <field name="aug_actual" readonly="1" string="Aug" />
+                <field name="sep_actual" readonly="1" string="Sep" />
 
                 <!-- Total -->
                 <field name="total_actual" readonly="1" string="Total RN" />
@@ -29,7 +29,7 @@
         </field>
     </record>
 
-    <!-- Vista Form para Room Nights -->
+    <!-- Vista Form -->
     <record id="view_budget_rn_form" model="ir.ui.view">
         <field name="name">budget.rn.form</field>
         <field name="model">budget.rn</field>
@@ -63,42 +63,18 @@
                     <notebook>
                         <page string="Room Nights Data (PMS)">
                             <group string="Monthly Room Nights from PMS" col="4">
-                                <field
-                                    name="oct_actual"
-                                    readonly="1"
-                                    string="October"
-                                />
-                                <field
-                                    name="nov_actual"
-                                    readonly="1"
-                                    string="November"
-                                />
-                                <field
-                                    name="dec_actual"
-                                    readonly="1"
-                                    string="December"
-                                />
-                                <field
-                                    name="jan_actual"
-                                    readonly="1"
-                                    string="January"
-                                />
-                                <field
-                                    name="feb_actual"
-                                    readonly="1"
-                                    string="February"
-                                />
-                                <field name="mar_actual" readonly="1" string="March" />
-                                <field name="apr_actual" readonly="1" string="April" />
+                                <field name="oct_actual" readonly="1" string="Oct" />
+                                <field name="nov_actual" readonly="1" string="Nov" />
+                                <field name="dec_actual" readonly="1" string="Dec" />
+                                <field name="jan_actual" readonly="1" string="Jan" />
+                                <field name="feb_actual" readonly="1" string="Feb" />
+                                <field name="mar_actual" readonly="1" string="Mar" />
+                                <field name="apr_actual" readonly="1" string="Apr" />
                                 <field name="may_actual" readonly="1" string="May" />
-                                <field name="jun_actual" readonly="1" string="June" />
-                                <field name="jul_actual" readonly="1" string="July" />
-                                <field name="aug_actual" readonly="1" string="August" />
-                                <field
-                                    name="sep_actual"
-                                    readonly="1"
-                                    string="September"
-                                />
+                                <field name="jun_actual" readonly="1" string="Jun" />
+                                <field name="jul_actual" readonly="1" string="Jul" />
+                                <field name="aug_actual" readonly="1" string="Aug" />
+                                <field name="sep_actual" readonly="1" string="Sep" />
                             </group>
                             <group string="Total">
                                 <field name="total_actual" readonly="1" />
@@ -110,7 +86,7 @@
         </field>
     </record>
 
-    <!-- Vista Pivot para Room Nights -->
+    <!-- Vista Pivot -->
     <record id="view_budget_rn_pivot" model="ir.ui.view">
         <field name="name">budget.rn.pivot</field>
         <field name="model">budget.rn</field>
@@ -119,23 +95,23 @@
                 <field name="year" type="row" />
                 <field name="hotel" type="row" />
                 <field name="total_actual" type="measure" sum="True" />
-                <field name="oct_actual" type="measure" sum="True" />
-                <field name="nov_actual" type="measure" sum="True" />
-                <field name="dec_actual" type="measure" sum="True" />
-                <field name="jan_actual" type="measure" sum="True" />
-                <field name="feb_actual" type="measure" sum="True" />
-                <field name="mar_actual" type="measure" sum="True" />
-                <field name="apr_actual" type="measure" sum="True" />
-                <field name="may_actual" type="measure" sum="True" />
-                <field name="jun_actual" type="measure" sum="True" />
-                <field name="jul_actual" type="measure" sum="True" />
-                <field name="aug_actual" type="measure" sum="True" />
-                <field name="sep_actual" type="measure" sum="True" />
+                <field name="oct_actual" type="measure" sum="True" string="Oct" />
+                <field name="nov_actual" type="measure" sum="True" string="Nov" />
+                <field name="dec_actual" type="measure" sum="True" string="Dec" />
+                <field name="jan_actual" type="measure" sum="True" string="Jan" />
+                <field name="feb_actual" type="measure" sum="True" string="Feb" />
+                <field name="mar_actual" type="measure" sum="True" string="Mar" />
+                <field name="apr_actual" type="measure" sum="True" string="Apr" />
+                <field name="may_actual" type="measure" sum="True" string="May" />
+                <field name="jun_actual" type="measure" sum="True" string="Jun" />
+                <field name="jul_actual" type="measure" sum="True" string="Jul" />
+                <field name="aug_actual" type="measure" sum="True" string="Aug" />
+                <field name="sep_actual" type="measure" sum="True" string="Sep" />
             </pivot>
         </field>
     </record>
 
-    <!-- Vista Search para Room Nights -->
+    <!-- Vista Search -->
     <record id="view_budget_rn_search" model="ir.ui.view">
         <field name="name">budget.rn.search</field>
         <field name="model">budget.rn</field>
@@ -158,7 +134,7 @@
         </field>
     </record>
 
-    <!-- Acción para Room Nights -->
+    <!-- Action -->
     <record id="action_budget_rn" model="ir.actions.act_window">
         <field name="name">Room Nights</field>
         <field name="res_model">budget.rn</field>
@@ -176,7 +152,7 @@
         </field>
     </record>
 
-    <!-- Menú para Room Nights -->
+    <!-- Menú -->
     <menuitem
         id="menu_budget_rn"
         name="Room Nights"
@@ -185,7 +161,7 @@
         action="action_budget_rn"
     />
 
-    <!-- Acción de servidor para crear registros automáticamente -->
+    <!-- Crear registros automáticamente -->
     <record id="action_create_rn_for_all_hotels" model="ir.actions.server">
         <field name="name">Create RN Records for All Hotels</field>
         <field name="model_id" ref="model_budget_rn" />

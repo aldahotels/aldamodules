@@ -14,7 +14,6 @@
     "data": [
         "security/budget_groups.xml",
         "security/ir.model.access.csv",
-        #"data/security_rules.xml",
         "views/budget_capex_views.xml",
         "views/budget_cfo_views.xml",
         "views/budget_controller.xml",

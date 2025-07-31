@@ -4,12 +4,12 @@
     <field name="name">budget.taz.tree</field>
     <field name="model">budget.taz</field>
     <field name="arch" type="xml">
-      <tree editable="bottom">
+      <tree>
         <field name="responsible" />
         <field name="description" />
         <field name="accounting_account" />
-        <field name="company" />
         <field name="hotel" />
+        <field name="company" />
         <field name="year" />
         <field name="oct" />
         <field name="nov" />
@@ -38,8 +38,9 @@
             <field name="responsible" />
             <field name="description" />
             <field name="accounting_account" />
-            <field name="company" />
             <field name="hotel" />
+            <field name="hotel_code" readonly="1" />
+            <field name="company" />
             <field name="year" />
           </group>
           <notebook>

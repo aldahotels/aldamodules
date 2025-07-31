@@ -3,7 +3,7 @@
     <field name="name">budget.operaciones.tree</field>
     <field name="model">budget.operaciones</field>
     <field name="arch" type="xml">
-      <tree editable="bottom">
+      <tree>
         <field name="responsible" />
         <field name="description" />
         <field name="accounting_account" />

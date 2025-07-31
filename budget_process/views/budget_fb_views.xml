@@ -4,7 +4,7 @@
     <field name="name">budget.fb.tree</field>
     <field name="model">budget.fb</field>
     <field name="arch" type="xml">
-      <tree editable="bottom">
+      <tree>
         <field name="responsible" />
         <field name="description" />
         <field name="accounting_account" />

@@ -4,13 +4,24 @@
     <field name="name">budget.informatica.tree</field>
     <field name="model">budget.informatica</field>
     <field name="arch" type="xml">
-      <tree editable="bottom">
+      <tree>
+        <field name="record_type" />
         <field name="responsible" />
         <field name="description" />
-        <field name="accounting_account" />
-        <field name="company" />
+        <field name="accounting_account" placeholder="e.g. 627001" />
         <field name="hotel" />
+        <!--<field name="hotel_code" readonly="1" />-->
+        <field name="company" />
         <field name="year" />
+        <field
+                    name="rooms_available_current"
+                    readonly="1"
+                    attrs="{'invisible': [('record_type', '=', 'manual')]}"
+                />
+        <field
+                    name="manual_amount"
+                    attrs="{'invisible': [('record_type', '=', 'manual')]}"
+                />
         <field name="oct" />
         <field name="nov" />
         <field name="dec" />
@@ -35,16 +46,31 @@
       <form string="Budget IT">
         <sheet>
           <group>
-            <field name="responsible" />
-            <field name="description" />
-            <field name="accounting_account" />
-            <field name="company" />
-            <field name="hotel" />
-            <field name="year" />
+            <group string="Basic Information">
+              <field name="record_type" />
+              <field
+                                name="rooms_available_current"
+                                readonly="1"
+                                attrs="{'invisible': [('record_type', '=', 'manual')]}"
+                            />
+              <field
+                                name="manual_amount"
+                                attrs="{'invisible': [('record_type', '=', 'manual')]}"
+                            />
+              <field name="responsible" />
+              <field name="description" />
+              <field name="accounting_account" />
+            </group>
+            <group name="hotel_info" string="Hotel &amp; Company">
+              <field name="hotel" />
+              <field name="hotel_code" readonly="1" />
+              <field name="company" />
+              <field name="year" />
+            </group>
           </group>
           <notebook>
             <page string="Months">
-              <group>
+              <group string="Budget Planning" col="4">
                 <field name="oct" />
                 <field name="nov" />
                 <field name="dec" />
@@ -91,9 +117,15 @@
         <field name="hotel" />
         <field name="year" />
         <field name="company" />
+        <field name="record_type" />
         <separator />
         <filter name="group_by_year" string="Year" context="{'group_by': 'year'}" />
         <filter name="group_by_hotel" string="Hotel" context="{'group_by': 'hotel'}" />
+        <filter
+                    name="group_by_record_type"
+                    string="Record Type"
+                    context="{'group_by': 'record_type'}"
+                />
         <filter
                     name="group_by_responsible"
                     string="Responsible"

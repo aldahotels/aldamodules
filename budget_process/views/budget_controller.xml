@@ -4,7 +4,7 @@
         <field name="name">budget.controller.tree</field>
         <field name="model">budget.controller</field>
         <field name="arch" type="xml">
-            <tree editable="bottom" create="true" delete="true">
+            <tree>
                 <field name="responsible" />
                 <field name="description" />
                 <field name="accounting_account" placeholder="e.g. 627001" />
@@ -36,12 +36,6 @@
         <field name="arch" type="xml">
             <form string="Controller Budget">
                 <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="responsible" placeholder="Controller Budget" />
-                        </h1>
-                    </div>
-
                     <group>
                         <group name="basic_info" string="Basic Information">
                             <field name="responsible" />
@@ -51,16 +45,15 @@
                                 placeholder="e.g. 627001"
                             />
                         </group>
-                        <group name="location_info" string="Location &amp; Year">
-                            <field name="company" />
+                        <group name="hotel_info" string="Hotel &amp; Company">
                             <field name="hotel" options="{'no_create': True}" />
                             <field name="hotel_code" readonly="1" />
+                            <field name="company" />
                             <field name="year" />
                         </group>
                     </group>
-
                     <notebook>
-                        <page string="Monthly Budget">
+                        <page string="Months">
                             <group string="Monthly Values" col="4">
                                 <field name="oct" string="October" />
                                 <field name="nov" string="November" />
