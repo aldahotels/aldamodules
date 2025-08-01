@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-04 16:49+0000\n"
-"PO-Revision-Date: 2025-07-04 16:49+0000\n"
+"POT-Creation-Date: 2025-08-01 15:08+0000\n"
+"PO-Revision-Date: 2025-08-01 15:08+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,14 +16,42 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "%(count)s Room Out of Service"
+msgstr "%(count)s Bloqueos en habitación"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "%(rate)s%% Occupancy Rate"
+msgstr "%(rate)s%% Ocupación"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "(Blocked)"
 msgstr "(Bloqueado)"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "+70% Occupation"
+msgstr "+70% Ocupación"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid ".&amp;nbsp;&amp;nbsp;"
 msgstr "."
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
+msgid ""
+"<br/>\n"
+"                                    <strong>Property:</strong>"
+msgstr ""
+"<br/>\n"
+"                                    <strong>Hotel:</strong>"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -46,6 +74,44 @@ msgid "<option value=\"\">Select a Ticket Type</option>"
 msgstr "<option value=\"\">Seleccionar tipo de ticket</option>"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid ""
+"<span attrs=\"{'invisible': [('total_days_blocked', '&gt;', 15)]}\" class=\"d-inline text-white\">\n"
+"                                    Medium-term blocked room with medium occupancy +30%.\n"
+"                                </span>\n"
+"\n"
+"                                <span attrs=\"{'invisible': ['!', ('total_days_blocked', '&gt;', 15)]}\" class=\"d-inline text-white\">\n"
+"                                    Room blocked for medium time and low occupancy -30%.\n"
+"                                </span>"
+msgstr ""
+"<span attrs=\"{'invisible': [('total_days_blocked', '>', 15)]}\" class=\"d-inline text-white\">\n"
+"                                    Habitación bloqueada a medio plazo con ocupación media +30%.\n"
+"                                </span>\n"
+"\n"
+"                                <span attrs=\"{'invisible': ['!', ('total_days_blocked', '>', 15)]}\" class=\"d-inline text-white\">\n"
+"                                    Habitación bloqueada durante tiempo medio y baja ocupación -30%.\n"
+"                                </span>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid ""
+"<span class=\"d-inline-block px-2 py-1 bg-danger text-white rounded border "
+"border-white me-2\">🚨</span>"
+msgstr ""
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid ""
+"<span class=\"d-inline-block px-2 py-1 bg-white text-danger rounded border border-danger me-2\">\n"
+"                                        ❗</span>"
+msgstr ""
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "<span class=\"o_stat_text\"> Tickets</span>"
+msgstr ""
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid ""
 "<span style=\"font-size: 36px;\">📑</span>\n"
@@ -60,11 +126,19 @@ msgid "<strong>Hi&amp;nbsp;</strong>"
 msgstr "<strong>Hola&amp;nbsp;</strong>"
 
 #. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/main.py:0
-#, python-format
-msgid "Access denied. Please start from the valid link."
-msgstr "Acceso denegado. Por favor, empieza desde el enlace válido."
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__ticket_blocked_room_adr_accumulated
+msgid "Accumulated ADR (Blocked Room)"
+msgstr "ADR Acumulado (Bloqueo)"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__total_days_blocked
+msgid "Accumulated Days (Blocked Room)"
+msgstr "Total días (bloqueo)"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__alert_level
+msgid "Alert Level"
+msgstr "Alerta sobre prioridad"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -94,6 +168,11 @@ msgid "Blocked Room"
 msgstr "Habitación Bloqueada"
 
 #. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__blocked_rooms
+msgid "Blocked Rooms"
+msgstr "Habitaciones bloqueadas"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__color
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_type__color
 msgid "Color"
@@ -103,6 +182,21 @@ msgstr ""
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket_type__color
 msgid "Color associated with the ticket type."
 msgstr "Color asociado al tipo de ticket."
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
+msgid "Company Logo"
+msgstr ""
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__alert_level__critical
+msgid "Critical Alert"
+msgstr "Crítico"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__date_today
+msgid "Date"
+msgstr "Fecha"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -115,11 +209,16 @@ msgid "Display Name"
 msgstr "Mostrar el nombre"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "Extended block during high demand +70%. Immediate action recommended."
+msgstr "Bloqueo extendido con ocupación alta +70%. Se recomienda acción inmediata."
+
+#. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "External Company"
-msgstr "Empresa Externa"
+msgstr "Empresa externa"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -142,10 +241,29 @@ msgid "Helpdesk Ticket Type"
 msgstr "Tipo de ticket de servicio de asistencia"
 
 #. module: alda_helpdesk_pms
+#: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__alert_level__high
+msgid "High Occupation"
+msgstr "Alta ocupación"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__season_type__high
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
 msgid "High Season"
 msgstr "Temporada Alta"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "High Season +70%"
+msgstr "Temporada Alta +70%"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "High Season - Low Occupation"
+msgstr "Temporada Alta - Baja ocupación"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "High Season - Medium Occupation"
+msgstr "Temporada Alta - Ocupación Media"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__id
@@ -175,23 +293,9 @@ msgid "Indicates if the ticket is related to a room."
 msgstr "Indica si el ticket está relacionado con una habitación."
 
 #. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/main.py:0
-#, python-format
-msgid "Invalid parameters"
-msgstr "Parámetros inválidos"
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/main.py:0
-#, python-format
-msgid "Invalid token"
-msgstr "Token inválido"
-
-#. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Última actualización"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -205,9 +309,34 @@ msgid "Location type"
 msgstr "Tipo de ubicación"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "Long-term blocked room with or medium/high occupancy."
+msgstr "Tiempo de bloqueo de la habitación alto con una ocupación media alta"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__alert_level__low
+msgid "Low Occupation"
+msgstr "Baja ocupación"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__season_type__low
 msgid "Low Season"
 msgstr "Temporada Baja"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "Low occupation -40%"
+msgstr "Baja ocupación -40%"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__alert_level__medium
+msgid "Medium Occupation"
+msgstr "Ocupación Media"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "Medium-high occupation -70%"
+msgstr "Media-alta ocupación -70%"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -228,30 +357,50 @@ msgid "No"
 msgstr ""
 
 #. module: alda_helpdesk_pms
+#: model:ir.model.fields.selection,name:alda_helpdesk_pms.selection__helpdesk_ticket__alert_level__none
+msgid "No Alert"
+msgstr ""
+
+#. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "No longer related to Room"
-msgstr ""
+msgstr "No tiene una habitación relacionada"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__occupancy_rate
+msgid "Occupancy Rate (%)"
+msgstr "Ocupación Rate (%)"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__occupancy_kpi_info
+msgid "Occupancy Rate Info"
+msgstr "Ocupación"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__block_kpi_info
+msgid "Out Rate Info"
+msgstr "Información del rate de bloqueo"
 
 #. module: alda_helpdesk_pms
 #: model:ir.ui.menu,name:alda_helpdesk_pms.menu_pms_root
 msgid "PMS"
-msgstr ""
+msgstr "Gestión de hotel"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Reception"
-msgstr "Recepción del Hotel"
+msgstr "Recepción"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Related to Room"
-msgstr "Relacionado con la habitación"
+msgstr "Relacionado con una habitación"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__company_external_id
@@ -278,9 +427,7 @@ msgstr "Habitación bloqueada"
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Room is required when location type is 'Bathroom'"
-msgstr ""
-"Debe seleccionar la habitación si desea en enviar un ticket para el baño de "
-"la habitación"
+msgstr "Si el problema es en el baño se requiere especificar la habitación."
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -288,14 +435,15 @@ msgstr ""
 #, python-format
 msgid "Room is required when location type is 'Room'"
 msgstr ""
-"La habitación es obligatoria cuando el tipo de ubicación es 'Habitación'"
+"Seleccione la habitación de la avería siempre que el lugar sea en la "
+"habitación."
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Room status changed"
-msgstr "Estado de la habitación cambiado"
+msgstr "Estatus de la habitación actualizada"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__is_room
@@ -319,12 +467,9 @@ msgid "Send ticket"
 msgstr "Enviar ticket"
 
 #. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/main.py:0
-#, python-format
-msgid "Session expired or invalid. Please start from the valid link."
-msgstr ""
-"Sesión expirada o inválida. Por favor, empiece desde el enlace válido."
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "Short-term blocked room with low occupancy -30%."
+msgstr "Habitación bloqueada con baja ocupación -30%."
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -348,6 +493,23 @@ msgid "Team"
 msgstr "Equipo"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
+msgid "Thank you for contacting us. We'll get back to you soon."
+msgstr ""
+"Gracias por enviarnos un ticket. Pronto nos pondremos en contacto con usted."
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid ""
+"The selected ticket type doesn't belong to the current team. Please select a"
+" type that corresponds to the selected team."
+msgstr ""
+"El tipo de ticket seleccionado no pertenece al equipo actual. Por favor,  "
+"seleccione un tipo que corresponda al equipo elegido."
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket_type__team_id
 msgid "The team to which this ticket type belongs."
 msgstr "El equipo al que pertenece este tipo de ticket."
@@ -362,9 +524,26 @@ msgstr ""
 "trabajo."
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "This ticket is not associated with any property."
+msgstr "Este ticket no está asociado a ningún hotel"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
+msgid "Ticket #"
+msgstr ""
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Ticket Type"
 msgstr "Tipo de ticket"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__property_count_tickets
+msgid "Tickets"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__ticket_type_id
@@ -389,23 +568,14 @@ msgid "Update Room Blocked"
 msgstr "Marcar habitaciones bloqueadas"
 
 #. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/main.py:0
-#, python-format
-msgid "User not found"
-msgstr "Usuario no encontrado"
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "Show KPIs"
+msgstr "Mostrar KPIs"
 
 #. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.thank_you_page
-msgid "We will contact you soon."
-msgstr "Nos pondremos en contacto contigo pronto"
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/main.py:0
-#, python-format
-msgid "Wrong authentication"
-msgstr "Autenticación incorrecta"
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
+msgid "View your ticket"
+msgstr "Ver mis tickets"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -413,11 +583,30 @@ msgid "Yes"
 msgstr "Sí"
 
 #. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.thank_you_page
-msgid "Your ticket has been successfully submitted."
-msgstr "El ticket se ha enviado con éxito"
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
+msgid "Your ticket has been successfully submitted to"
+msgstr "Su ticket ha sido enviado satisfactoriamente a"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid ""
+"days /\n"
+"                            📊 Potential impact:"
+msgstr ""
+"días /\n"
+"                            📊 Impacto potencial por bloqueo:"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "will this be fixed by an external company?"
 msgstr "¿Será atendido por una empresa externa?"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "🕒 Days blocked:"
+msgstr "🕒 Bloqueo total: "
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
+msgid "🧭 Recommended actions based on alert level:"
+msgstr "🧭 Acciones recomendadas según el nivel de alerta:"

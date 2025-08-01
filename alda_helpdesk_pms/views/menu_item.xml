@@ -15,7 +15,7 @@
         id="menu_pms_root"
         name="PMS"
         parent="helpdesk.menu_helpdesk_root"
-        sequence="120"
+        sequence="99"
         groups="base.group_user"
     />
 

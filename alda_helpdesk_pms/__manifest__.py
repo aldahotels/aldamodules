@@ -27,7 +27,7 @@
     "Irlui Ramirez (Alda Hotels), Jose Luis Algara (Alda Hotels)",
     "website": "https://github.com/OCA/pms",
     "license": "LGPL-3",
-    "depends": ["website", "helpdesk", "alda_helpdesk_pms_enterprise"],
+    "depends": ["website", "helpdesk", "alda_helpdesk_pms_enterprise", "alda_pms_kpi"],
     "category": "PMS",
     "data": [
         "security/ir.model.access.csv",

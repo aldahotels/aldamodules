@@ -16,14 +16,19 @@ class HelpdeskFormController(http.Controller):
         partner_id = request.env.user.partner_id
         property_id = int(kwargs.get("property_id", 0))
 
-        property_record = request.env["pms.property"].sudo().browse(property_id)
-        company_id = user_id.company_id.id if user_id.company_id else False
+        pms_property_ids = request.env["pms.property"].sudo().browse(property_id)
 
+        visibility_filter = []
+        if user_id.has_group("base.group_portal"):
+            visibility_filter = ["portal"]
+        else:
+            visibility_filter = ["portal", "internal", "public"]
         team_ids = (
             request.env["helpdesk.team"]
             .sudo()
-            .search(["|", ("company_id", "=", False), ("company_id", "=", company_id)])
+            .search([("privacy_visibility", "in", visibility_filter)])
         )
+
         ticket_type_ids = (
             request.env["helpdesk.ticket.type"]
             .sudo()
@@ -40,7 +45,7 @@ class HelpdeskFormController(http.Controller):
             .sudo()
             .search(
                 [
-                    ("pms_property_id", "=", property_record.id),
+                    ("pms_property_id", "=", pms_property_ids.id),
                     ("room_type_id", "in", is_overnight_room),
                     ("active", "=", True),
                 ]
@@ -65,8 +70,8 @@ class HelpdeskFormController(http.Controller):
                 "ticket_type_ids": ticket_type_ids,
                 "partner_name": partner_id.company_name if partner_id else "",
                 "partner_id": partner_id.id if partner_id else None,
-                "property_id": property_record.id,
-                "property_name": property_record.name,
+                "property_id": pms_property_ids.id,
+                "property_name": pms_property_ids.name,
                 "room_ids": room_ids,
                 "is_room": False,
                 "location_type_options": location_type_options,
@@ -109,8 +114,31 @@ class HelpdeskFormController(http.Controller):
         )
         _logger.info("Ticket creado: %s", ticket.id)
 
-        return request.redirect("/helpdesk/ticket/thankyou")
+        return request.redirect(f"/helpdesk/ticket/confirmation/{ticket.id}")
 
-    @http.route("/helpdesk/ticket/thankyou", type="http", auth="public", website=True)
-    def helpdesk_ticket_thankyou(self, **kwargs):
-        return request.render("alda_helpdesk_pms.thank_you_page")
+    @http.route(
+        "/helpdesk/ticket/confirmation/<int:ticket_id>",
+        type="http",
+        auth="public",
+        website=True,
+    )
+    def helpdesk_ticket_thankyou(self, ticket_id=None, **kwargs):
+        values = {
+            "ticket": None,
+            "ticket_url": None,
+        }
+        if ticket_id:
+            try:
+                ticket = request.env["helpdesk.ticket"].sudo().browse(int(ticket_id))
+                if ticket.exists():
+                    ticket_url = f"/my/ticket/{ticket.id}/{ticket.access_token}"
+                    values.update(
+                        {
+                            "ticket": ticket,
+                            "ticket_url": ticket_url,
+                        }
+                    )
+            except Exception as e:
+                _logger.error("Error processing ticket confirmation: %s", str(e))
+
+        return request.render("alda_helpdesk_pms.confirmation_ticket", values)

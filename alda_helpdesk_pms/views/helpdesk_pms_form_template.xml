@@ -161,7 +161,7 @@
                                         type="radio"
                                         name="company_external_id"
                                         id="external_no"
-                                        value="False"
+                                        value=""
                                         checked="checked"
                                     />
                                         <label
@@ -191,11 +191,49 @@
         </t>
     </template>
 
-    <template id="thank_you_page" name="Gracias por tu ticket">
+    <template id="confirmation_ticket" name="Confirmation Ticket">
         <t t-call="website.layout">
-            <div class="container mt-5 text-center">
-                <h3>Your ticket has been successfully submitted.</h3>
-                <p>We will contact you soon.</p>
+            <div class="container mt-5 mb-5">
+                        <div class="text-center mb-4">
+                <img
+                        t-att-src="image_data_uri(request.env.company.logo)"
+                        alt="Company Logo"
+                        style="max-height: 80px; width: auto;"
+                    />
+            </div>
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h4><t
+                                t-translate="True"
+                            >Your ticket has been successfully submitted to
+                        </t>
+                        <br />
+                        <t t-esc="ticket.team_id.name" />
+                        </h4>
+                        <p class="lead">
+                        <t
+                                t-translate="True"
+                            >Thank you for contacting us. We'll get back to you soon.</t>
+                        </p>
+
+                        <t t-if="ticket and ticket_url">
+                            <div class="alert alert-info mt-3">
+                                <p>
+                                    <strong>Ticket #<t
+                                            t-esc="ticket.ticket_ref"
+                                        />:</strong>
+                                    <t t-esc="ticket.name" />
+                                    <br />
+                                    <strong>Property:</strong>
+                                    <t t-esc="ticket.pms_property_id.name" />
+                                </p>
+                                <a t-att-href="ticket_url" class="btn btn-primary">
+                                    View your ticket
+                                </a>
+                            </div>
+                        </t>
+                    </div>
+                </div>
             </div>
         </t>
     </template>

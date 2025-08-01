@@ -26,27 +26,204 @@
                     />
                 </div>
                 <field name="season_type" invisible="1" />
+                <field name="occupancy_rate" invisible="1" />
                 <widget
                     name="web_ribbon"
-                    title="High Season"
-                    bg_color="text-bg-warning"
-                    attrs="{'invisible': [('season_type', '!=', 'high')]}"
+                    title="High Season - Low Occupation"
+                    bg_color="text-bg-light"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|', ('season_type', '!=', 'high'),
+                        ('occupancy_rate', '>=', 0.3)
+                    ]}"
                 />
-
+                <widget
+                    name="web_ribbon"
+                    title="High Season - Medium Occupation"
+                    bg_color="text-bg-warning"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|', ('season_type', '!=', 'high'),
+                        '|','!', ('occupancy_rate', '>=', 0.3),
+                        ('occupancy_rate', '>=', 0.7)
+                    ]}"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="High Season +70%"
+                    bg_color="text-bg-danger"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|', ('season_type', '!=', 'high'),
+                        '!',('occupancy_rate', '>=', 0.7)
+                    ]}"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="+70% Occupation"
+                    bg_color="text-bg-warning"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|','!', ('occupancy_rate', '>=', 0.7),
+                        ('season_type', '=', 'high')
+                    ]}"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="Medium-high occupation -70%"
+                    bg_color="text-bg-info"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|', ('season_type', '=', 'high'),
+                        '|', '!', ('occupancy_rate', '>=', 0.3),
+                        ('occupancy_rate', '>', 0.7)
+                    ]}"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="Low occupation -40%"
+                    bg_color="bg-success text-white"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|', ('occupancy_rate', '>=', 0.3),
+                        ('season_type', '=', 'high')
+                    ]}"
+                />
             </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                    <button
+                    class="oe_stat_button"
+                    name="action_view_kpi_ticket"
+                    type="object"
+                    string="Show KPIs"
+                    attrs="{'invisible': [('pms_property_id', '=', False)]}"
+                    icon="fa-line-chart"
+                >
+                            <div class="o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="occupancy_kpi_info" nolabel="1" />
+                                </span>
+                                <span class="o_stat_value">
+                                    <field name="block_kpi_info" nolabel="1" />
+                                </span>
+                            </div>
+                    </button>
+                    <button
+                    class="oe_stat_button"
+                    type="object"
+                    groups="helpdesk.group_helpdesk_user"
+                    name="action_open_property_tickets"
+                    context="{'default_partner_id': active_id, 'default_team_id': False}"
+                    icon="fa-hotel"
+                    attrs="{'invisible': [
+                            ('property_count_tickets', '=', 0)
+                            ]}
+                        "
+                >
+                        <div class="o_stat_info">
+                            <field class="o_stat_value" name="property_count_tickets" />
+                            <span class="o_stat_text"> Tickets</span>
+                        </div>
+                    </button>
+            </xpath>
+
             <xpath expr="//field[@name='ticket_type_id']" position="attributes">
                 <attribute
                     name="options"
                 >{"no_create": true, "no_open": true}</attribute>
             </xpath>
             <xpath expr="//field[@name='email_cc']" position="after">
-                <field name="company_external_id" />
+                <field name="company_external_id" widget="boolean_toggle" />
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="attributes">
-                <attribute name="options">{"no_create": true,
+                <attribute name="options">
+                    {"no_create": true,
                     "no_open": true,
-                    'color_field': 'color'}
+                    'color_field': 'color'
+                    }
                 </attribute>
+            </xpath>
+            <xpath expr="//field[@name='description']" position="after">
+                <field name="is_room_blocked" invisible='1' />
+                <field name="alert_level" invisible='1' />
+                <field name="occupancy_rate" invisible='1' />
+                <div
+                    class="text-center fw-bold fs-5 text-secondary mb-3"
+                    attrs="{'invisible': [('alert_level', '=', 'none')]}"
+                >
+                        🧭 Recommended actions based on alert level:
+                </div>
+                <div
+                    class="bg-info p-3 rounded-3 fw-bold shadow-sm text-center"
+                    attrs="{'invisible': [('alert_level', '=', 'none')]}"
+                    style="margin:0 3.5rem 0 3.5rem;"
+                >
+                    <div class="row">
+                        <!-- 🕒 Columna izquierda: Datos -->
+                        <div class="col-12 col-md-5 text-white mb-2 mb-md-0 ">
+                            <strong>🕒 Days blocked: <field
+                                    name="total_days_blocked"
+                                /> days /
+                            📊 Potential impact: <field
+                                    name="ticket_blocked_room_adr_accumulated"
+                                />€</strong>
+                        </div>
+                        <div class="col-12 col-md-7 text-white ">
+                            <p attrs="{'invisible': [('alert_level', '!=', 'low')]}">
+                                <span
+                                    class="d-inline-block px-2 py-1 bg-white text-black rounded border border-white me-2"
+                                >
+                                    <strong>ℹ️ <field name="alert_level" />:</strong>
+                                </span>
+                                Short-term blocked room with low occupancy -30%.
+                            </p>
+                            <p attrs="{'invisible': [('alert_level', '!=', 'medium')]}">
+                                <span
+                                    class="d-inline-block px-2 bg-white text-info rounded border border-white me-2"
+                                >
+                                    <strong>⚠️ <field name="alert_level" />:</strong>
+                                </span>
+
+                                <span
+                                    attrs="{'invisible': [('total_days_blocked', '>', 15)]}"
+                                    class="d-inline text-white"
+                                >
+                                    Medium-term blocked room with medium occupancy +30%.
+                                </span>
+
+                                <span
+                                    attrs="{'invisible': ['!', ('total_days_blocked', '>', 15)]}"
+                                    class="d-inline text-white"
+                                >
+                                    Room blocked for medium time and low occupancy -30%.
+                                </span>
+                            </p>
+                            <p attrs="{'invisible': [('alert_level', '!=', 'high')]}">
+                                <span
+                                    class="d-inline-block px-2 py-1 bg-danger text-white rounded border border-white me-2"
+                                >
+                                    <span
+                                        class="d-inline-block px-2 py-1 bg-white text-danger rounded border border-danger me-2"
+                                    >
+                                        ❗</span> <strong><field
+                                            name="alert_level"
+                                        />:</strong>
+                                </span>
+                                    Long-term blocked room with or medium/high occupancy.
+                            </p>
+                            <p
+                                attrs="{'invisible': [('alert_level', '!=', 'critical')]}"
+                            >
+                                <span
+                                    class="d-inline-block px-2 py-1 bg-danger text-white rounded border border-white me-2"
+                                >🚨</span>
+                                <strong><field
+                                        name="alert_level"
+                                    />:</strong> Extended block during high demand +70%. Immediate action recommended.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>
