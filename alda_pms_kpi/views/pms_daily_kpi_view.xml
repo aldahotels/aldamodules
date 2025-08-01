@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_property_daily_kpi_action" model="ir.actions.act_window">
+        <field name="name" />
+        <field name="res_model">pms.daily.kpi</field>
+        <field name="view_mode">form,tree</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+            Create your first pms_property_daily_kpi_form
+        </p>
+        </field>
+    </record>
+    <record id="pms_daily_kpi_tree_view" model="ir.ui.view">
+        <field name="name">pms.daily.kpi.tree</field>
+        <field name="model">pms.daily.kpi</field>
+        <field name="arch" type="xml">
+            <tree name="Daily KPI tree" create="false" edit="false" delete="false">
+                <field name="date" readonly="1" />
+                <field name="pms_property_id" readonly="1" />
+                <field name="occupancy_rate" widget="percentage" readonly="1" />
+                <field name="block_rate" widget="percentage" readonly="1" />
+                <field name="total_rooms" readonly="1" />
+                <field name="pax" readonly="1" />
+                <field name="occupied_rooms" readonly="1" />
+                <field name="blocked_rooms" readonly="1" />
+                <field
+                    name="room_revenue"
+                    widget="monetary"
+                    options="{'currency_field': 'currency_id'}"
+                    readonly="1"
+                />
+                <field
+                    name="adr"
+                    widget="monetary"
+                    options="{'currency_field': 'currency_id'}"
+                    readonly="1"
+                />
+                <field
+                    name="revpar"
+                    widget="monetary"
+                    options="{'currency_field': 'currency_id'}"
+                    readonly="1"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <record id="pms_daily_kpi_form_view" model="ir.ui.view">
+        <field name="name">pms.daily.kpi.form</field>
+        <field name="model">pms.daily.kpi</field>
+        <field name="arch" type="xml">
+            <form name="Daily KPI form" create="false" edit="false" delete="false">
+                <sheet>
+                    <group>
+                        <field name="date" readonly="1" />
+                        <field
+                            name="pms_property_id"
+                            readonly="1"
+                            options="{'no_create': True, 'no_open': True}"
+                        />
+                    </group>
+                    <group string="Key Metrics">
+                        <field name="total_rooms" readonly="1" />
+                        <field name="occupied_rooms" readonly="1" />
+                        <field name="blocked_rooms" readonly="1" />
+                        <field name="occupancy_rate" widget="percentage" readonly="1" />
+                        <field name="block_rate" widget="percentage" readonly="1" />
+                        <field name="pax" readonly="1" />
+                    </group>
+                    <group string="Revenue Metrics">
+                        <field
+                            name="room_revenue"
+                            widget="monetary"
+                            options="{'currency_field': 'currency_id'}"
+                            readonly="1"
+                        />
+                        <field
+                            name="adr"
+                            widget="monetary"
+                            options="{'currency_field': 'currency_id'}"
+                            readonly="1"
+                        />
+                        <field
+                            name="revpar"
+                            widget="monetary"
+                            options="{'currency_field': 'currency_id'}"
+                            readonly="1"
+                        />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

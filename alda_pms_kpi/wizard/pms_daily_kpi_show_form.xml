@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_daily_kpi_show_ticket_form" model="ir.ui.view">
+        <field name="name">pms.daily.kpi.show.ticket.form</field>
+        <field name="model">pms.daily.kpi.show</field>
+        <field name="arch" type="xml">
+            <form
+                string="Daily KPI Property"
+                create="false"
+                edit="false"
+                delete="false"
+                mode="readonly"
+            >
+                <sheet>
+                    <group>
+                        <field name="date_today" readonly="1" />
+                        <field
+                            name="pms_property_id"
+                            readonly="1"
+                            options="{'no_create': True, 'no_open': True}"
+                        />
+                    </group>
+                    <group string="Key Metrics">
+                        <field name="total_rooms" readonly="1" />
+                        <field name="occupied_rooms" readonly="1" />
+                        <field name="blocked_rooms" readonly="1" />
+                        <field name="pax" readonly="1" />
+                        <field name="occupancy_rate" widget="percentage" readonly="1" />
+                        <field name="block_rate" widget="percentage" readonly="1" />
+                    </group>
+                    <group string="Revenue Metrics">
+                        <field name="adr" widget="monetary" readonly="1" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
