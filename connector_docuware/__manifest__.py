@@ -7,7 +7,7 @@
     "category": "",
     "author": "Comunitea , Odoo Community Association (OCA)",
     "maintainer": "Comunitea",
-    "website": "https://github.com/OCA/account-financial-tools",
+    "website": "https://github.com/OCA/pms",
     "license": "AGPL-3",
     "depends": [
         "account",
