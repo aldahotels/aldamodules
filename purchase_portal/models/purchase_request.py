@@ -70,7 +70,7 @@ class PurchaseRequest(models.Model):
             ('state', '=', 'in_progress'),
         ])
         for pr in pr_to_check:
-            if all(line.pending_qty_to_receive == 0 for line in pr.line_ids):
+            if all((pl.product_qty - pl.qty_received) == 0 for pl in pr.line_ids.mapped('purchase_lines').filtered(lambda x: x.state == 'purchase')):
                 pr.button_done()
 
 
