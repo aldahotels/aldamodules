@@ -169,5 +169,12 @@ class BudgetBase(models.AbstractModel):
         fields_to_check = {"record_type", "manual_amount", "rooms_available_current"}
         if fields_to_check.intersection(vals.keys()):
             for record in self:
-                record._compute_monthly_amounts()
+                if hasattr(record, "_compute_monthly_amounts"):
+                    record._compute_monthly_amounts()
         return result
+
+    def _compute_monthly_amounts(self):
+        """
+        Método base para calcular valores mensuales.
+        Los modelos hijos deben sobrescribir este método.
+        """
