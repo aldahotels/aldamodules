@@ -10,6 +10,7 @@
         <field name="accounting_account" />
         <field name="company" />
         <field name="hotel" />
+        <field name="hotel_id" />
         <field name="year" />
         <field name="oct" />
         <field name="nov" />
@@ -40,6 +41,8 @@
             <field name="accounting_account" />
             <field name="company" />
             <field name="hotel" />
+            <field name="hotel_id" />
+            <field name="hotel_code" readonly="1" />
             <field name="year" />
           </group>
           <notebook>
@@ -107,12 +110,6 @@
     </field>
   </record>
 
-  <!-- Menú Principal -->
-  <menuitem id="menu_budget_root" name="Budget" sequence="10" />
-
-  <!-- Submenú -->
-  <menuitem id="menu_budget_cfo" name="cfo" parent="menu_budget_root" sequence="1" />
-
   <!-- Action -->
   <record id="action_budget_cfo" model="ir.actions.act_window">
     <field name="name">cfo</field>
@@ -130,9 +127,10 @@
 
   <menuitem
         id="menu_budget_cfo_action"
-        parent="menu_budget_cfo"
+        name="CFO"
+        parent="menu_budget_root"
         action="action_budget_cfo"
-        sequence="1"
+        sequence="7"
     />
 
 </odoo>

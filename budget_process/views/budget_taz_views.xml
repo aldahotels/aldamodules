@@ -7,8 +7,9 @@
       <tree>
         <field name="responsible" />
         <field name="description" />
-        <field name="accounting_account" />
+        <field name="accounting_account" placeholder="e.g. 627001" />
         <field name="hotel" />
+        <field name="hotel_id" />
         <field name="company" />
         <field name="year" />
         <field name="oct" />
@@ -37,8 +38,9 @@
           <group>
             <field name="responsible" />
             <field name="description" />
-            <field name="accounting_account" />
+            <field name="accounting_account" placeholder="e.g. 627001" />
             <field name="hotel" />
+            <field name="hotel_id" />
             <field name="hotel_code" readonly="1" />
             <field name="company" />
             <field name="year" />
@@ -76,8 +78,19 @@
       <pivot string="taz Pivot">
         <field name="year" type="row" />
         <field name="hotel" type="row" />
-        <field name="responsible" type="row" />
         <field name="total" type="measure" sum="True" />
+        <field name="oct" type="measure" sum="True" />
+        <field name="nov" type="measure" sum="True" />
+        <field name="dec" type="measure" sum="True" />
+        <field name="jan" type="measure" sum="True" />
+        <field name="feb" type="measure" sum="True" />
+        <field name="mar" type="measure" sum="True" />
+        <field name="apr" type="measure" sum="True" />
+        <field name="may" type="measure" sum="True" />
+        <field name="jun" type="measure" sum="True" />
+        <field name="jul" type="measure" sum="True" />
+        <field name="aug" type="measure" sum="True" />
+        <field name="sep" type="measure" sum="True" />
       </pivot>
     </field>
   </record>
@@ -108,11 +121,6 @@
       </search>
     </field>
   </record>
-  <!-- Menú Principal -->
-  <menuitem id="menu_budget_root" name="Budget" sequence="10" />
-
-  <!-- Submenú -->
-  <menuitem id="menu_budget_taz" name="taz" parent="menu_budget_root" sequence="1" />
 
   <!-- Action -->
   <record id="action_budget_taz" model="ir.actions.act_window">
@@ -129,10 +137,12 @@
     </field>
   </record>
 
-  <menuitem
-        id="menu_budget_taz_action"
-        parent="menu_budget_taz"
+   <!-- Menú taz -->
+    <menuitem
+        id="menu_budget_taz"
+        name="TAZ"
+        parent="menu_budget_root"
+        sequence="8"
         action="action_budget_taz"
-        sequence="1"
     />
 </odoo>

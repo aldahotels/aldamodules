@@ -10,7 +10,7 @@
                 <field name="accounting_account" placeholder="e.g. 627001" />
                 <field name="company" />
                 <field name="hotel" options="{'no_create': True}" />
-                <field name="hotel_code" readonly="1" />
+                <field name="hotel_id" />
                 <field name="year" />
                 <field name="oct" />
                 <field name="nov" />
@@ -47,6 +47,7 @@
                         </group>
                         <group name="hotel_info" string="Hotel &amp; Company">
                             <field name="hotel" options="{'no_create': True}" />
+                            <field name="hotel_id" />
                             <field name="hotel_code" readonly="1" />
                             <field name="company" />
                             <field name="year" />
@@ -55,18 +56,18 @@
                     <notebook>
                         <page string="Months">
                             <group string="Monthly Values" col="4">
-                                <field name="oct" string="October" />
-                                <field name="nov" string="November" />
-                                <field name="dec" string="December" />
-                                <field name="jan" string="January" />
-                                <field name="feb" string="February" />
-                                <field name="mar" string="March" />
-                                <field name="apr" string="April" />
-                                <field name="may" string="May" />
-                                <field name="jun" string="June" />
-                                <field name="jul" string="July" />
-                                <field name="aug" string="August" />
-                                <field name="sep" string="September" />
+                                <field name="oct" />
+                                <field name="nov" />
+                                <field name="dec" />
+                                <field name="jan" />
+                                <field name="feb" />
+                                <field name="mar" />
+                                <field name="apr" />
+                                <field name="may" />
+                                <field name="jun" />
+                                <field name="jul" />
+                                <field name="aug" />
+                                <field name="sep" />
                             </group>
                             <group string="Total">
                                 <field name="total" readonly="1" />
@@ -129,6 +130,11 @@
                     string="Responsible"
                     context="{'group_by': 'responsible'}"
                 />
+                <filter
+                    name="group_by_company"
+                    string="Company"
+                    context="{'group_by': 'company'}"
+                />
             </search>
         </field>
     </record>
@@ -145,7 +151,6 @@
             <p class="oe_view_nocontent_smiling_face">
                 Create Controller budget records for each hotel.
             </p>
-
         </field>
     </record>
 

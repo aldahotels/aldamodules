@@ -14,6 +14,7 @@
                 />
         <field name="company" />
         <field name="hotel" />
+        <field name="hotel_id" />
         <field name="year" />
         <field name="oct" />
         <field name="nov" />
@@ -75,6 +76,7 @@
             </group>
             <group name="hotel_info" string="Hotel &amp; Company">
               <field name="hotel" />
+              <field name="hotel_id" />
               <field name="hotel_code" readonly="1" />
               <field name="company" />
               <field name="year" />
@@ -217,17 +219,6 @@
     </field>
   </record>
 
-  <!-- Menú Principal -->
-  <menuitem id="menu_budget_root" name="Budget" sequence="10" />
-
-  <!-- Submenú  -->
-  <menuitem
-        id="menu_budget_revenue"
-        name="Revenue"
-        parent="menu_budget_root"
-        sequence="1"
-    />
-
   <!-- Action -->
   <record id="action_budget_revenue" model="ir.actions.act_window">
     <field name="name">Revenue</field>
@@ -244,9 +235,10 @@
   </record>
 
   <menuitem
-        id="menu_budget_revenue_action"
-        parent="menu_budget_revenue"
+        id="menu_budget_revenue"
+        name="Revenue"
+        parent="menu_budget_root"
         action="action_budget_revenue"
-        sequence="1"
+        sequence="2"
     />
   </odoo>

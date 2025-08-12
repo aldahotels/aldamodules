@@ -157,7 +157,7 @@
         id="menu_budget_rn"
         name="Room Nights"
         parent="menu_budget_root"
-        sequence="2"
+        sequence="1"
         action="action_budget_rn"
     />
 

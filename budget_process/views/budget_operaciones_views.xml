@@ -9,6 +9,7 @@
         <field name="accounting_account" />
         <field name="company" />
         <field name="hotel" />
+        <field name="hotel_id" />
         <field name="year" />
         <field name="oct" />
         <field name="nov" />
@@ -26,6 +27,7 @@
       </tree>
     </field>
   </record>
+  <!-- Vista Form -->
   <record id="view_budget_operaciones_form" model="ir.ui.view">
     <field name="name">budget.operaciones.form</field>
     <field name="model">budget.operaciones</field>
@@ -38,6 +40,8 @@
             <field name="accounting_account" />
             <field name="company" />
             <field name="hotel" />
+            <field name="hotel_id" />
+            <field name="hotel_code" readonly="1" />
             <field name="year" />
           </group>
           <notebook>
@@ -103,14 +107,6 @@
     </field>
   </record>
 
-  <menuitem id="menu_budget_root" name="Budget" sequence="10" />
-  <menuitem
-        id="menu_budget_operaciones"
-        name="operaciones"
-        parent="menu_budget_root"
-        sequence="1"
-    />
-
   <!-- Action -->
   <record id="action_budget_operaciones" model="ir.actions.act_window">
     <field name="name">operaciones</field>
@@ -127,10 +123,11 @@
   </record>
 
   <menuitem
-        id="menu_budget_operaciones_action"
-        parent="menu_budget_operaciones"
+        id="menu_budget_operaciones"
+        name="Operaciones"
+        parent="menu_budget_root"
         action="action_budget_operaciones"
-        sequence="1"
+        sequence="4"
     />
 
 </odoo>

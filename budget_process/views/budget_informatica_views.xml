@@ -10,6 +10,7 @@
         <field name="description" />
         <field name="accounting_account" placeholder="e.g. 627001" />
         <field name="hotel" />
+        <field name="hotel_id" />
         <!--<field name="hotel_code" readonly="1" />-->
         <field name="company" />
         <field name="year" />
@@ -63,6 +64,7 @@
             </group>
             <group name="hotel_info" string="Hotel &amp; Company">
               <field name="hotel" />
+              <field name="hotel_id" />
               <field name="hotel_code" readonly="1" />
               <field name="company" />
               <field name="year" />
@@ -139,16 +141,6 @@
       </search>
     </field>
   </record>
-  <!-- Menú Principal -->
-  <menuitem id="menu_budget_root" name="Budget" sequence="10" />
-
-  <!-- Submenú -->
-  <menuitem
-        id="menu_budget_informatica"
-        name="informatica"
-        parent="menu_budget_root"
-        sequence="1"
-    />
 
   <!-- Action -->
   <record id="action_budget_informatica" model="ir.actions.act_window">
@@ -167,9 +159,10 @@
 
   <menuitem
         id="menu_budget_informatica_action"
-        parent="menu_budget_informatica"
+        name="Informatica"
+        parent="menu_budget_root"
         action="action_budget_informatica"
-        sequence="1"
+        sequence="5"
     />
 
 </odoo>
