@@ -60,7 +60,8 @@ class AldaImportSalariesWzd(models.TransientModel):
             if last_move_name != row[0]:
                 if last_move_name:
                     newmove_vals["line_ids"] = move_lines
-                    newmove_vals["ref"] = row[11]
+                    if len(row) > 11:
+                        newmove_vals["ref"] = row[11]
                     moves_to_create.append(newmove_vals)
                     move_lines = []
 
@@ -104,7 +105,8 @@ class AldaImportSalariesWzd(models.TransientModel):
 
             if rownum == sheet.nrows - 1:
                 newmove_vals["line_ids"] = move_lines
-                newmove_vals["ref"] = row[11]
+                if len(row) > 11:
+                    newmove_vals["ref"] = row[11]
                 moves_to_create.append(newmove_vals)
 
         if moves_to_create:
