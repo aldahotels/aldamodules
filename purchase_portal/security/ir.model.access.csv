@@ -16,3 +16,4 @@ access_ir_attachment_purchase_portal,access_ir_attachment_purchase_portal,base.m
 access_uom_uom_purchase_portal,access_uom_uom_purchase_portal,uom.model_uom_uom,base.group_portal,1,0,0,0
 access_stock_move_purchase_portal,access_stock_move_purchase_portal,stock.model_stock_move,base.group_portal,1,1,0,0
 access_stock_move_line_purchase_portal,access_stock_move_line_purchase_portal,stock.model_stock_move_line,base.group_portal,1,1,0,0
+access_mail_template_portal,access_mail_template_portal,mail.model_mail_template,base.group_portal,1,0,0,0
