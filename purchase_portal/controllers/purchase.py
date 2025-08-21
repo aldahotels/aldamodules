@@ -18,6 +18,8 @@ class PurchasePortal(purchase.controllers.portal.CustomerPortal):
         }
 
         user = request.env['res.users'].sudo().browse(request.uid)
+        domain = [('property_id', 'in', user.pms_property_ids.ids)]
+
         count = len(searchbar_filters)
         for property_id in user.pms_property_ids:
             key = str(count) + "-" + property_id.name
@@ -32,7 +34,7 @@ class PurchasePortal(purchase.controllers.portal.CustomerPortal):
         return self._render_portal(
             "purchase.portal_my_purchase_orders",
             page, date_begin, date_end, sortby, filterby,
-            [],
+            domain,
             searchbar_filters,
             '00-all',
             "/my/purchase",
