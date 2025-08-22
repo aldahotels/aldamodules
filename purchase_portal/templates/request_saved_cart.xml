@@ -92,6 +92,19 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row mt4">
+                            <div t-if="saved_cart.property_id" class="col-12 col-md-6 mb-4 mb-md-0">
+                                <h6><strong>Hotel:</strong></h6>
+                                <div class="row">
+                                    <div class="col flex-grow-0 pr-3">
+                                        <img class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(saved_cart.property_id.logo)" alt="Hotel"/>
+                                    </div>
+                                    <div class="col pl-sm-0">
+                                        <address t-field="saved_cart.property_id" t-options='{"widget": "contact", "fields": ["name", "email", "phone"]}'/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row mt32" id="product_information">
                             <div class="col-12 col-md-6">
                                 <div class="row mb-2 mb-sm-1">
