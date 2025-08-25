@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from odoo import http
 from odoo.http import request
@@ -60,6 +61,7 @@ class HelpdeskFormController(http.Controller):
             )
 
         company_external_id = False
+        is_property_operated_normaly = True
 
         return request.render(
             "alda_helpdesk_pms.create_ticket_form",
@@ -77,6 +79,7 @@ class HelpdeskFormController(http.Controller):
                 "location_type_options": location_type_options,
                 "is_room_blocked_ids": room_state_ids,
                 "company_external_id": company_external_id,
+                "is_property_operated_normaly": is_property_operated_normaly,
             },
         )
 
@@ -91,11 +94,43 @@ class HelpdeskFormController(http.Controller):
     def helpdesk_ticket_submit(self, **post):
         ensure_db()
         room_id = post.get("room_ids", "")
+        pms_property = post.get("property_id", "")
         ticket_type_id = post.get("ticket_type_id", "")
+        is_property_operated_normaly = post.get("is_property_operated_normaly") == "on"
         pms_room_id = int(room_id) if room_id else False
+        pms_property_id = int(pms_property) if pms_property else False
+        date = datetime.now()
+        is_room_operated_normaly = True
+
+        if pms_room_id:
+            room = request.env["pms.room"].browse(pms_room_id)
+            is_room_operated_normaly = (
+                False
+                if request.env["helpdesk.ticket"].sudo()._is_room_blocked(room)
+                else True
+            )
+
+        result = (
+            request.env["helpdesk.ticket"]
+            .sudo()
+            ._get_priority_estimated(
+                pms_property_id,
+                pms_room_id,
+                date,
+                is_room_operated_normaly,
+                is_property_operated_normaly,
+            )
+        )
+        priority_rule_id = result[0] if result else "0"
+        priority_estimated = result[1] if result else "0"
+        is_room_operated_normaly = result[3] if result else is_room_operated_normaly
+        is_property_operated_normaly = (
+            result[4] if result else is_property_operated_normaly
+        )
 
         ticket = (
             request.env["helpdesk.ticket"]
+            .with_context(from_web_create=True)
             .sudo()
             .create(
                 {
@@ -109,10 +144,19 @@ class HelpdeskFormController(http.Controller):
                     "pms_room_id": pms_room_id,
                     "company_external_id": post.get("company_external_id"),
                     "description": post.get("description"),
+                    "priority_rule_id": priority_rule_id,
+                    "priority": priority_estimated,
+                    "is_property_operated_normaly": is_property_operated_normaly,
+                    "is_room_operated_normaly": is_room_operated_normaly,
                 }
             )
         )
-        _logger.info("Ticket creado: %s", ticket.id)
+        _logger.info(
+            "Ticket creado: %s %s %s",
+            ticket.id,
+            ticket.is_property_operated_normaly,
+            ticket.is_room_operated_normaly,
+        )
 
         return request.redirect(f"/helpdesk/ticket/confirmation/{ticket.id}")
 

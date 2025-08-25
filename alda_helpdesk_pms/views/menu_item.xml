@@ -26,4 +26,12 @@
         action="action_update_blocked_rooms"
         sequence="10"
     />
+
+    <menuitem
+        id="menu_helpdesk_priority_rules"
+        name="Priority Rules"
+        parent="helpdesk.helpdesk_menu_config"
+        action="action_helpdesk_priority_rule"
+        sequence="10"
+    />
 </odoo>

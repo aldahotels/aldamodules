@@ -94,6 +94,7 @@ class PmsDailyKpi(models.Model):
 
     @api.model
     def create_or_update_daily_kpi(self, property_id, kpi_date):
+        # Bloqueo para evitar condiciones de carrera
         self.env.cr.execute(
             "SELECT id FROM pms_daily_kpi WHERE date = %s AND pms_property_id = %s FOR UPDATE",
             (kpi_date, property_id),
@@ -103,18 +104,23 @@ class PmsDailyKpi(models.Model):
         )
 
         now = datetime.now()
-
         if existing_kpi:
             if (
                 not existing_kpi.last_updated
-                or existing_kpi.last_updated.date() < now.date()
+                or existing_kpi.last_updated.date() < fields.Date.today()
             ):
                 existing_kpi._compute_kpis()
             return existing_kpi
-
-        new_kpi = self.create({"date": kpi_date, "pms_property_id": property_id})
-        new_kpi._compute_kpis()
-        return new_kpi
+        else:
+            new_kpi = self.create(
+                {
+                    "date": kpi_date,
+                    "pms_property_id": property_id,
+                    "last_updated": now,
+                }
+            )
+            new_kpi._compute_kpis()
+            return new_kpi
 
     @api.depends("date", "pms_property_id")
     def _compute_kpis(self):

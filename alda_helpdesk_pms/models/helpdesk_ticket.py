@@ -89,6 +89,21 @@ class HelpdeskTicket(models.Model):
         help="Indicates if the ticket is linked to an external repair ID.",
     )
 
+    is_property_operated_normaly = fields.Boolean(
+        string="Property Operated Normaly",
+        default=True,
+        store=True,
+        tracking=True,
+        help="Indicates if the property have a emergency or not",
+    )
+
+    is_room_operated_normaly = fields.Boolean(
+        string="Room Operated Normaly",
+        default=True,
+        store=True,
+        help="Indicates if the room is unblocked or not",
+    )
+
     season_type = fields.Selection(
         [
             ("high", "High Season"),
@@ -107,19 +122,21 @@ class HelpdeskTicket(models.Model):
     occupancy_rate = fields.Float(
         string="Occupancy Rate (%)",
         compute="_compute_show_daily_kpi",
+        compute_sudo=True,
         digits=(16, 2),
         default=0.0,
     )
 
-    date_today = fields.Date(
-        string="Date",
-        default=fields.Date.today(),
+    date_now = fields.Date(
+        string="Today",
+        default=fields.Date.today,
         store=False,
     )
 
     blocked_rooms = fields.Integer(
         string="Total Blocked Rooms",
         compute="_compute_show_daily_kpi",
+        compute_sudo=True,
         store=True,
     )
 
@@ -138,18 +155,6 @@ class HelpdeskTicket(models.Model):
 
     occupancy_kpi_info = fields.Char(string="Occupancy Rate Info")
     block_kpi_info = fields.Char(string="Out Rate Info")
-
-    alert_level = fields.Selection(
-        [
-            ("none", "No Alert"),
-            ("low", "Low Occupation"),
-            ("medium", "Medium Occupation"),
-            ("high", "High Occupation"),
-            ("critical", "Critical Alert"),
-        ],
-        compute="_compute_alert_level",
-        store=False,
-    )
 
     @api.depends("pms_property_id")
     def _compute_take_ticket_count(self):
@@ -170,30 +175,37 @@ class HelpdeskTicket(models.Model):
 
         return self.pms_property_id.action_view_tickets()
 
+    @api.model
+    def _get_season_type(self, date):
+        create_date = fields.Date.from_string(date)
+        year = create_date.year
+        month = create_date.month
+        day = create_date.day
+        easter_date = easter(year)
+        palm_sunday = easter_date - timedelta(days=7)
+        holy_start = palm_sunday - timedelta(days=4)
+        holy_end = easter_date + timedelta(days=4)
+        is_holy_period = holy_start <= create_date <= holy_end
+
+        if 6 <= month <= 9:
+            season_type = "high"
+        elif is_holy_period:
+            season_type = "high"
+        elif month == 12 or (month == 1 and day <= 7):
+            season_type = "high"
+        else:
+            season_type = "low"
+
+        return season_type
+
     def _compute_season_type(self):
         for ticket in self:
             if not ticket.create_date:
                 ticket.season_type = False
                 continue
             create_date = fields.Date.from_string(ticket.create_date.date())
-            year = ticket.create_date.year
-            easter_date = easter(year)
-            palm_sunday = easter_date - timedelta(days=7)
-            holy_start = palm_sunday - timedelta(days=4)
-            holy_end = easter_date + timedelta(days=4)
 
-            is_holy_period = holy_start <= create_date <= holy_end
-
-            month = create_date.month
-
-            if 6 <= month <= 9:
-                ticket.season_type = "high"
-            elif is_holy_period:
-                ticket.season_type = "high"
-            elif month == 12 or (month == 1 and ticket.create_date.day <= 7):
-                ticket.season_type = "high"
-            else:
-                ticket.season_type = "low"
+            ticket.season_type = self._get_season_type(create_date)
 
     def _get_location_selection(self):
         file_path = os.path.join(
@@ -218,11 +230,12 @@ class HelpdeskTicket(models.Model):
 
     location_type = fields.Selection(
         selection=_get_location_selection,
-        string="Location type",
+        string="Locations",
         help="Select where this issue is located",
         store=True,
     )
 
+    @api.model
     def _is_room_blocked(self, pms_room_id):
         today = fields.Date.context_today(self)
         line = (
@@ -388,47 +401,48 @@ class HelpdeskTicket(models.Model):
 
     @api.depends("pms_property_id")
     def _compute_show_daily_kpi(self):
-        today = fields.Date.today(self)
-
         for ticket in self:
+            ticket.date_now = fields.Date.today()
             if not ticket.pms_property_id:
                 ticket.occupancy_rate = 0.0
                 ticket.blocked_rooms = 0
-                continue
-
-            kpi = self.env["pms.daily.kpi"].create_or_update_daily_kpi(
-                ticket.pms_property_id.id,
-                today,
-            )
-
-            rate = round(kpi.occupancy_rate * 100) if kpi.occupancy_rate else 0
-
-            ticket.update(
-                {
-                    "occupancy_rate": kpi.occupancy_rate or 0.0,
-                    "blocked_rooms": kpi.blocked_rooms or 0,
-                    "occupancy_kpi_info": _(
-                        "%(rate)s%% Occupancy Rate", rate=int(rate)
-                    ),
-                    "block_kpi_info": _(
-                        "%(count)s Room Out of Service", count=kpi.blocked_rooms or 0
-                    ),
-                }
-            )
+            else:
+                data = self.env["pms.daily.kpi"].create_or_update_daily_kpi(
+                    ticket.pms_property_id.id, ticket.date_now
+                )
+                occ = data.occupancy_rate
+                block = data.blocked_rooms
+                rate = round(occ * 100) if occ else 0
+                ticket.update(
+                    {
+                        "occupancy_rate": occ or 0.0,
+                        "blocked_rooms": block or 0,
+                        "occupancy_kpi_info": _(
+                            "%(rate)s%% Occupancy Rate", rate=int(rate)
+                        ),
+                        "block_kpi_info": _(
+                            "%(count)s Room Out of Service", count=block or 0
+                        ),
+                    }
+                )
 
     def action_view_kpi_ticket(self):
         self.ensure_one()
 
-        # Obtener o crear el KPI real
-        kpi = self.env["pms.daily.kpi"].create_or_update_daily_kpi(
-            self.pms_property_id.id, fields.Date.today()
+        kpi = (
+            self.env["pms.daily.kpi"]
+            .sudo()
+            .create_or_update_daily_kpi(self.pms_property_id.id, fields.Date.today())
         )
 
-        # Crear el registro transitorio con el KPI asignado
-        kpi_show = self.env["pms.daily.kpi.show"].create(
-            {
-                "kpi_id": kpi.id,
-            }
+        kpi_show = (
+            self.env["pms.daily.kpi.show"]
+            .sudo()
+            .create(
+                {
+                    "kpi_id": kpi.id,
+                }
+            )
         )
 
         return {
@@ -454,21 +468,6 @@ class HelpdeskTicket(models.Model):
             },
         }
 
-    # def action_view_kpi_ticket(self):
-    #     self.ensure_one()
-    #     return {
-    #         'name': 'KPIs Diarios',
-    #         'type': 'ir.actions.act_window',
-    #         'res_model': 'pms.daily.kpi.show',
-    #         'view_mode': 'form',
-    #         'target': 'new',
-    #         'context': {
-    #             'default_pms_property_id': self.pms_property_id.id or False,
-    #             'default_date_today': fields.Date.today(),
-    #         },
-    #         'view_id': self.env.ref('alda_pms_kpi.pms_daily_kpi_show_ticket_form').id,
-    #     }
-
     @api.constrains("team_id", "ticket_type_id")
     def _check_team_ticket_type(self):
         for ticket in self:
@@ -485,85 +484,69 @@ class HelpdeskTicket(models.Model):
 
     @api.onchange("team_id")
     def _onchange_team_id(self):
-        """Clear ticket type when team changes if they don't match"""
         if self.ticket_type_id and self.ticket_type_id.team_id != self.team_id:
             self.ticket_type_id = False
 
-    @api.depends("pms_room_id", "is_room_blocked")
+    @api.model
+    def _calculate_blocked_room_adr(
+        self, pms_property_id, pms_room_id, create_date, close_date=None
+    ):
+        if not (pms_room_id and create_date):
+            return {"adr_accumulated": 0.0, "total_days_blocked": 0}
+
+        room = self.env["pms.room"].sudo().browse(pms_room_id)
+        if not room or not room.room_type_id:
+            return {"adr_accumulated": 0.0, "total_days_blocked": 0}
+
+        room_type = room.room_type_id
+        room_type_price = room_type.list_price or 0.0
+
+        start_date = create_date.date()
+        end_date = close_date.date() if close_date else fields.Date.today(self)
+
+        if start_date > end_date:
+            return {"adr_accumulated": 0.0, "total_days_blocked": 0}
+
+        blocked_lines = (
+            self.env["pms.reservation.line"]
+            .sudo()
+            .search(
+                [
+                    ("room_id", "=", room.id),
+                    ("reservation_id.reservation_type", "=", "out"),
+                    ("reservation_id.state", "not in", ["draft", "cancel"]),
+                    ("date", ">=", start_date),
+                    ("date", "<=", end_date),
+                ]
+            )
+        )
+
+        total_days_blocked = len(blocked_lines)
+
+        adr_accumulated = room_type_price * total_days_blocked
+
+        return {
+            "adr_accumulated": adr_accumulated,
+            "total_days_blocked": total_days_blocked,
+        }
+
+    @api.depends("pms_room_id", "is_room_blocked", "create_date", "close_date")
     def _compute_blocked_room_adr(self):
         for ticket in self:
             ticket.ticket_blocked_room_adr_accumulated = 0.0
+            ticket.total_days_blocked = 0
 
             if not (
-                ticket.pms_property_id
-                and ticket.is_room_blocked
-                and ticket.create_date
-                and not ticket.close_date
+                ticket.pms_property_id and ticket.is_room_blocked and ticket.create_date
             ):
                 continue
 
-            room = ticket.pms_room_id
-            room_type = room.room_type_id if room else False
-            if not room_type:
-                continue
-            start_date = ticket.create_date.date()
-            end_date = (
-                ticket.close_date.date()
-                if ticket.close_date
-                else fields.Date.today(ticket)
-            )
-            blocked_line = (
-                self.env["pms.reservation.line"]
-                .sudo()
-                .search(
-                    [
-                        ("room_id", "=", room.id),
-                        ("reservation_id.reservation_type", "=", "out"),
-                        ("state", "not in", ["draft", "cancel"]),
-                        ("date", ">=", start_date),
-                        ("date", "<=", end_date),
-                    ],
-                    order="date ASC",
-                )
+            result = self._calculate_blocked_room_adr(
+                pms_property_id=ticket.pms_property_id.id,
+                pms_room_id=ticket.pms_room_id.id,
+                create_date=ticket.create_date,
+                close_date=ticket.close_date,
             )
 
-            if not blocked_line:
-                continue
-
-            room_type_price = room_type.list_price or 0.0
-
-            total_days = (end_date - start_date).days
-            total_days_room_blocked = len(blocked_line) if blocked_line else total_days
-            total_days = 1 if total_days == 0 else total_days
-            if total_days < 0:
-                total_days = 1
-
-            adr_total_blocked = room_type_price * total_days_room_blocked
-
-            ticket.ticket_blocked_room_adr_accumulated = adr_total_blocked
-            ticket.total_days_blocked = total_days_room_blocked
-
-    @api.depends(
-        "pms_property_id", "is_room_blocked", "total_days_blocked", "occupancy_rate"
-    )
-    def _compute_alert_level(self):
-        for ticket in self:
-            if not ticket.pms_property_id or not ticket.is_room_blocked:
-                ticket.alert_level = "none"
-                continue
-
-            days = ticket.total_days_blocked or 0
-            occ = ticket.occupancy_rate or 0.0
-
-            if occ == 0.0 or not ticket.is_room_blocked:
-                ticket.alert_level = "none"
-            elif occ <= 0.30 and days <= 15:
-                ticket.alert_level = "low"
-            elif (0.30 < occ <= 0.70 and days <= 30) or (days > 15 and occ <= 0.70):
-                ticket.alert_level = "medium"
-            elif occ > 0.70 and days <= 30:
-                ticket.alert_level = "high"
-            elif occ > 0.70 and days > 30:
-                ticket.alert_level = "critical"
-            else:
-                ticket.alert_level = "none"
+            ticket.ticket_blocked_room_adr_accumulated = result["adr_accumulated"]
+            ticket.total_days_blocked = result["total_days_blocked"]

@@ -35,6 +35,7 @@
         "views/helpdesk_ticket_type_views.xml",
         "views/helpdesk_ticket_views.xml",
         "views/helpdesk_pms_form_template.xml",
+        "views/helpdesk_ticket_priority_rule_views.xml",
         "data/ir_cron.xml",
     ],
     "assets": {

@@ -66,6 +66,11 @@
                                 name="is_room"
                                 t-att-value="is_room or ''"
                             />
+                            <input
+                                type="hidden"
+                                name="partner_name"
+                                t-att-value="partner_name or ''"
+                            />
                                 <div class="mb-3">
                                     <label class="form-label">Subject</label>
                                     <input
@@ -76,13 +81,13 @@
                                 />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Team</label>
+                                    <label class="form-label">Department</label>
                                     <select
                                     name="team_id"
                                     class="form-control"
                                     required="1"
                                 >
-                                    <option value="">Select a Team</option>
+                                    <option value="">Select a department</option>
                                         <t t-foreach="team_ids" t-as="team">
                                             <option t-att-value="team.id">
                                             <t t-out="team.name" /></option>
@@ -131,10 +136,25 @@
                                                 <t t-out="room.name" />
                                                 <t
                                                 t-if="is_room_blocked_ids.get(room.id, False)"
-                                            > (Blocked)</t>
+                                            > (Blocked)<i class="fa fa-lock" /></t>
                                             </option>
                                         </t>
                                     </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label
+                                    class="form-label"
+                                >Is property operated normally?</label>
+                                    <div class="form-check form-switch">
+                                        <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        role="switch"
+                                        name="is_property_operated_normaly"
+                                        id="is_property_operated_normaly"
+                                        t-att-checked="is_property_operated_normaly and 'checked' or ''"
+                                    />
+                                    </div>
                                 </div>
                                 <div class="mb-3" id="company_external_id_field">
                                     <label
