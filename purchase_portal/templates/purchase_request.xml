@@ -137,6 +137,20 @@
                                 </div>
                             </li>
 
+                            <li t-if="purchase_request.property_id" class="list-group-item flex-grow-1">
+                                <div class="small mb-1">
+                                    <strong class="text-muted">Hotel</strong>
+                                </div>
+                                <div class="row">
+                                    <div class="col flex-grow-0 pr-2">
+                                        <img class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(purchase_request.property_id.logo)" alt="Hotel"/>
+                                    </div>
+                                    <div class="col pl-0">
+                                        <span t-field="purchase_request.property_id" t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>
+                                    </div>
+                                </div>
+                            </li>
+
                             <li class="list-group-item flex-grow-1">
                                 Save it as a recurrent purchase.<br/>
                                 <a type="button" t-att-href="'/save_purchase_request/' + str(purchase_request.id)" class="btn btn-primary" string="Save request" role="button">
