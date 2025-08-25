@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_update_blocked_rooms" model="ir.actions.server">
+        <field name="name">Update Room Blocked</field>
+        <field name="model_id" ref="model_helpdesk_ticket" />
+        <field name="state">code</field>
+        <field name="binding_model_id" ref="model_helpdesk_ticket" />
+        <field name="binding_view_types">kanban,list,form</field>
+        <field name="code">
+            action = model.action_update_is_room_blocked()
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_pms_root"
+        name="PMS"
+        parent="helpdesk.menu_helpdesk_root"
+        sequence="99"
+        groups="base.group_user"
+    />
+
+    <menuitem
+        id="menu_update_blocked"
+        name="Update Blocked"
+        parent="menu_pms_root"
+        action="action_update_blocked_rooms"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_helpdesk_priority_rules"
+        name="Priority Rules"
+        parent="helpdesk.helpdesk_menu_config"
+        action="action_helpdesk_priority_rule"
+        sequence="10"
+    />
+</odoo>

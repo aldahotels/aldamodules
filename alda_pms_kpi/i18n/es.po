@@ -1,0 +1,278 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* alda_pms_kpi
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 17:12+0000\n"
+"PO-Revision-Date: 2025-08-01 17:12+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: alda_pms_kpi
+#: model_terms:ir.ui.view,arch_db:alda_pms_kpi.view_property_kpi_section
+msgid "<span class=\"text-secondary fw-normal\"> KPIs</span>"
+msgstr ""
+
+#. module: alda_pms_kpi
+#: model_terms:ir.ui.view,arch_db:alda_pms_kpi.view_property_kpi_section
+msgid "<span class=\"text-secondary fw-normal\"> Occupation</span>"
+msgstr "<span class=\"text-secondary fw-normal\"> Ocupación</span>"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__available_rate
+msgid "Available Rate (%)"
+msgstr "Tasa Disponible (%)"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__available_rooms
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__available_rooms
+msgid "Total Available Rooms"
+msgstr "Habitaciones Disponibles"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__adr
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__adr
+msgid "Average Daily Rate"
+msgstr "Tarifa Diaria Promedio por tipo de habitación"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__block_rate
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__block_rate
+msgid "Block Rate (%)"
+msgstr "Tasa de Bloqueo (%)"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__blocked_rooms
+msgid "Blocked Rooms"
+msgstr "Habitaciones Bloqueadas"
+
+#. module: alda_pms_kpi
+#: model_terms:ir.ui.view,arch_db:alda_pms_kpi.view_pms_generate_batch_kpi_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: alda_pms_kpi
+#: model_terms:ir.actions.act_window,help:alda_pms_kpi.pms_property_daily_kpi_action
+msgid "Create your first pms_property_daily_kpi_form"
+msgstr "Crea tu primer formulario de KPIs diarios de propiedad"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__create_uid
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__create_uid
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_wizard_generate_batch_kpi__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__create_date
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__create_date
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_wizard_generate_batch_kpi__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__kpi_id
+msgid "Daily KPI"
+msgstr "KPI Diario"
+
+#. module: alda_pms_kpi
+#: model_terms:ir.ui.view,arch_db:alda_pms_kpi.pms_daily_kpi_show_ticket_form
+msgid "Daily KPI Property"
+msgstr "Propiedad de KPI Diario"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_property__daily_kpi_ids
+msgid "Daily KPIs"
+msgstr "KPIs Diarios"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__date
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__date_today
+msgid "Date"
+msgstr "Fecha"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__last_updated
+msgid "Date Last Updated"
+msgstr "Fecha de última actualización"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__display_name
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__display_name
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_wizard_generate_batch_kpi__display_name
+msgid "Display Name"
+msgstr "Nombre mostrado"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_wizard_generate_batch_kpi__date_end
+msgid "Date End KPIs"
+msgstr "Fecha Final"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_wizard_generate_batch_kpi__date_start
+msgid "Start Date KPIs"
+msgstr "Fecha de Inicio"
+
+#. module: alda_pms_kpi
+#: model:ir.actions.act_window,name:alda_pms_kpi.action_pms_generate_batch_kpi
+msgid "Generate KPIs multiple properties"
+msgstr "Generar KPIs en bloque"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__id
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__id
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_wizard_generate_batch_kpi__id
+msgid "ID"
+msgstr ""
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_property__kpi_count
+msgid "KPIs"
+msgstr ""
+
+#. module: alda_pms_kpi
+#. odoo-python
+#: code:addons/alda_pms_kpi/wizard/pms_wizard_generate_multiply_kpi.py:0
+#, python-format
+msgid "KPIs can only be created no later than today."
+msgstr ""
+
+#. module: alda_pms_kpi
+#: model_terms:ir.ui.view,arch_db:alda_pms_kpi.pms_daily_kpi_form_view
+#: model_terms:ir.ui.view,arch_db:alda_pms_kpi.pms_daily_kpi_show_ticket_form
+msgid "Key Metrics"
+msgstr "Métricas Clave"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi____last_update
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show____last_update
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_wizard_generate_batch_kpi____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__write_uid
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__write_uid
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_wizard_generate_batch_kpi__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__write_date
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__write_date
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_wizard_generate_batch_kpi__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: alda_pms_kpi
+#: model:ir.model,name:alda_pms_kpi.model_pms_kpi_mixin
+msgid "Mixin calculate KPIs"
+msgstr "Mixin para cálculos de KPIs"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__occupancy_rate
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__occupancy_rate
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_property__occupancy_rate
+msgid "Occupancy Rate (%)"
+msgstr "Tasa de Ocupación (%)"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__occupied_rooms
+msgid "Occupied Rooms"
+msgstr "Habitaciones Ocupadas"
+
+#. module: alda_pms_kpi
+#: model:ir.model.constraint,message:alda_pms_kpi.constraint_pms_daily_kpi_property_date_uniq
+msgid "Only one property KPI can be taken per day!"
+msgstr "¡Solo se puede tomar un KPI de propiedad por día!"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__pax
+msgid "Pax"
+msgstr "PAX (Húespedes total noche)"
+
+#. module: alda_pms_kpi
+#: model:ir.model,name:alda_pms_kpi.model_pms_property
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__pms_property_id
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__pms_property_id
+msgid "Property"
+msgstr "Hotel"
+
+#. module: alda_pms_kpi
+#: model:ir.model,name:alda_pms_kpi.model_pms_daily_kpi
+msgid "Property Daily KPIs"
+msgstr "KPIs Diarios de Propiedad"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__room_revenue
+msgid "Property Room Revenue"
+msgstr "Ingresos por Habitación de la Propiedad"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_wizard_generate_batch_kpi__property_ids
+msgid "Propiedades"
+msgstr "Hoteles"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__revpar
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__revpar
+msgid "RevPAR"
+msgstr ""
+
+#. module: alda_pms_kpi
+#: model_terms:ir.ui.view,arch_db:alda_pms_kpi.pms_daily_kpi_form_view
+#: model_terms:ir.ui.view,arch_db:alda_pms_kpi.pms_daily_kpi_show_ticket_form
+msgid "Revenue Metrics"
+msgstr "Revenue Métricas"
+
+#. module: alda_pms_kpi
+#: model:ir.model,name:alda_pms_kpi.model_pms_daily_kpi_show
+msgid "Temporal view to show daily KPIs"
+msgstr "Vista temporal para mostrar KPIs diarios"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__blocked_rooms
+msgid "Total Blocked Rooms"
+msgstr "Total de Habitaciones Bloqueadas"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__occupied_rooms
+msgid "Total Occupied Rooms"
+msgstr "Total de Habitaciones Ocupadas"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__pax
+msgid "Total Pax"
+msgstr "Total PAX"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi_show__total_rooms
+msgid "Total Rooms"
+msgstr "Total de Habitaciones"
+
+#. module: alda_pms_kpi
+#: model:ir.model.fields,field_description:alda_pms_kpi.field_pms_daily_kpi__total_rooms
+msgid "Total of Rooms"
+msgstr "Total de Habitaciones"
+
+#. module: alda_pms_kpi
+#: model_terms:ir.ui.view,arch_db:alda_pms_kpi.view_property_kpi_section
+msgid "View Property KPI's"
+msgstr "Ver KPIs del Hotel"
+
+#. module: alda_pms_kpi
+#: model_terms:ir.ui.view,arch_db:alda_pms_kpi.view_pms_generate_batch_kpi_form
+msgid "Views"
+msgstr "Vistas"
+
+#. module: alda_pms_kpi
+#: model:ir.model,name:alda_pms_kpi.model_pms_wizard_generate_batch_kpi
+msgid "Wizard to generate KPIs for multiple properties"
+msgstr "Asistente para generar KPIs en bloque"

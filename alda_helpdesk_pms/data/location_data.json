@@ -1,0 +1,29 @@
+{
+  "common_areas": {
+    "elevator": "Elevator",
+    "common_bathroom": "Common Bathrooms",
+    "main_entrance": "Main Entrance",
+    "reception": "Reception",
+    "restaurant": "Restaurant/Cafeteria",
+    "living_room": "Living Room"
+  },
+  "technical": {
+    "electrical_panel": "Electrical Panel",
+    "machine_room": "Machine Room",
+    "perimeter_network": "Perimeter Network"
+  },
+  "rooms": {
+    "room": "Room",
+    "bathroom": "Bathroom"
+  },
+  "outdoor": {
+    "terrace": "Outdoor/Terrace",
+    "pool": "Pool",
+    "parking": "Parking"
+  },
+  "other": {
+    "kitchen": "Kitchen",
+    "hallway": "Hallways",
+    "accounting": "Accounting"
+  }
+}

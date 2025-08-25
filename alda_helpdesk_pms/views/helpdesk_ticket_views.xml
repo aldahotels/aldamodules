@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="helpdesk_ticket_type_view_form" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.type.form.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button
+                    string="Update Blocked"
+                    name="action_update_is_room_blocked"
+                    type="object"
+                    class="btn-secondary"
+                />
+            </xpath>
+            <xpath
+                expr="//div[@class='oe_title']/h1/field[@name='name']"
+                position="after"
+            >
+                <div class="mt-2">
+                    <field
+                        name="tag_detail"
+                        widget="many2many_tags"
+                        options="{'color_field': 'color'}"
+                    />
+                </div>
+                <field name="season_type" invisible="1" />
+                <field name="occupancy_rate" invisible="1" />
+                <widget
+                    name="web_ribbon"
+                    title="High Season - Low Occupation"
+                    bg_color="text-bg-light"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|', ('season_type', '!=', 'high'),
+                        ('occupancy_rate', '>=', 0.3)
+                    ]}"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="High Season - Medium Occupation"
+                    bg_color="text-bg-warning"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|', ('season_type', '!=', 'high'),
+                        '|','!', ('occupancy_rate', '>=', 0.3),
+                        ('occupancy_rate', '>=', 0.7)
+                    ]}"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="High Season +70%"
+                    bg_color="text-bg-danger"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|', ('season_type', '!=', 'high'),
+                        '!',('occupancy_rate', '>=', 0.7)
+                    ]}"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="+70% Occupation"
+                    bg_color="text-bg-warning"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|','!', ('occupancy_rate', '>=', 0.7),
+                        ('season_type', '=', 'high')
+                    ]}"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="Medium-high occupation -70%"
+                    bg_color="text-bg-info"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|', ('season_type', '=', 'high'),
+                        '|', '!', ('occupancy_rate', '>=', 0.3),
+                        ('occupancy_rate', '>', 0.7)
+                    ]}"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="Low occupation -40%"
+                    bg_color="bg-success text-white"
+                    attrs="{'invisible': [
+                        '|', ('pms_property_id', '=', False),
+                        '|', ('occupancy_rate', '>=', 0.3),
+                        ('season_type', '=', 'high')
+                    ]}"
+                />
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                    <button
+                    class="oe_stat_button"
+                    name="action_view_kpi_ticket"
+                    type="object"
+                    string="Show KPIs"
+                    attrs="{'invisible': [('pms_property_id', '=', False)]}"
+                    icon="fa-line-chart"
+                >
+                            <div class="o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="occupancy_kpi_info" nolabel="1" />
+                                </span>
+                                <span class="o_stat_value">
+                                    <field name="block_kpi_info" nolabel="1" />
+                                </span>
+                            </div>
+                    </button>
+                    <button
+                    class="oe_stat_button"
+                    type="object"
+                    groups="helpdesk.group_helpdesk_user"
+                    name="action_open_property_tickets"
+                    context="{'default_partner_id': active_id, 'default_team_id': False}"
+                    icon="fa-hotel"
+                    attrs="{'invisible': [
+                            ('property_count_tickets', '=', 0)
+                            ]}
+                        "
+                >
+                        <div class="o_stat_info">
+                            <field class="o_stat_value" name="property_count_tickets" />
+                            <span class="o_stat_text"> Tickets</span>
+                        </div>
+                    </button>
+            </xpath>
+
+            <xpath expr="//field[@name='ticket_type_id']" position="attributes">
+                <attribute
+                    name="options"
+                >{"no_create": true, "no_open": true}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='email_cc']" position="after">
+                <field name="company_external_id" widget="boolean_toggle" />
+                <field
+                    name="is_property_operated_normaly"
+                    widget="boolean_toggle"
+                    attrs="{'invisible': [('pms_property_id', '=', False)]}"
+                />
+                <field
+                    name="is_room_operated_normaly"
+                    widget="boolean_toggle"
+                    attrs="{'invisible': [('pms_property_id', '=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="attributes">
+                <attribute name="options">
+                    {"no_create": true,
+                    "no_open": true,
+                    'color_field': 'color'
+                    }
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='description']" position="after">
+                <field name="is_room_blocked" invisible='1' />
+                <field name="alert_level" invisible='1' />
+                <field name="occupancy_rate" invisible='1' />
+                <div
+                    class="text-center fw-bold fs-5 text-black mb-3"
+                    attrs="{'invisible': [('alert_level', '=', 'none')]}"
+                >
+                        &#9889; Recommended actions based on Alert Level Estimated
+                </div>
+                <div
+                    class="bg-light p-3 rounded-3 fw-bold shadow-sm r"
+                    attrs="{'invisible': [('alert_level', '=', 'none')]}"
+                    style="margin:0 3.5rem 0 3.5rem;"
+                >
+                    <div groups="helpdesk.group_helpdesk_manager" class="mb-3">
+                        🛡️
+                        <field name="priority_rule_id" />
+                        <span style="margin-right: 8px;margin-left: 8px;"> →</span>
+                        <field name="priority_estimated" widget="priority" />
+                    </div>
+                    <div groups="!helpdesk.group_helpdesk_manager" class="mb-3">
+                        🛡️
+                        <field
+                            name="priority_rule_id"
+                            readonly="1"
+                            options="{'no_open': True}"
+                        />
+                        <span style="margin-right: 8px;margin-left: 8px;"> →</span>
+                        <field
+                            name="priority_estimated"
+                            widget="priority"
+                            readonly="1"
+                        />
+                    </div>
+                    <div><field name="priority_suggestion_action" /></div>
+                    <div
+                        class="row"
+                        attrs="{'invisible': [('is_room_blocked', '=', True)]}"
+                    >
+                        <div class="col-12 col-sm-6 col-lg-4 text-info mb-2">
+                            <strong>⚠️ <field name="alert_level" />:
+                            <field name="occupancy_rate" widget="percentage" /></strong>
+                        </div>
+                    </div>
+                    <div
+                        class="row justify-content-center text-center"
+                        attrs="{'invisible': [('is_room_blocked', '=', False)]}"
+                    >
+                        <div class="col-12 col-sm-6 col-lg-4 text-info mb-2">
+                            <strong>⚠️ <field name="alert_level" />:
+                            <field name="occupancy_rate" widget="percentage" /></strong>
+                        </div>
+                        <div
+                            class="col-12 col-sm-6 col-lg-4 text-info mb-2"
+                            attrs="{'invisible': [('total_days_blocked', '=', 0)]}"
+                        >
+                            <strong>🕒 Days blocked: <field
+                                    name="total_days_blocked"
+                                /> days</strong>
+                        </div>
+                        <div
+                            class="col-12 col-sm-6 col-lg-4 text-info mb-2"
+                            attrs="{'invisible': [('total_days_blocked', '=', 0)]}"
+                        >
+                            <strong>📉 Potential impact: <field
+                                    name="ticket_blocked_room_adr_accumulated"
+                                /> €</strong>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <record id="helpdesk_ticket_type_view_form_pms" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.type.form.inherit.pms</field>
+        <field name="model">helpdesk.ticket</field>
+        <field
+            name="inherit_id"
+            ref="alda_helpdesk_pms_enterprise.pms_helpdesk_ticket_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='pms_property_id']" position="after">
+                <field name="is_room_blocked" invisible="1" />
+                <field name="is_room" invisible="1" />
+                <field name="is_bathroom" invisible="1" />
+                <field name="location_type" />
+            </xpath>
+            <xpath expr="//field[@name='pms_room_id']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': [('location_type', 'not in', ['room', 'bathroom'])]}
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista tree -->
+    <record id="helpdesk_ticket_type_view_tree" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.type.tree.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='ticket_type_id']" position="attributes">
+                <attribute name="options">{'color_field': 'color'}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='team_id']" position="before">
+                <field name="location_type" optional="hide" />
+                <field name="is_room" optional="hide" />
+                <field name="is_room_blocked" optional="hide" />
+                <field name="is_bathroom" optional="hide" />
+                <field name="alert_level" optional="hide" />
+                <field
+                    name="tag_detail"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                />
+                <field name="company_external_id" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+    <!-- Vista kanban -->
+    <record id="alda_pms_helpdesk_ticket_view_kanban" model="ir.ui.view">
+        <field name="name">alda.helpdesk.ticket.kanban.inherit.pms</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_kanban" />
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="on_write">1</attribute>
+                <attribute name="color_field">color</attribute>
+            </xpath>
+            <xpath
+                expr="//div[./field[@name='tag_ids' and @widget='many2many_tags']]"
+                position="before"
+            >
+                    <div class="oe_kanban_card_content p-2">
+                        <div class="mb-2">
+                            <field
+                            name="tag_detail"
+                            widget="many2many_tags"
+                            options="{'color_field': 'color'}"
+                        />
+                        </div>
+                    </div>
+            </xpath>
+            <xpath
+                expr="//div[./field[@name='tag_ids' and @widget='many2many_tags']]"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista search -->
+    <record id="pms_helpdesk_ticket_search_inherit" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.search.inherit.pms</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="is_room_blocked" />
+                <field name="is_room" />
+                <field name="company_external_id" />
+                <field name="location_type" />
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter
+                    string="Blocked"
+                    name="group_blocked"
+                    context="{'group_by': 'is_room_blocked'}"
+                />
+                <filter
+                    string="Room's ticket"
+                    name="group_is_room"
+                    context="{'group_by': 'is_room'}"
+                />
+                <filter
+                    string="Bathroom's room"
+                    name="group_is_bathroom"
+                    context="{'group_by': 'is_bathroom'}"
+                />
+                <filter
+                    string="Location type"
+                    name="group_location_type"
+                    context="{'group_by': 'location_type'}"
+                />
+                <filter
+                    string="Repair External ID"
+                    name="group_company_external"
+                    context="{'group_by': 'company_external_id'}"
+                />
+                <filter
+                    string="Priority Estimated"
+                    name="group_priority_estimated"
+                    context="{'group_by': 'priority_estimated'}"
+                />
+                <separator string="Alert by Occupancy" />
+                <filter
+                    string="Alert Level"
+                    name="filter_alert_level"
+                    context="{'group_by': 'alert_level'}"
+                />
+            </xpath>
+            <xpath expr="//filter[@name='my_follow_ticket']" position="before">
+                <filter
+                    string="Room Blocked"
+                    name="filter_blocked"
+                    domain="[('is_room_blocked','!=', False)]"
+                />
+                <filter
+                    string="Room's ticket"
+                    name="filter_is_room"
+                    domain="[('is_room','!=', False)]"
+                />
+                <filter
+                    string="Bathroom's room"
+                    name="filter_is_bathroom"
+                    domain="[('is_bathroom','!=', False)]"
+                />
+                <filter
+                    string="Location type"
+                    name="filter_location_type"
+                    domain="[('location_type','!=', False)]"
+                />
+                <filter
+                    string="Repair External ID"
+                    name="filter_company_external"
+                    domain="[('company_external_id','!=', False)]"
+                />
+                <separator string="Priority Estimated" />
+                <filter
+                    string="Low Priority Estimated"
+                    name="filter_low_priority_estimated"
+                    domain="[('priority_estimated', '!=', False),('priority_estimated', '=', '0')]"
+                />
+                <filter
+                    string="Medium Priority Estimated"
+                    name="filter_urgent_priority_estimated"
+                    domain="[('priority_estimated', '!=', False),('priority_estimated', '=', '1')]"
+                />
+                <filter
+                    string="High Priority Estimated"
+                    name="filter_high_priority_estimated"
+                    domain="[('priority_estimated', '!=', False),('priority_estimated', '=', '2')]"
+                />
+                <filter
+                    string="Urgent Priority Estimated"
+                    name="filter_urgent_priority_estimated"
+                    domain="[('priority_estimated', '!=', False),('priority_estimated', '=', '3')]"
+                />
+                <separator />
+            </xpath>
+        </field>
+    </record>
+</odoo>

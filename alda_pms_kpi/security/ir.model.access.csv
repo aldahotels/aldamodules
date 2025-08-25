@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+alda_pms_kpi.manager_access_property_daily_kpi,manager_access_property_daily_kpi,alda_pms_kpi.model_pms_daily_kpi,pms.group_pms_manager,1,1,1,1
+alda_pms_kpi.manager_access_pms_property,manager_access_pms_property,alda_pms_kpi.model_pms_property,pms.group_pms_manager,1,1,1,1
+alda_pms_kpi.access_pms_daily_kpi_show,user_pms_daily_kpi_show,alda_pms_kpi.model_pms_daily_kpi_show,base.group_user,1,0,1,0
+alda_pms_kpi.manager_access_pms_propery_kpi_generate,manager_access_pms_property_kpi_generate,alda_pms_kpi.model_pms_wizard_generate_batch_kpi,pms.group_pms_manager,1,1,1,1

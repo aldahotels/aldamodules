@@ -1,0 +1,260 @@
+<odoo>
+    <template id="create_ticket_form" name="Formulario de Ticket">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section
+                    class="s_text_block o_colored_level pb0 pt0 o_snippet_invisible o_conditional_hidden"
+                    style="position: relative; background-image: none;"
+                    data-name="Texto"
+                    data-visibility="conditional"
+                    data-visibility-value-utm-campaign-rule=""
+                >
+                                <div class="s_allow_columns container-fluid">
+                                    <div
+                            class="s_text_highlight o_colored_level my-3 w-100 text-center"
+                            data-snippet="s_text_highlight"
+                            data-name="Texto resaltado"
+                        >
+                        <div class="container">
+                            <h4><strong>Hi&amp;nbsp;</strong><t
+                                        t-out="user_name or ''"
+                                    /><br /></h4>
+                            <p>
+                            <span style="font-size: 36px;">📑</span>
+                                You're submitting a support request for:
+                                <t t-esc="property_name or ''" />.&amp;nbsp;&amp;nbsp;
+                            </p>
+                        </div>
+                    </div><p />
+                    </div>
+                </section>
+                    <div class="o_container_small">
+                        <div class="s_website_form_rows row s_col_no_bgcolor">
+                            <h2><center>Form New Ticket</center></h2>
+                            <form
+                            action="/helpdesk/ticket/submit"
+                            method="POST"
+                            class="mt-4"
+                        >
+                                <input
+                                type="hidden"
+                                name="partner_id"
+                                t-att-value="partner_id"
+                            />
+                                <input
+                                type="hidden"
+                                name="property_id"
+                                t-att-value="property_id"
+                            />
+                                <input
+                                type="hidden"
+                                name="user_name"
+                                t-att-value="user_name or ''"
+                            />
+                                <input
+                                type="hidden"
+                                name="partner_name"
+                                t-att-value="partner_name or ''"
+                            />
+                                <input
+                                type="hidden"
+                                name="property_name"
+                                t-att-value="property_name or ''"
+                            />
+                                <input
+                                type="hidden"
+                                name="is_room"
+                                t-att-value="is_room or ''"
+                            />
+                            <input
+                                type="hidden"
+                                name="partner_name"
+                                t-att-value="partner_name or ''"
+                            />
+                                <div class="mb-3">
+                                    <label class="form-label">Subject</label>
+                                    <input
+                                    type="text"
+                                    name="subject"
+                                    class="form-control"
+                                    required="1"
+                                />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Department</label>
+                                    <select
+                                    name="team_id"
+                                    class="form-control"
+                                    required="1"
+                                >
+                                    <option value="">Select a department</option>
+                                        <t t-foreach="team_ids" t-as="team">
+                                            <option t-att-value="team.id">
+                                            <t t-out="team.name" /></option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ticket Type</label>
+                                    <select
+                                    name="ticket_type_id"
+                                    class="form-control"
+                                    required="1"
+                                >
+                                        <option value="">Select a Ticket Type</option>
+                                        <t t-foreach="ticket_type_ids" t-as="type">
+                                            <option
+                                            t-att-value="type.id"
+                                            t-att-data-team-id="type.team_id.id"
+                                        >
+                                                <t t-out="type.name" />
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="mb-3" id="location_field">
+                                    <label class="form-label">Location</label>
+                                    <select
+                                    name="location_type"
+                                    class="form-control"
+                                    required="1"
+                                >
+                                        <option value="">Select Place</option>
+                                        <t t-foreach="location_type_options" t-as="opt">
+                                            <option t-att-value="opt[0]">
+                                                <t t-out="opt[1]" />
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Room</label>
+                                    <select name="room_ids" class="form-control">
+                                        <option value="">Select Room</option>
+                                        <t t-foreach="room_ids" t-as="room">
+                                            <option t-att-value="room.id">
+                                                <t t-out="room.name" />
+                                                <t
+                                                t-if="is_room_blocked_ids.get(room.id, False)"
+                                            > (Blocked)<i class="fa fa-lock" /></t>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label
+                                    class="form-label"
+                                >Is property operated normally?</label>
+                                    <div class="form-check form-switch">
+                                        <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        role="switch"
+                                        name="is_property_operated_normaly"
+                                        id="is_property_operated_normaly"
+                                        t-att-checked="is_property_operated_normaly and 'checked' or ''"
+                                    />
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="company_external_id_field">
+                                    <label
+                                    class="form-label d-block"
+                                >will this be fixed by an external company?</label>
+
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="company_external_id"
+                                        id="external_yes"
+                                        value="True"
+                                    />
+                                        <label
+                                        class="form-check-label"
+                                        for="external_yes"
+                                    >Yes</label>
+                                    </div>
+
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="company_external_id"
+                                        id="external_no"
+                                        value=""
+                                        checked="checked"
+                                    />
+                                        <label
+                                        class="form-check-label"
+                                        for="external_no"
+                                    >No</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea
+                                    name="description"
+                                    class="form-control"
+                                    rows="4"
+                                />
+                                </div>
+
+                                <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >Send ticket</button>
+                            </form>
+                        </div>
+                    </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="confirmation_ticket" name="Confirmation Ticket">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                        <div class="text-center mb-4">
+                <img
+                        t-att-src="image_data_uri(request.env.company.logo)"
+                        alt="Company Logo"
+                        style="max-height: 80px; width: auto;"
+                    />
+            </div>
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h4><t
+                                t-translate="True"
+                            >Your ticket has been successfully submitted to
+                        </t>
+                        <br />
+                        <t t-esc="ticket.team_id.name" />
+                        </h4>
+                        <p class="lead">
+                        <t
+                                t-translate="True"
+                            >Thank you for contacting us. We'll get back to you soon.</t>
+                        </p>
+
+                        <t t-if="ticket and ticket_url">
+                            <div class="alert alert-info mt-3">
+                                <p>
+                                    <strong>Ticket #<t
+                                            t-esc="ticket.ticket_ref"
+                                        />:</strong>
+                                    <t t-esc="ticket.name" />
+                                    <br />
+                                    <strong>Property:</strong>
+                                    <t t-esc="ticket.pms_property_id.name" />
+                                </p>
+                                <a t-att-href="ticket_url" class="btn btn-primary">
+                                    View your ticket
+                                </a>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
