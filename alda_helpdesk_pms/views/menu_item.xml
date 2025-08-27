@@ -15,7 +15,6 @@
         <field name="name">Priority Rules</field>
         <field name="res_model">helpdesk.ticket.priority.rule</field>
         <field name="view_mode">kanban,tree,form,pivot,graph</field>
-        <field name="view_id" ref="view_helpdesk_ticket_priority_rule_kanban" />
         <field name="context">
             {
                 'create_button': True,
