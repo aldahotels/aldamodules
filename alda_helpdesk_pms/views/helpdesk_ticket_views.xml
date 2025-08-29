@@ -137,12 +137,12 @@
                 <field
                     name="is_property_operated_normaly"
                     widget="boolean_toggle"
-                    attrs="{'invisible': [('pms_property_id', '=', False)]}"
+                    attrs="{'invisible': ['|',('pms_property_id', '=', False), ('is_room', '=', True)]}"
                 />
                 <field
                     name="is_room_operated_normaly"
                     widget="boolean_toggle"
-                    attrs="{'invisible': [('pms_property_id', '=', False)]}"
+                    invisible='1'
                 />
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="attributes">
@@ -159,7 +159,7 @@
                 <field name="occupancy_rate" invisible='1' />
                 <div
                     class="text-center fw-bold fs-5 text-black mb-3"
-                    attrs="{'invisible': [('alert_level', '=', 'none')]}"
+                    attrs="{'invisible': ['|',('alert_level', '=', 'none'), ('priority_rule_id', '=', False)]}"
                 >
                         &#9889; Recommended actions based on Alert Level Estimated
                 </div>
