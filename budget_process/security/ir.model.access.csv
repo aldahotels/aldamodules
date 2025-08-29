@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_budget_fb_user,Presupuesto FB,model_budget_fb,base.group_user,1,1,1,1
+access_budget_informatica_user,Presupuesto Informática,model_budget_informatica,base.group_user,1,1,1,1
+access_budget_marketing_user,Presupuesto Marketing,model_budget_marketing,base.group_user,1,1,1,1
+access_budget_capex_user,Presupuesto CAPEX,model_budget_capex,base.group_user,1,1,1,1
+access_budget_cfo_user,Presupuesto CFO,model_budget_cfo,base.group_user,1,1,1,1
+access_budget_operaciones_user,Presupuesto Operaciones,model_budget_operaciones,base.group_user,1,1,1,1
+access_budget_revenue_user,Presupuesto Revenue,model_budget_revenue,base.group_user,1,1,1,1
+access_budget_taz_user,Presupuesto TAZ,model_budget_taz,base.group_user,1,1,1,1
+access_budget_controller_user,Presupuesto Controller,model_budget_controller,base.group_user,1,1,1,1
+access_budget_base_user,Presupuesto Base,model_budget_base,base.group_user,1,1,1,1
+access_budget_capex_group,budget.capex group,model_budget_capex,group_budget_capex,1,1,1,1
+access_budget_hotel_manager,budget.hotel.manager,model_budget_hotel,budget_group_manager,1,1,1,1
+access_budget_hotel_user,budget.hotel.user,model_budget_hotel,budget_group_user,1,1,1,1
+access_budget_hotel_base_user,budget.hotel.base.user,model_budget_hotel,base.group_user,1,1,1,1
+access_budget_hotel_all,budget.hotel.all,model_budget_hotel,,1,0,0,0
+access_budget_rn_user,Presupuesto Room Nights,model_budget_rn,base.group_user,1,1,1,1

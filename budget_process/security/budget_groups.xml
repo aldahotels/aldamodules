@@ -1,0 +1,46 @@
+<odoo>
+  <record id="group_budget_capex" model="res.groups">
+    <field name="name">Budget CAPEX</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+  <record id="group_budget_cfo" model="res.groups">
+    <field name="name">Budget CFO</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+  <record id="group_budget_controller" model="res.groups">
+    <field name="name">Budget Controller</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+  <record id="group_budget_fb" model="res.groups">
+    <field name="name">Budget FB</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+  <record id="group_budget_informatica" model="res.groups">
+    <field name="name">Budget Informática</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+  <record id="group_budget_marketing" model="res.groups">
+    <field name="name">Budget Marketing</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+  <record id="group_budget_operaciones" model="res.groups">
+    <field name="name">Budget Operaciones</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+  <record id="group_budget_revenue" model="res.groups">
+    <field name="name">Budget Revenue</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+  <record id="group_budget_taz" model="res.groups">
+    <field name="name">Budget TAZ</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+  <record id="budget_group_manager" model="res.groups">
+    <field name="name">Budget Manager</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+  <record id="budget_group_user" model="res.groups">
+    <field name="name">Budget User</field>
+    <field name="category_id" ref="base.module_category_accounting_and_finance" />
+  </record>
+</odoo>

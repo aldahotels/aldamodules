@@ -1,0 +1,387 @@
+<odoo>
+  <record id="hotel_101" model="budget.hotel">
+    <field name="name">FOGAR DE TEODOMIRO</field>
+    <field name="code">101</field>
+  </record>
+  <record id="hotel_102" model="budget.hotel">
+    <field name="name">CASCO ANTIGUO</field>
+    <field name="code">102</field>
+  </record>
+  <record id="hotel_103" model="budget.hotel">
+    <field name="name">CENTRO LEON</field>
+    <field name="code">103</field>
+  </record>
+  <record id="hotel_106" model="budget.hotel">
+    <field name="name">ALGALIA</field>
+    <field name="code">106</field>
+  </record>
+  <record id="hotel_108" model="budget.hotel">
+    <field name="name">LUCUS</field>
+    <field name="code">108</field>
+  </record>
+  <record id="hotel_109" model="budget.hotel">
+    <field name="name">SAN CARLOS</field>
+    <field name="code">109</field>
+  </record>
+  <record id="hotel_111" model="budget.hotel">
+    <field name="name">CATEDRAL</field>
+    <field name="code">111</field>
+  </record>
+  <record id="hotel_112" model="budget.hotel">
+    <field name="name">AVENIDA</field>
+    <field name="code">112</field>
+  </record>
+  <record id="hotel_113" model="budget.hotel">
+    <field name="name">VIA LEON</field>
+    <field name="code">113</field>
+  </record>
+  <record id="hotel_114" model="budget.hotel">
+    <field name="name">BONAVAL</field>
+    <field name="code">114</field>
+  </record>
+  <record id="hotel_115" model="budget.hotel">
+    <field name="name">SAN BIEITO</field>
+    <field name="code">115</field>
+  </record>
+  <record id="hotel_116" model="budget.hotel">
+    <field name="name">CAMIÑO INGLES</field>
+    <field name="code">116</field>
+  </record>
+  <record id="hotel_117" model="budget.hotel">
+    <field name="name">VIA DE LA PLATA</field>
+    <field name="code">117</field>
+  </record>
+  <record id="hotel_118" model="budget.hotel">
+    <field name="name">FOGAR NATURAL</field>
+    <field name="code">118</field>
+  </record>
+  <record id="hotel_119" model="budget.hotel">
+    <field name="name">ASTORGA</field>
+    <field name="code">119</field>
+  </record>
+  <record id="hotel_201" model="budget.hotel">
+    <field name="name">ENTREARCOS</field>
+    <field name="code">201</field>
+  </record>
+  <record id="hotel_202" model="budget.hotel">
+    <field name="name">CENTRO PALENCIA</field>
+    <field name="code">202</field>
+  </record>
+  <record id="hotel_205" model="budget.hotel">
+    <field name="name">PALENCIA PLAZA</field>
+    <field name="code">205</field>
+  </record>
+  <record id="hotel_204" model="budget.hotel">
+    <field name="name">CARDEÑA</field>
+    <field name="code">204</field>
+  </record>
+  <record id="hotel_206" model="budget.hotel">
+    <field name="name">CENTRO PONFERRADA</field>
+    <field name="code">206</field>
+  </record>
+  <record id="hotel_207" model="budget.hotel">
+    <field name="name">CIUDAD DE SORIA</field>
+    <field name="code">207</field>
+  </record>
+  <record id="hotel_208" model="budget.hotel">
+    <field name="name">ESTELLA</field>
+    <field name="code">208</field>
+  </record>
+  <record id="hotel_209" model="budget.hotel">
+    <field name="name">RIO DUERO</field>
+    <field name="code">209</field>
+  </record>
+  <record id="hotel_211" model="budget.hotel">
+    <field name="name">JOLIO JACA</field>
+    <field name="code">211</field>
+  </record>
+  <record id="hotel_213" model="budget.hotel">
+    <field name="name">ALBERGUE CENTRO PONFERRADA</field>
+    <field name="code">213</field>
+  </record>
+  <record id="hotel_214" model="budget.hotel">
+    <field name="name">CENTRO PAMPLONA</field>
+    <field name="code">214</field>
+  </record>
+  <record id="hotel_215" model="budget.hotel">
+    <field name="name">ZARAGOZA INDEPENDENCIA</field>
+    <field name="code">215</field>
+  </record>
+  <record id="hotel_216" model="budget.hotel">
+    <field name="name">MERCADO DE ZAMORA</field>
+    <field name="code">216</field>
+  </record>
+  <record id="hotel_217" model="budget.hotel">
+    <field name="name">RIO TORMES</field>
+    <field name="code">217</field>
+  </record>
+  <record id="hotel_218" model="budget.hotel">
+    <field name="name">CIUDAD DE TORO</field>
+    <field name="code">218</field>
+  </record>
+  <record id="hotel_219" model="budget.hotel">
+    <field name="name">CASTILLO DE OLITE</field>
+    <field name="code">219</field>
+  </record>
+  <record id="hotel_220" model="budget.hotel">
+    <field name="name">MALVASIA</field>
+    <field name="code">220</field>
+  </record>
+  <record id="hotel_222" model="budget.hotel">
+    <field name="name">MIRADOR DEL MONCAYO</field>
+    <field name="code">222</field>
+  </record>
+  <record id="hotel_223" model="budget.hotel">
+    <field name="name">PUERTO SECO</field>
+    <field name="code">223</field>
+  </record>
+  <record id="hotel_224" model="budget.hotel">
+    <field name="name">VALLADOLID SUR</field>
+    <field name="code">224</field>
+  </record>
+  <record id="hotel_225" model="budget.hotel">
+    <field name="name">ZETA STUDENT HOME</field>
+    <field name="code">225</field>
+  </record>
+  <record id="hotel_226" model="budget.hotel">
+    <field name="name">CENTRO ZAMORA</field>
+    <field name="code">226</field>
+  </record>
+  <record id="hotel_227" model="budget.hotel">
+    <field name="name">SORIA ROOMS</field>
+    <field name="code">227</field>
+  </record>
+  <record id="hotel_228" model="budget.hotel">
+    <field name="name">PALENCIA CATEDRAL</field>
+    <field name="code">228</field>
+  </record>
+  <record id="hotel_229" model="budget.hotel">
+    <field name="name">PEÑAFIEL</field>
+    <field name="code">229</field>
+  </record>
+  <record id="hotel_230" model="budget.hotel">
+    <field name="name">EGÜES ROOMS</field>
+    <field name="code">230</field>
+  </record>
+  <record id="hotel_231" model="budget.hotel">
+    <field name="name">TRISKEL</field>
+    <field name="code">231</field>
+  </record>
+  <record id="hotel_232" model="budget.hotel">
+    <field name="name">NUEVA CASTILLA</field>
+    <field name="code">232</field>
+  </record>
+  <record id="hotel_233" model="budget.hotel">
+    <field name="name">ESPINAR</field>
+    <field name="code">233</field>
+  </record>
+  <record id="hotel_234" model="budget.hotel">
+    <field name="name">GUIJUELO</field>
+    <field name="code">234</field>
+  </record>
+  <record id="hotel_235" model="budget.hotel">
+    <field name="name">ABOIRA</field>
+    <field name="code">235</field>
+  </record>
+  <record id="hotel_301" model="budget.hotel">
+    <field name="name">BUEUMAR</field>
+    <field name="code">301</field>
+  </record>
+  <record id="hotel_302" model="budget.hotel">
+    <field name="name">ESTACION VIGO</field>
+    <field name="code">302</field>
+  </record>
+  <record id="hotel_303" model="budget.hotel">
+    <field name="name">PUERTA DEL SOL</field>
+    <field name="code">303</field>
+  </record>
+  <record id="hotel_304" model="budget.hotel">
+    <field name="name">APARTAMENTOS PORTA DO SOL</field>
+    <field name="code">304</field>
+  </record>
+  <record id="hotel_305" model="budget.hotel">
+    <field name="name">ESTACION PONTEVEDRA</field>
+    <field name="code">305</field>
+  </record>
+  <record id="hotel_306" model="budget.hotel">
+    <field name="name">ESTACION OURENSE</field>
+    <field name="code">306</field>
+  </record>
+  <record id="hotel_307" model="budget.hotel">
+    <field name="name">STA. TREGA</field>
+    <field name="code">307</field>
+  </record>
+  <record id="hotel_308" model="budget.hotel">
+    <field name="name">VIA NORTE</field>
+    <field name="code">308</field>
+  </record>
+  <record id="hotel_309" model="budget.hotel">
+    <field name="name">LALIN</field>
+    <field name="code">309</field>
+  </record>
+  <record id="hotel_310" model="budget.hotel">
+    <field name="name">PALAS DE REI</field>
+    <field name="code">310</field>
+  </record>
+  <record id="hotel_311" model="budget.hotel">
+    <field name="name">CORRUBEDO</field>
+    <field name="code">311</field>
+  </record>
+  <record id="hotel_312" model="budget.hotel">
+    <field name="name">PONTEVEDRA</field>
+    <field name="code">312</field>
+  </record>
+  <record id="hotel_313" model="budget.hotel">
+    <field name="name">CARRIL</field>
+    <field name="code">313</field>
+  </record>
+  <record id="hotel_314" model="budget.hotel">
+    <field name="name">CASTELAO</field>
+    <field name="code">314</field>
+  </record>
+  <record id="hotel_315" model="budget.hotel">
+    <field name="name">BOIRO</field>
+    <field name="code">315</field>
+  </record>
+  <record id="hotel_316" model="budget.hotel">
+    <field name="name">BARRAÑA PLAYA</field>
+    <field name="code">316</field>
+  </record>
+  <record id="hotel_318" model="budget.hotel">
+    <field name="name">ALPINA</field>
+    <field name="code">318</field>
+  </record>
+  <record id="hotel_319" model="budget.hotel">
+    <field name="name">RIBEIRA</field>
+    <field name="code">319</field>
+  </record>
+  <record id="hotel_320" model="budget.hotel">
+    <field name="name">XINZO</field>
+    <field name="code">320</field>
+  </record>
+  <record id="hotel_401" model="budget.hotel">
+    <field name="name">PUERTA CORUÑA</field>
+    <field name="code">401</field>
+  </record>
+  <record id="hotel_402" model="budget.hotel">
+    <field name="name">STA. CRISTINA</field>
+    <field name="code">402</field>
+  </record>
+  <record id="hotel_403" model="budget.hotel">
+    <field name="name">SADA MARINA</field>
+    <field name="code">403</field>
+  </record>
+  <record id="hotel_404" model="budget.hotel">
+    <field name="name">APTOS. STA. CRISTINA</field>
+    <field name="code">404</field>
+  </record>
+  <record id="hotel_405" model="budget.hotel">
+    <field name="name">EL SUIZO</field>
+    <field name="code">405</field>
+  </record>
+  <record id="hotel_406" model="budget.hotel">
+    <field name="name">CENTRO GIJON</field>
+    <field name="code">406</field>
+  </record>
+  <record id="hotel_407" model="budget.hotel">
+    <field name="name">PALACIO VALDES</field>
+    <field name="code">407</field>
+  </record>
+  <record id="hotel_408" model="budget.hotel">
+    <field name="name">GALERIA CORUÑA</field>
+    <field name="code">408</field>
+  </record>
+  <record id="hotel_409" model="budget.hotel">
+    <field name="name">PASAJE</field>
+    <field name="code">409</field>
+  </record>
+  <record id="hotel_410" model="budget.hotel">
+    <field name="name">CENTRO OVIEDO</field>
+    <field name="code">410</field>
+  </record>
+  <record id="hotel_411" model="budget.hotel">
+    <field name="name">ESTACION OVIEDO</field>
+    <field name="code">411</field>
+  </record>
+  <record id="hotel_412" model="budget.hotel">
+    <field name="name">MIRAMAR</field>
+    <field name="code">412</field>
+  </record>
+  <record id="hotel_413" model="budget.hotel">
+    <field name="name">ORZAN</field>
+    <field name="code">413</field>
+  </record>
+  <record id="hotel_414" model="budget.hotel">
+    <field name="name">ALBORAN ROOMS</field>
+    <field name="code">414</field>
+  </record>
+  <record id="hotel_415" model="budget.hotel">
+    <field name="name">DON CARLOS</field>
+    <field name="code">415</field>
+  </record>
+  <record id="hotel_416" model="budget.hotel">
+    <field name="name">CORUÑAMAR</field>
+    <field name="code">416</field>
+  </record>
+  <record id="hotel_417" model="budget.hotel">
+    <field name="name">PUERTO CALDERON</field>
+    <field name="code">417</field>
+  </record>
+  <record id="hotel_418" model="budget.hotel">
+    <field name="name">CABANAS PLAYA</field>
+    <field name="code">418</field>
+  </record>
+  <record id="hotel_419" model="budget.hotel">
+    <field name="name">FOGAR MARIÑEIRO</field>
+    <field name="code">419</field>
+  </record>
+  <record id="hotel_420" model="budget.hotel">
+    <field name="name">TRIACASTELA</field>
+    <field name="code">420</field>
+  </record>
+  <record id="hotel_421" model="budget.hotel">
+    <field name="name">CABANAS NATURE</field>
+    <field name="code">421</field>
+  </record>
+  <record id="hotel_422" model="budget.hotel">
+    <field name="name">NARON</field>
+    <field name="code">422</field>
+  </record>
+  <record id="hotel_701" model="budget.hotel">
+    <field name="name">BÁVARO</field>
+    <field name="code">701</field>
+  </record>
+
+  <record id="hotel_901" model="budget.hotel">
+    <field name="name">CIUDAD VALLADOLID</field>
+    <field name="code">901</field>
+  </record>
+  <record id="hotel_902" model="budget.hotel">
+    <field name="name">CIUDAD DEL CINE</field>
+    <field name="code">902</field>
+  </record>
+  <record id="hotel_903" model="budget.hotel">
+    <field name="name">CIUDAD DE AVILÉS</field>
+    <field name="code">903</field>
+  </record>
+  <record id="hotel_904" model="budget.hotel">
+    <field name="name">FELIPE PRIETO</field>
+    <field name="code">904</field>
+  </record>
+  <record id="hotel_905" model="budget.hotel">
+    <field name="name">FOGAR NATURAL</field>
+    <field name="code">905</field>
+  </record>
+  <record id="hotel_906" model="budget.hotel">
+    <field name="name">APTOS.STA.CRISTINA</field>
+    <field name="code">906</field>
+  </record>
+  <record id="hotel_907" model="budget.hotel">
+    <field name="name">APARTAMENTOS PORTA DO SOL</field>
+    <field name="code">907</field>
+  </record>
+  <record id="hotel_908" model="budget.hotel">
+    <field name="name">PALECNCIA CATEDRAL</field>
+    <field name="code">908</field>
+  </record>
+</odoo>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="0">
+        <!-- Admin User for Hotel Management -->
+        <record
+        id="budget_admin_user"
+        model="res.users"
+        context="{'no_reset_password': True}"
+    >
+            <field name="name">Budget Admin</field>
+            <field name="login">budget.admin</field>
+            <field name="email">budget.admin@company.com</field>
+            <field name="password">admin123</field>
+            <field name="active" eval="True" />
+            <field
+            name="groups_id"
+            eval="[(6, 0, [
+                ref('base.group_system'),
+                ref('base.group_user'),
+                ref('base.group_partner_manager'),
+                ref('account.group_account_manager'),
+                ref('analytic.group_analytic_accounting'),
+                ref('base.group_multi_company'),
+                ref('base.group_erp_manager'),
+            ])]"
+        />
+            <field name="company_ids" eval="[(6, 0, [ref('base.main_company')])]" />
+            <field name="company_id" ref="base.main_company" />
+        </record>
+</odoo>
