@@ -121,6 +121,8 @@ class HelpdeskFormController(http.Controller):
                 is_property_operated_normaly,
             )
         )
+
+        _logger.info("Resultado de prioridad: %s", result)
         priority_rule_id = result[0] if result else "0"
         priority_estimated = result[1] if result else "0"
         is_room_operated_normaly = result[3] if result else is_room_operated_normaly

@@ -156,6 +156,17 @@ class HelpdeskTicket(models.Model):
     occupancy_kpi_info = fields.Char(string="Occupancy Rate Info")
     block_kpi_info = fields.Char(string="Out Rate Info")
 
+    @api.onchange("is_room", "is_bathroom")
+    def _onchange_is_room(self):
+        if self.is_room or self.is_bathroom:
+            self.is_property_operated_normaly = True
+
+    @api.onchange("is_room_blocked")
+    def _onchange_is_room_blocked(self):
+        if self.is_room_blocked:
+            self.is_property_operated_normaly = True
+            self.is_room_operated_normaly = False
+
     @api.depends("pms_property_id")
     def _compute_take_ticket_count(self):
         for ticket in self:
