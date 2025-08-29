@@ -5,24 +5,14 @@
     <field name="model">budget.informatica</field>
     <field name="arch" type="xml">
       <tree>
+        <field name="budget_type" />
         <field name="record_type" />
         <field name="responsible" />
         <field name="description" />
-        <field name="accounting_account" placeholder="e.g. 627001" />
         <field name="hotel" />
-        <field name="hotel_id" />
-        <!--<field name="hotel_code" readonly="1" />-->
-        <field name="company" />
-        <field name="year" />
-        <field
-                    name="rooms_available_current"
-                    readonly="1"
-                    attrs="{'invisible': [('record_type', '=', 'manual')]}"
-                />
-        <field
-                    name="manual_amount"
-                    attrs="{'invisible': [('record_type', '=', 'manual')]}"
-                />
+        <field name="hotel_code" readonly="1" />
+        <field name="company_id" />
+        <field name="fiscal_year_id" string="Fiscal Year" />
         <field name="oct" />
         <field name="nov" />
         <field name="dec" />
@@ -35,7 +25,10 @@
         <field name="jul" />
         <field name="aug" />
         <field name="sep" />
-        <field name="total" readonly="1" />
+        <field name="budgeted_total" readonly="1" />
+        <field name="real_total" readonly="1" />
+        <field name="variance_total" readonly="1" />
+        <field name="variance_percentage" readonly="1" />
       </tree>
     </field>
   </record>
@@ -44,34 +37,25 @@
     <field name="name">budget.informatica.form</field>
     <field name="model">budget.informatica</field>
     <field name="arch" type="xml">
-      <form string="Budget IT">
+      <form string="Budget Informatica">
         <sheet>
           <group>
-            <group string="Basic Information">
-              <field name="record_type" />
-              <field
-                                name="rooms_available_current"
-                                readonly="1"
-                                attrs="{'invisible': [('record_type', '=', 'manual')]}"
-                            />
-              <field
-                                name="manual_amount"
-                                attrs="{'invisible': [('record_type', '=', 'manual')]}"
-                            />
+            <group name="basic_info" string="Basic Information">
               <field name="responsible" />
               <field name="description" />
-              <field name="accounting_account" />
+              <field name="record_type" />
+              <field name="budget_type" />
+              <field name="manual_amount" />
             </group>
-            <group name="hotel_info" string="Hotel &amp; Company">
+            <group name="location_info" string="Location &amp; Fiscal Year">
               <field name="hotel" />
-              <field name="hotel_id" />
               <field name="hotel_code" readonly="1" />
-              <field name="company" />
-              <field name="year" />
+              <field name="company_id" />
+              <field name="fiscal_year_id" string="Fiscal Year" />
             </group>
           </group>
           <notebook>
-            <page string="Months">
+            <page string="Budget vs Real">
               <group string="Budget Planning" col="4">
                 <field name="oct" />
                 <field name="nov" />
@@ -87,8 +71,13 @@
                 <field name="sep" />
               </group>
             </page>
-            <page string="Totals">
-              <field name="total" readonly="1" />
+            <page string="Totals comparative">
+                <group string="Totals" col="2">
+                <field name="budgeted_total" readonly="1" />
+                <field name="real_total" readonly="1" />
+                <field name="variance_total" readonly="1" />
+                <field name="variance_percentage" readonly="1" />
+              </group>
             </page>
           </notebook>
         </sheet>
@@ -100,11 +89,25 @@
     <field name="name">budget.informatica.pivot</field>
     <field name="model">budget.informatica</field>
     <field name="arch" type="xml">
-      <pivot string="informatica Pivot">
-        <field name="year" type="row" />
+      <pivot string="Informatica Pivot">
         <field name="hotel" type="row" />
         <field name="responsible" type="row" />
-        <field name="total" type="measure" sum="True" />
+        <field name="oct" type="measure" sum="True" />
+        <field name="nov" type="measure" sum="True" />
+        <field name="dec" type="measure" sum="True" />
+        <field name="jan" type="measure" sum="True" />
+        <field name="feb" type="measure" sum="True" />
+        <field name="mar" type="measure" sum="True" />
+        <field name="apr" type="measure" sum="True" />
+        <field name="may" type="measure" sum="True" />
+        <field name="jun" type="measure" sum="True" />
+        <field name="jul" type="measure" sum="True" />
+        <field name="aug" type="measure" sum="True" />
+        <field name="sep" type="measure" sum="True" />
+        <field name="real_total" type="measure" sum="True" />
+        <field name="budgeted_total" type="measure" sum="True" />
+        <field name="variance_total" type="measure" sum="True" />
+        <field name="variance_percentage" type="measure" sum="True" />
       </pivot>
     </field>
   </record>
@@ -117,16 +120,19 @@
       <search string="Informatica Budget Search">
         <field name="responsible" />
         <field name="hotel" />
-        <field name="year" />
-        <field name="company" />
-        <field name="record_type" />
+        <field name="fiscal_year_id" string="Fiscal Year" />
+        <field name="company_id" />
         <separator />
-        <filter name="group_by_year" string="Year" context="{'group_by': 'year'}" />
+        <filter
+                    name="group_by_year"
+                    string="Year"
+                    context="{'group_by': 'fiscal_year_id'}"
+                />
         <filter name="group_by_hotel" string="Hotel" context="{'group_by': 'hotel'}" />
         <filter
-                    name="group_by_record_type"
-                    string="Record Type"
-                    context="{'group_by': 'record_type'}"
+                    name="group_by_budget_type"
+                    string="Budget Type"
+                    context="{'group_by': 'budget_type'}"
                 />
         <filter
                     name="group_by_responsible"
@@ -136,7 +142,7 @@
         <filter
                     name="group_by_company"
                     string="Company"
-                    context="{'group_by': 'company'}"
+                    context="{'group_by': 'company_id'}"
                 />
       </search>
     </field>
@@ -144,12 +150,12 @@
 
   <!-- Action -->
   <record id="action_budget_informatica" model="ir.actions.act_window">
-    <field name="name">informatica</field>
+    <field name="name">Informatica</field>
     <field name="res_model">budget.informatica</field>
     <field name="view_mode">tree,form,pivot</field>
     <field
             name="context"
-        >{'search_default_group_by_year': 1, 'search_default_group_by_hotel': 1}</field>
+        >{'search_default_group_by_year': 1, 'search_default_group_by_hotel': 1, 'search_default_group_by_budget_type': 1}</field>
     <field name="help" type="html">
       <p class="oe_view_nocontent_smiling_face">
         Create records for each hotel.

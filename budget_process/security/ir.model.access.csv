@@ -15,4 +15,3 @@ access_budget_hotel_user,budget.hotel.user,model_budget_hotel,budget_group_user,
 access_budget_hotel_base_user,budget.hotel.base.user,model_budget_hotel,base.group_user,1,1,1,1
 access_budget_hotel_all,budget.hotel.all,model_budget_hotel,,1,0,0,0
 access_budget_rn_user,Presupuesto Room Nights,model_budget_rn,base.group_user,1,1,1,1
-

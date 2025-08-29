@@ -45,7 +45,7 @@ class BudgetInformatica(models.Model):
         help="Amount to be used for calculations (per room or total distributed)",
     )
 
-    @api.depends("hotel", "year", "record_type")
+    @api.depends("hotel", "fiscal_year_id", "record_type")
     # Calcula automáticamente los datos del año actual desde PMS
     def _compute_current_year_data(self):
 
@@ -55,10 +55,15 @@ class BudgetInformatica(models.Model):
                 continue
 
             try:
-                current_rooms = record._get_current_year_rooms_from_pms(
-                    record.hotel.id, record.year
-                )
-                record.rooms_available_current = current_rooms
+                fiscal_year = record.fiscal_year_id
+                if fiscal_year:
+                    year_int = fiscal_year.date_from.year
+                    current_rooms = record._get_current_year_rooms_from_pms(
+                        record.hotel.id, year_int
+                    )
+                    record.rooms_available_current = current_rooms
+                else:
+                    record.rooms_available_current = 0.0
             except Exception:
                 record.rooms_available_current = 0.0
 
@@ -129,8 +134,7 @@ class BudgetInformatica(models.Model):
     # Obtiene el número de habitaciones disponibles del PMS para el año actual
     def _get_current_year_rooms_from_pms(self, property_id, year=None):
         if year:
-            year_int = int(year)
-            specific_date = date(year_int, 10, 1)
+            specific_date = date(year, 10, 1)
             return self._get_rooms_available_from_pms(
                 property_id, specific_date.strftime("%Y-%m-%d")
             )

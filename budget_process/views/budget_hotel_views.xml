@@ -8,7 +8,7 @@
         <field name="hotel" />
         <field name="hotel_id" />
         <field name="hotel_code" readonly="1" />
-        <field name="company" readonly="1" string="Company " />
+        <field name="company_id" readonly="1" string="Company " />
       </tree>
     </field>
   </record>
@@ -29,7 +29,7 @@
               <field name="hotel_code" readonly="1" />
             </group>
             <group name="company_info" string="Company Information">
-              <field name="company" readonly="1" string="Company " />
+              <field name="company_id" readonly="1" string="Company " />
             </group>
           </group>
         </sheet>
