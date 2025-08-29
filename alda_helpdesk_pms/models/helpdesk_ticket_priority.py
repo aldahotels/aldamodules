@@ -42,10 +42,15 @@ class HelpdeskTicket(models.Model):
         store=True,
     )
 
+    @api.onchange("priority_rule_id")
+    def _onchange_priority_rule(self):
+        if not self.priority_rule_id:
+            self.alert_level = "none"
+
     @api.depends("priority_rule_id")
     def _compute_alert_level(self):
         for ticket in self:
-            if not ticket.pms_property_id:
+            if not ticket.pms_property_id or not ticket.priority_rule_id:
                 ticket.alert_level = "none"
                 continue
 
@@ -117,6 +122,8 @@ class HelpdeskTicket(models.Model):
         days_blocked_rule = "0"
         is_room_related_rule = "0"
         if pms_room_id:
+            is_room_operated_normaly = True
+            is_property_operated_normaly = True
             is_room_operated_normaly_rule = "20"
             is_property_operated_normaly_rule = "20"
             is_room_related_rule = "20"
@@ -140,6 +147,7 @@ class HelpdeskTicket(models.Model):
                     if total_days_blocked
                     else "0"
                 )
+                is_room_operated_normaly = False
 
         kpi_property = (
             self.env["pms.daily.kpi"]
@@ -175,7 +183,13 @@ class HelpdeskTicket(models.Model):
             self.env["helpdesk.ticket.priority.rule"].sudo().search(domain, limit=1)
         )
         if not priority_rule_record:
-            return (False, "0", False, False, False)
+            return (
+                False,
+                False,
+                False,
+                is_room_operated_normaly,
+                is_property_operated_normaly,
+            )
 
         return (
             priority_rule_record.id if priority_rule_record else False,
@@ -201,7 +215,11 @@ class HelpdeskTicket(models.Model):
     )
     def _compute_priority_recomended_rule(self):
         for ticket in self:
+
             if ticket.env.context.get("from_web_create"):
+                ticket.priority_rule_id = False
+                ticket.priority_estimated = False
+                ticket.priority_suggestion_action = False
                 continue
 
             if not ticket.pms_property_id:
@@ -231,9 +249,7 @@ class HelpdeskTicket(models.Model):
             ticket.priority_suggestion_action = (
                 action_suggestion if action_suggestion else False
             )
-            ticket.is_room_operated_normaly = (
-                room_operated if room_operated else ticket.is_room_operated_normaly
-            )
+            ticket.is_room_operated_normaly = room_operated if room_operated else False
             ticket.is_property_operated_normaly = (
                 property_operated
                 if property_operated
