@@ -7,6 +7,24 @@ purchase = importlib.import_module('odoo.addons.purchase')
 
 class PurchasePortal(purchase.controllers.portal.CustomerPortal):
 
+    def _prepare_home_portal_values(self, counters):
+        values = super()._prepare_home_portal_values(counters)
+
+        user = request.env['res.users'].sudo().browse(request.uid)
+
+        PurchaseOrder = request.env['purchase.order']
+        if 'rfq_count' in counters:
+            values['rfq_count'] = PurchaseOrder.search_count([
+                ('state', 'in', ['sent']),
+                ('property_id', 'in', user.pms_property_ids.ids)
+            ]) if PurchaseOrder.check_access_rights('read', raise_exception=False) else 0
+        if 'purchase_count' in counters:
+            values['purchase_count'] = PurchaseOrder.search_count([
+                ('state', 'in', ['purchase', 'done', 'cancel']),
+                ('property_id', 'in', user.pms_property_ids.ids)
+            ]) if PurchaseOrder.check_access_rights('read', raise_exception=False) else 0
+        return values
+
     @http.route(['/my/purchase', '/my/purchase/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_purchase_orders(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
         searchbar_filters = {
