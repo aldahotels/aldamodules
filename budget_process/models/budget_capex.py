@@ -16,6 +16,6 @@ class BudgetCAPEX(models.Model):
             ("other", "Other"),
         ],
         required=True,
-        default="room_nights",
+        default="account_budget",
         help="Each record type represents a different KPI calculated monthly from PMS",
     )

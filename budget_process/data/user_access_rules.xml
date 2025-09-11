@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+        <record id="analytic_account_admin_rule" model="ir.rule">
+            <field name="name">Analytic Account Admin Rule</field>
+            <field name="model_id" ref="analytic.model_account_analytic_account" />
+            <field name="domain_force">[('id','!=',False)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]" />
+            <field name="perm_read">True</field>
+            <field name="perm_write">True</field>
+            <field name="perm_create">True</field>
+            <field name="perm_unlink">True</field>
+        </record>
+        <record id="analytic_account_manager_rule" model="ir.rule">
+            <field name="name">Analytic Account Manager Rule</field>
+            <field name="model_id" ref="analytic.model_account_analytic_account" />
+            <field name="domain_force">[('id','!=',False)]</field>
+            <field name="groups" eval="[(4, ref('account.group_account_manager'))]" />
+            <field name="perm_read">True</field>
+            <field name="perm_write">True</field>
+            <field name="perm_create">True</field>
+            <field name="perm_unlink">True</field>
+        </record>
+        <record id="analytic_distribution_model_admin_rule" model="ir.rule">
+            <field name="name">Analytic Distribution Model Admin Rule</field>
+            <field
+            name="model_id"
+            ref="account.model_account_analytic_distribution_model"
+        />
+            <field name="domain_force">[('id','!=',False)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]" />
+            <field name="perm_read">True</field>
+            <field name="perm_write">True</field>
+            <field name="perm_create">True</field>
+            <field name="perm_unlink">True</field>
+        </record>
+        <record id="analytic_distribution_model_manager_rule" model="ir.rule">
+            <field name="name">Analytic Distribution Model Manager Rule</field>
+            <field
+            name="model_id"
+            ref="account.model_account_analytic_distribution_model"
+        />
+            <field name="domain_force">[('id','!=',False)]</field>
+            <field name="groups" eval="[(4, ref('account.group_account_manager'))]" />
+            <field name="perm_read">True</field>
+            <field name="perm_write">True</field>
+            <field name="perm_create">True</field>
+            <field name="perm_unlink">True</field>
+        </record>
+        <record id="pms_room_type_admin_rule" model="ir.rule">
+            <field name="name">PMS Room Type Admin Rule</field>
+            <field name="model_id" ref="pms.model_pms_room_type" />
+            <field name="domain_force">[('id','!=',False)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]" />
+            <field name="perm_read">True</field>
+            <field name="perm_write">True</field>
+            <field name="perm_create">True</field>
+            <field name="perm_unlink">True</field>
+        </record>
+        <record id="pms_reservation_line_admin_rule" model="ir.rule">
+            <field name="name">PMS Reservation Line Admin Rule</field>
+            <field name="model_id" ref="pms.model_pms_reservation_line" />
+            <field name="domain_force">[('id','!=',False)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]" />
+            <field name="perm_read">True</field>
+            <field name="perm_write">True</field>
+            <field name="perm_create">True</field>
+            <field name="perm_unlink">True</field>
+        </record>
+        <record id="pms_reservation_admin_rule" model="ir.rule">
+            <field name="name">PMS Reservation Admin Rule</field>
+            <field name="model_id" ref="pms.model_pms_reservation" />
+            <field name="domain_force">[('id','!=',False)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]" />
+            <field name="perm_read">True</field>
+            <field name="perm_write">True</field>
+            <field name="perm_create">True</field>
+            <field name="perm_unlink">True</field>
+        </record>
+        <record id="pms_folio_admin_rule" model="ir.rule">
+            <field name="name">PMS Folio Admin Rule</field>
+            <field name="model_id" ref="pms.model_pms_folio" />
+            <field name="domain_force">[('id','!=',False)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]" />
+            <field name="perm_read">True</field>
+            <field name="perm_write">True</field>
+            <field name="perm_create">True</field>
+            <field name="perm_unlink">True</field>
+        </record>
+        <record id="pms_property_admin_rule" model="ir.rule">
+            <field name="name">PMS Property Admin Rule</field>
+            <field name="model_id" ref="pms.model_pms_property" />
+            <field name="domain_force">[('id','!=',False)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]" />
+            <field name="perm_read">True</field>
+            <field name="perm_write">True</field>
+            <field name="perm_create">True</field>
+            <field name="perm_unlink">True</field>
+        </record>
+        <record id="pms_checkin_partner_admin_rule" model="ir.rule">
+            <field name="name">PMS Checkin Partner Admin Rule</field>
+            <field name="model_id" ref="pms.model_pms_checkin_partner" />
+            <field name="domain_force">[('id','!=',False)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]" />
+            <field name="perm_read">True</field>
+            <field name="perm_write">True</field>
+            <field name="perm_create">True</field>
+            <field name="perm_unlink">True</field>
+        </record>
+        <record id="budget_admin_group" model="res.groups">
+            <field name="name">Budget Administrators</field>
+            <field
+            name="category_id"
+            ref="base.module_category_accounting_and_finance"
+        />
+            <field
+            name="implied_ids"
+            eval="[(4, ref('account.group_account_manager')),
+                                           (4, ref('analytic.group_analytic_accounting'))]"
+        />
+        </record>
+
+</odoo>

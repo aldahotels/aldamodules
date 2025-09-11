@@ -38,6 +38,33 @@
     <field name="model">budget.revenue</field>
     <field name="arch" type="xml">
       <form string="Budget Revenue">
+        <header>
+          <!-- Sync Buttons -->
+          <button
+                        name="action_refresh_rooms_available"
+                        type="object"
+                        string="🔄 Refresh Rooms Available"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'rooms_available'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Refresh room availability data from Budget Data"
+                    />
+          <button
+                        name="action_show_sync_status"
+                        type="object"
+                        string="📊 Show Sync Status"
+                        class="btn-info"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'rooms_available'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Show current synchronization status"
+                    />
+          <button
+                        name="action_diagnose_current_records"
+                        type="object"
+                        string="🔍 Diagnose Records"
+                        class="btn-warning"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'rooms_available'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Advanced diagnosis of current records"
+                    />
+        </header>
         <sheet>
           <group>
             <group name="basic_info" string="Basic Information">
@@ -110,7 +137,6 @@
       </pivot>
     </field>
   </record>
-
   <!-- Vista Search -->
   <record id="view_budget_revenue_search" model="ir.ui.view">
     <field name="name">budget.revenue.search</field>
@@ -162,6 +188,18 @@
     </field>
   </record>
 
+  <!-- Server Action -->
+  <record id="action_server_sync_all_rooms" model="ir.actions.server">
+    <field name="name">🔄 Sync All Rooms Disponibles</field>
+    <field name="model_id" ref="model_budget_revenue" />
+    <field name="binding_model_id" ref="model_budget_revenue" />
+    <field name="binding_view_types">list</field>
+    <field name="state">code</field>
+    <field name="code">
+      action = records.action_sync_all_rooms_disponibles()
+    </field>
+  </record>
+
   <menuitem
         id="menu_budget_revenue_action"
         name="Revenue"
@@ -169,5 +207,4 @@
         action="action_budget_revenue"
         sequence="2"
     />
-
 </odoo>

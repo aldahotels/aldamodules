@@ -9,7 +9,7 @@
     "category": "Accounting",
     "summary": "Module for hotel budget process",
     "website": "https://github.com/OCA/pms",
-    "depends": ["base", "pms", "account", "account_accountant"],
+    "depends": ["base", "pms", "account", "account_accountant", "pms_data_bi"],
     "images": ["static/description/icon.png"],
     "data": [
         "security/budget_groups.xml",
@@ -26,6 +26,8 @@
         "views/budget_revenue_views.xml",
         "views/budget_rn_views.xml",
         "views/budget_taz_views.xml",
+        "views/budget_data_views.xml",
+        "wizard/budget_load_wizard_views.xml",
     ],
     "installable": True,
     "application": True,
