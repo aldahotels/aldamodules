@@ -10,7 +10,7 @@
     "summary": "Module for hotel budget process",
     "website": "https://github.com/OCA/pms",
     "depends": ["base", "pms", "account", "account_accountant", "pms_data_bi"],
-    "images": ["static/description/icon.png"],
+    "images": ["budget_process/static/description/icon.png"],
     "data": [
         "security/budget_groups.xml",
         "security/ir.model.access.csv",
