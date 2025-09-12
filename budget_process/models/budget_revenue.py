@@ -86,6 +86,9 @@ class BudgetRevenue(models.Model):
     def _is_rooms_available_budgeted(self):
         return self.record_type == "rooms_available" and self.budget_type == "budgeted"
 
+    def _is_room_nights_budgeted(self):
+        return self.record_type == "rn_ly" and self.budget_type == "budgeted"
+
     def _get_fiscal_month_mapping(self):
         """
         Returns a mapping of fiscal months to (calendar_year, calendar_month)
@@ -120,93 +123,22 @@ class BudgetRevenue(models.Model):
         for record in self:
             monthly_values = {month: 0 for month in months}
 
-            # Only for rooms_available budgeted obtain data from budget.data
-            if record._is_rooms_available_budgeted():
-                monthly_values = record._get_rooms_available_from_budget_data()
+            # Handle different record types that need data from budget.data
+            if record.budget_type == "budgeted":
+                if record.record_type == "rooms_available":
+                    monthly_values = record._get_rooms_available_from_budget_data()
+                elif record.record_type == "rn_ly":
+                    monthly_values = record._get_rooms_nights_from_budget_data()
+                # Add more record types here as needed
 
             for month in months:
                 setattr(record, month, monthly_values[month])
 
     def _get_rooms_available_from_budget_data(self):
-        """
-        Improved method to get rooms available from budget.data
-        """
-
-        # Initialize monthly values
-        monthly_values = {month: 0 for month in months}
-
-        # Preliminary validation: Must have hotel and fiscal year
-        if not (self.hotel and self.fiscal_year_id):
-            _logger.warning(
-                "Skipping sync - Missing hotel (%s) or fiscal year (%s)",
-                self.hotel,
-                self.fiscal_year_id,
-            )
-            return monthly_values
-
-        # Check if there are any budget.data records for this hotel
-        all_budget_data = self.env["budget.data"].search(
-            [("pms_property_id", "=", self.hotel.id)]
+        """Get rooms available data from budget.data model"""
+        return self._get_budget_data_values(
+            "rooms_disponibles", "total_rooms_available"
         )
-        _logger.info(f"[REVENUE] >>>> Found {len(all_budget_data)} budget.data records")
-
-        try:
-            # Use the auxiliary fiscal mapping function
-            month_year_mapping = self._get_fiscal_month_mapping()
-
-            if not month_year_mapping:
-                return monthly_values
-
-            for month_field, (
-                calendar_year,
-                calendar_month,
-            ) in month_year_mapping.items():
-
-                budget_data = self.env["budget.data"].search(
-                    [
-                        ("pms_property_id", "=", self.hotel.id),
-                        ("year", "=", str(calendar_year)),
-                        ("month", "=", str(calendar_month)),
-                    ],
-                    limit=1,
-                )
-
-                if budget_data:
-                    if budget_data.total_rooms_available:
-                        monthly_values[month_field] = budget_data.total_rooms_available
-                        _logger.info(
-                            "[REVENUE] >>>>> STORED: %s = %s",
-                            month_field,
-                            budget_data.total_rooms_available,
-                        )
-                        _logger.info(
-                            "✅ FISCAL SYNC %s: " "%s fiscal %s ← %s/%02d = %s",
-                            month_field,
-                            self.hotel.name,
-                            self.fiscal_year_id.name,
-                            calendar_year,
-                            calendar_month,
-                            budget_data.total_rooms_available,
-                        )
-                    else:
-                        _logger.info(
-                            "[REVENUE] >>>>> SKIPPED: total_rooms_available is 0/NULL"
-                        )
-                else:
-                    _logger.info(
-                        "[REVENUE] >>>>> NO DATA: No budget.data found for %s/%s",
-                        calendar_year,
-                        calendar_month,
-                    )
-
-        except Exception as e:
-            _logger.error(
-                f"[REVENUE] >>>> EXCEPTION in _get_rooms_available_from_budget_data: {e}"
-            )
-            _logger.error(f"Error in fiscal sync for {self.hotel.name}: {e}")
-
-        _logger.info(f"[REVENUE] >>>> RETURNING monthly_values: {monthly_values}")
-        return monthly_values
 
     def action_refresh_rooms_available(self):
         """
@@ -332,7 +264,7 @@ class BudgetRevenue(models.Model):
                         "budget.data or load from pms.budget"
                     )
                 else:
-                    # Show some sample data examples
+                    # Show some sample data
                     sample_data = all_budget_data[:5]
                     message += "\n\n📝 Examples of available data:"
                     for data in sample_data:
@@ -595,5 +527,153 @@ class BudgetRevenue(models.Model):
                 "message": message,
                 "type": "success" if fixes_applied else "warning",
                 "sticky": True,
+            },
+        }
+
+    def _get_rooms_nights_from_budget_data(self):
+        "Get room nights data from budget.data model"
+        return self._get_budget_data_values("rn_ly", "room_nights")
+
+    def _get_budget_data_values(self, record_type, field_name):
+        """
+        Generic method to get values from budget.data
+        for different record types and fields
+        """
+        _logger.info(
+            "Starting _get_budget_data_values for hotel: %s, "
+            "Record Type: %s, Field: %s",
+            self.hotel,
+            record_type,
+            field_name,
+        )
+        _logger.info(
+            "Fiscal Year: %s",
+            self.fiscal_year_id.name if self.fiscal_year_id else "No fiscal year",
+        )
+
+        monthly_values = {month: 0 for month in months}
+
+        if not self.hotel or not self.fiscal_year_id:
+            _logger.info("Missing hotel or fiscal_year_id - returning zeros")
+            return monthly_values
+
+        # Get fiscal-month mapping for the fiscal year
+        month_mapping = self._get_fiscal_month_mapping()
+        _logger.info("Month mapping: %s", month_mapping)
+
+        # Search in budget.data using year/month
+        # (without record_type/budget_type filters)
+        for fiscal_month, (calendar_year, calendar_month) in month_mapping.items():
+            budget_data_records = self.env["budget.data"].search(
+                [
+                    ("pms_property_id", "=", self.hotel.id),
+                    ("year", "=", str(calendar_year)),
+                    ("month", "=", str(calendar_month)),
+                ]
+            )
+
+            _logger.info(
+                "Searching for %s/%02d - Found %s records",
+                calendar_year,
+                calendar_month,
+                len(budget_data_records),
+            )
+
+            for budget_data in budget_data_records:
+                current_value = getattr(budget_data, field_name, 0) or 0
+                monthly_values[fiscal_month] = current_value
+                _logger.info(
+                    "Mapped %s/%02d to fiscal month %s: %s",
+                    calendar_year,
+                    calendar_month,
+                    fiscal_month,
+                    current_value,
+                )
+
+        _logger.info("Final monthly values: %s", monthly_values)
+        return monthly_values
+
+    def action_refresh_room_nights(self):
+        """
+        Refresh room nights from budget.data with fiscal year logic
+        """
+        updated_count = 0
+
+        for record in self:
+            if record._is_room_nights_budgeted():
+                if not (record.fiscal_year_id and record.hotel):
+                    _logger.warning(
+                        "Record %s missing fiscal_year_id or hotel, skipping sync",
+                        record.id,
+                    )
+                    continue
+
+                old_values = {month: getattr(record, month) for month in months}
+                record._compute_monthly_amounts()
+                new_values = {month: getattr(record, month) for month in months}
+
+                if old_values != new_values:
+                    updated_count += 1
+                    _logger.info(
+                        f"Updated record {record.id}: "
+                        f"{record.hotel.name} fiscal {record.fiscal_year_id.name}"
+                    )
+
+        message = f"Room nights sync completed. Updated {updated_count} records."
+        _logger.info(message)
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "Room Nights Sync",
+                "message": message,
+                "type": "success",
+                "sticky": False,
+            },
+        }
+
+    def action_sync_all_room_nights(self):
+        """
+        Server action to sync all room nights records in bulk
+        """
+        room_nights_records = self.filtered(lambda r: r._is_room_nights_budgeted())
+
+        if not room_nights_records:
+            message = "No room nights budgeted records found to sync."
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": "Room Nights Bulk Sync",
+                    "message": message,
+                    "type": "warning",
+                    "sticky": False,
+                },
+            }
+
+        updated_count = 0
+        for record in room_nights_records:
+            if record.fiscal_year_id and record.hotel:
+                old_values = {month: getattr(record, month) for month in months}
+                record._compute_monthly_amounts()
+                new_values = {month: getattr(record, month) for month in months}
+
+                if old_values != new_values:
+                    updated_count += 1
+
+        message = (
+            f"RN sync completed. Updated "
+            f"{updated_count} of {len(room_nights_records)} records."
+        )
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "Room Nights Bulk Sync",
+                "message": message,
+                "type": "success",
+                "sticky": False,
             },
         }

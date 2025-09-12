@@ -57,6 +57,14 @@
                         help="Show current synchronization status"
                     />
           <button
+                        name="action_refresh_room_nights"
+                        type="object"
+                        string="🌙 Refresh Room Nights"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'rn_ly'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Refresh room nights data from Budget Data"
+                    />
+          <button
                         name="action_diagnose_current_records"
                         type="object"
                         string="🔍 Diagnose Records"
@@ -197,6 +205,17 @@
     <field name="state">code</field>
     <field name="code">
       action = records.action_sync_all_rooms_disponibles()
+    </field>
+  </record>
+
+  <record id="action_server_sync_all_room_nights" model="ir.actions.server">
+    <field name="name">🌙 Sync All Room Nights</field>
+    <field name="model_id" ref="model_budget_revenue" />
+    <field name="binding_model_id" ref="model_budget_revenue" />
+    <field name="binding_view_types">list</field>
+    <field name="state">code</field>
+    <field name="code">
+      action = records.action_sync_all_room_nights()
     </field>
   </record>
 
