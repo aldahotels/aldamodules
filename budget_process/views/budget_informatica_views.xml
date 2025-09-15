@@ -38,6 +38,33 @@
     <field name="model">budget.informatica</field>
     <field name="arch" type="xml">
       <form string="Budget Informatica">
+        <header>
+          <!-- Sync Buttons -->
+          <button
+                        name="action_refresh_rooms_available"
+                        type="object"
+                        string="🔄 Refresh Rooms Available"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'rooms_available'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Refresh room availability data from Budget Data"
+                    />
+          <button
+                        name="action_show_sync_status"
+                        type="object"
+                        string="📊 Show Sync Status"
+                        class="btn-info"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'rooms_available'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Show current synchronization status"
+                    />
+          <button
+                        name="action_diagnose_current_records"
+                        type="object"
+                        string="🔍 Diagnose Records"
+                        class="btn-warning"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'rooms_available'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Advanced diagnosis of current records"
+                    />
+        </header>
         <sheet>
           <group>
             <group name="basic_info" string="Basic Information">
@@ -111,7 +138,6 @@
       </pivot>
     </field>
   </record>
-
   <!-- Vista Search -->
   <record id="view_budget_informatica_search" model="ir.ui.view">
     <field name="name">budget.informatica.search</field>
@@ -147,7 +173,6 @@
       </search>
     </field>
   </record>
-
   <!-- Action -->
   <record id="action_budget_informatica" model="ir.actions.act_window">
     <field name="name">Informatica</field>
@@ -162,7 +187,6 @@
       </p>
     </field>
   </record>
-
   <menuitem
         id="menu_budget_informatica_action"
         name="Informatica"
@@ -170,5 +194,4 @@
         action="action_budget_informatica"
         sequence="5"
     />
-
 </odoo>

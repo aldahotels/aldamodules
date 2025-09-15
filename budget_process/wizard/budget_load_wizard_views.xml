@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Wizard View -->
+    <record id="view_budget_load_wizard_form" model="ir.ui.view">
+        <field name="name">budget.load.wizard.form</field>
+        <field name="model">budget.load.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Load Budget Data by Year">
+                <group>
+                    <field name="year" />
+                    <field name="property_ids" widget="many2many_tags" />
+                </group>
+                <footer>
+                    <button
+                        name="action_load_budget_data"
+                        type="object"
+                        string=" Load Budget Data"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_budget_data_tree" model="ir.ui.view">
+        <field name="name">budget.data.tree</field>
+        <field name="model">budget.data</field>
+        <field name="arch" type="xml">
+
+            <tree>
+                <header>
+                    <button
+                        name="%(action_budget_load_wizard)d"
+                        type="action"
+                        string="Load Budget by Year"
+                        class="btn-primary"
+                        icon="fa-sync"
+                    />
+                </header>
+                <field name="pms_property_id" />
+                <field name="year" />
+                <field name="month" />
+                <field name="room_nights" string="Room Nights" />
+                <field name="room_revenue" string="Room Revenue" />
+                <field name="total_rooms_available" string="Total Rooms Available" />
+                <field name="total_pax" string="Total Pax" />
+
+            </tree>
+        </field>
+    </record>
+    <!-- Form View -->
+    <record id="view_budget_data_form" model="ir.ui.view">
+        <field name="name">budget.data.form</field>
+        <field name="model">budget.data</field>
+        <field name="arch" type="xml">
+            <form string="Budget Data">
+                <header>
+                    <button
+                        name="action_load_from_budget"
+                        type="object"
+                        string="Load from Budget"
+                        class="btn-primary"
+                        icon="fa-sync"
+                    />
+                    <button
+                        name="action_diagnose_availability"
+                        type="object"
+                        string="Diagnose Availability"
+                        class="btn-secondary"
+                        icon="fa-search"
+                    />
+                </header>
+                <sheet>
+                    <group>
+                        <field name="pms_property_id" />
+                        <field name="year" />
+                        <field name="month" />
+                    </group>
+
+                    <group string="Budget Data from DataBI" colspan="2">
+                        <group>
+                            <field name="room_nights" />
+                            <field name="room_revenue" />
+                        </group>
+                        <group>
+                            <field name="total_rooms_available" />
+                            <field name="total_pax" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Action wizard -->
+    <record id="action_budget_load_wizard" model="ir.actions.act_window">
+        <field name="name">Load Budget Data by Year</field>
+        <field name="res_model">budget.load.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_budget_load_wizard_form" />
+        <field name="target">new</field>
+    </record>
+    <!-- Acción para mostrar vista de presupuesto con datos PMS -->
+    <record id="action_budget_property_data" model="ir.actions.act_window">
+        <field name="name">Budget Data</field>
+        <field name="res_model">budget.data</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_budget_data_tree" />
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a comparison record to load Budget data from DataBI!
+            </p>
+            <p>
+                Use the " Load Budget by Year" menu to get data from pms.budget DataBI.
+            </p>
+        </field>
+    </record>
+      <!-- Menú principal del módulo Budget Data    -->
+    <menuitem
+        id="menu_budget__main"
+        name="Budget Data"
+        parent="menu_budget_root"
+        action="action_budget_property_data"
+        sequence="10"
+        groups="base.group_user"
+    />
+</odoo>

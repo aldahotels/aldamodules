@@ -8,13 +8,6 @@ from odoo import api, fields, models
 _logger = logging.getLogger(__name__)
 
 
-def get_years():
-    year_list = []
-    for i in range(2020, 2040):
-        year_list.append((str(i), str(i)))
-    return year_list
-
-
 class BudgetBase(models.AbstractModel):
     _name = "budget.base"
     _description = "Base model for budget process"
@@ -41,6 +34,12 @@ class BudgetBase(models.AbstractModel):
     )
     hotel_id = fields.Char(string="Hotel ID")
 
+    pms_budget_id = fields.Many2one(
+        "pms.budget",
+        string="PMS Budget Reference",
+        help="Relation with the PMS budget to obtain actual data",
+    )
+
     fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
         string="Fiscal Year",
@@ -48,11 +47,10 @@ class BudgetBase(models.AbstractModel):
     )
 
     budget_type = fields.Selection(
-        [("budgeted", "Presupuestado"), ("real", "Real")],
-        string="Tipo de Presupuesto",
+        [("budgeted", "Budgeted"), ("real", "Real")],
         required=True,
         default="budgeted",
-        help="Indica si el presupuesto es estimado o real",
+        help="Indicates if the budget is estimated or real",
     )
 
     record_type = fields.Selection(
@@ -108,7 +106,6 @@ class BudgetBase(models.AbstractModel):
     def _compute_budgeted_total(self):
         for rec in self:
             if rec.budget_type == "budgeted":
-                # Para registros presupuestados, calcular la suma de los meses
                 rec.budgeted_total = sum(
                     [
                         rec.oct or 0.0,
@@ -126,7 +123,6 @@ class BudgetBase(models.AbstractModel):
                     ]
                 )
             else:
-                # Para registros reales, buscar el registro presupuestado correspondiente
                 budgeted_record = self.search(
                     [
                         ("hotel", "=", rec.hotel.id),
@@ -180,7 +176,6 @@ class BudgetBase(models.AbstractModel):
     def _compute_real_total(self):
         for rec in self:
             if rec.budget_type == "real":
-                # Para registros reales, calcular la suma de los meses
                 rec.real_total = sum(
                     [
                         rec.oct or 0.0,
@@ -198,7 +193,6 @@ class BudgetBase(models.AbstractModel):
                     ]
                 )
             else:
-                # Para registros presupuestados, buscar el registro real correspondiente
                 real_record = self.search(
                     [
                         ("hotel", "=", rec.hotel.id),

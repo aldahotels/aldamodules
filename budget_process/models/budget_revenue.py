@@ -3,9 +3,23 @@
 
 
 import logging
-from datetime import date, timedelta
 
 from odoo import api, fields, models
+
+months = [
+    "oct",
+    "nov",
+    "dec",
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+]
 
 _logger = logging.getLogger(__name__)
 
@@ -21,658 +35,645 @@ class BudgetRevenue(models.Model):
 
     record_type = fields.Selection(
         [
-            ("room_nights", "Room Nights"),
-            ("occupancy", "Occupancy %"),
-            ("adr", "Average Daily Rate"),
-            ("room_revenue", "Room Revenue"),
-            ("pax", "PAX (Guests)"),
             ("rooms_available_ly", "Rooms Available LY"),
             ("rooms_available", "Rooms Available"),
-            ("rn_growth_percentage", "RN Growth % vs LY"),
-            ("adr_growth_percentage", "ADR Growth % vs LY"),
-            ("commission", "Commission Revenue"),
-            ("revenue_percentage", "% of Total Revenue"),
-            ("account_budget", "Accounting Budget"),
+            ("rn_ly", "RN LY"),
+            ("aumento_disminucion_rn_ly", "Aumento o Disminución RN / LY"),
+            ("rn_presupuestadas", "RN Presupuestadas"),
+            ("occ_presupuestada", "Occ Presupuestada"),
+            ("pax_presupuestadas", "Pax Presupuestadas"),
+            ("room_revenue_ly_sin_iva", "Room Revenue LY (SIN IVA)"),
+            ("adr_ly_sin_iva", "ADR LY (SIN IVA)"),
+            ("aumento_disminucion_adr_ly", "Aumento o Disminución ADR / LY"),
+            ("adr_sin_iva", "ADR (SIN IVA)"),
+            ("70500000000", "Habitaciones (4)"),
+            (
+                "aumento_disminucion_otros_servicios_ly",
+                "Aumento o Disminución Otros Servicios / LY",
+            ),
+            ("70500000030", "Parking (3)"),
+            ("70500000031", "Lavandería (3)"),
+            ("70500000032", "Coworking (3)"),
+            ("70500000034", "Otros ingresos Hotel (4)"),
+            ("70500000035", "Otros ingresos Spa (4)"),
+            ("70500000036", "Otros ingresos Restaurante (4)"),
+            ("70500000037", "Otros ingresos Bar (4)"),
+            ("70900000000", "Rappels sobre ventas (4)"),
+            ("62900000040", "Comisión de reservas (4)"),
+            ("77800000001", "% Ingresos / total revenue (4)"),
+            ("77800000000", "Ingresos excepcionales (4)"),
         ],
         required=True,
-        default="room_nights",
+        default="rooms_available",
         help="Each record type represents a different KPI calculated monthly from PMS",
     )
 
-    # Campos base para calculos
-    # Factores de crecimiento
-    rn_growth_factor = fields.Float(
-        string="RN Growth Factor (%)",
-        default=2.0,
-        help="Percentage of growth for Room Nights",
-    )
-    adr_growth_factor = fields.Float(
-        string="ADR Growth Factor (%)",
-        default=2.0,
-        help="Percentage of growth for ADR",
-    )
-    services_growth_factor = fields.Float(
-        string="Services Growth Factor (%)",
-        default=2.0,
-        help="Percentage of growth for other services",
-    )
+    # Automatic monthly fields that should be computed automatically
+    oct = fields.Float(compute="_compute_monthly_amounts", store=True)
+    nov = fields.Float(compute="_compute_monthly_amounts", store=True)
+    dec = fields.Float(compute="_compute_monthly_amounts", store=True)
+    jan = fields.Float(compute="_compute_monthly_amounts", store=True)
+    feb = fields.Float(compute="_compute_monthly_amounts", store=True)
+    mar = fields.Float(compute="_compute_monthly_amounts", store=True)
+    apr = fields.Float(compute="_compute_monthly_amounts", store=True)
+    may = fields.Float(compute="_compute_monthly_amounts", store=True)
+    jun = fields.Float(compute="_compute_monthly_amounts", store=True)
+    jul = fields.Float(compute="_compute_monthly_amounts", store=True)
+    aug = fields.Float(compute="_compute_monthly_amounts", store=True)
+    sep = fields.Float(compute="_compute_monthly_amounts", store=True)
 
-    # Campos adicionales para análisis de crecimiento y comisiones
-    rn_growth_percentage = fields.Float(
-        string="RN Growth %",
-        compute="_compute_growth_percentages",
-        store=True,
-        help="Real growth percentage for Room Nights vs Last Year",
-    )
-    adr_growth_percentage = fields.Float(
-        string="ADR Growth %",
-        compute="_compute_growth_percentages",
-        store=True,
-        help="Real growth percentage for ADR vs Last Year",
-    )
-    commission_ly = fields.Float(
-        string="Commission LY",
-        compute="_compute_commission_data",
-        store=True,
-        help="Commissions paid last year",
-    )
-    commission_budget = fields.Float(
-        compute="_compute_commission_data",
-        store=True,
-        help="Budgeted commissions for current year",
-    )
-    revenue_percentage = fields.Float(
-        string="% of Total Revenue",
-        compute="_compute_revenue_percentage",
-        store=True,
-        help="Percentage this revenue represents of total hotel revenue",
-    )
+    # Auxiliary methods
+    def _is_rooms_available_budgeted(self):
+        return self.record_type == "rooms_available" and self.budget_type == "budgeted"
 
-    @api.depends("record_type", "hotel", "year")
-    # Calcula y distribuye los valores mensuales según el record type
-    def _compute_monthly_amounts(self):
+    def _is_room_nights_budgeted(self):
+        return self.record_type == "rn_ly" and self.budget_type == "budgeted"
 
-        for record in self:
-            if record.record_type == "account_budget":
-                continue
-
-            monthly_values = record._get_monthly_kpi_values()
-            record.update(
-                {
-                    "oct": monthly_values.get("oct", 0.0),
-                    "nov": monthly_values.get("nov", 0.0),
-                    "dec": monthly_values.get("dec", 0.0),
-                    "jan": monthly_values.get("jan", 0.0),
-                    "feb": monthly_values.get("feb", 0.0),
-                    "mar": monthly_values.get("mar", 0.0),
-                    "apr": monthly_values.get("apr", 0.0),
-                    "may": monthly_values.get("may", 0.0),
-                    "jun": monthly_values.get("jun", 0.0),
-                    "jul": monthly_values.get("jul", 0.0),
-                    "aug": monthly_values.get("aug", 0.0),
-                    "sep": monthly_values.get("sep", 0.0),
-                }
-            )
-
-    def _get_monthly_kpi_values(self):
-        if not self.hotel or not self.year:
+    def _get_fiscal_month_mapping(self):
+        """
+        Returns a mapping of fiscal months to (calendar_year, calendar_month)
+        """
+        if not self.fiscal_year_id:
             return {}
 
-        monthly_values = {}
-        months = [
-            "oct",
-            "nov",
-            "dec",
-            "jan",
-            "feb",
-            "mar",
-            "apr",
-            "may",
-            "jun",
-            "jul",
-            "aug",
-            "sep",
-        ]
-
-        for month in months:
-            month_num = self._get_month_number(month)
-            year_for_month = int(self.year) if month_num >= 10 else int(self.year) + 1
-
-            # Obtener datos históricos del año pasado
-            historical_data = self._get_monthly_historical_data(
-                month_num, year_for_month - 1
-            )
-
-            # Calcular valor presupuestado según el tipo de registro
-            budget_value = self._calculate_budget_value_for_month(
-                self.record_type, historical_data, month_num, year_for_month
-            )
-
-            monthly_values[month] = budget_value
-
-        return monthly_values
-
-    def _get_month_number(self, month_name):
-        """Convierte nombre del mes a número"""
-        month_mapping = {
-            "oct": 10,
-            "nov": 11,
-            "dec": 12,
-            "jan": 1,
-            "feb": 2,
-            "mar": 3,
-            "apr": 4,
-            "may": 5,
-            "jun": 6,
-            "jul": 7,
-            "aug": 8,
-            "sep": 9,
-        }
-        return month_mapping.get(month_name, 1)
-
-    def _get_monthly_historical_data(self, month, year):
-        """
-        Obtiene datos históricos de un mes específico del PMS
-        """
-        try:
-            first_day = date(year, month, 1)
-            if month == 12:
-                last_day = date(year + 1, 1, 1) - timedelta(days=1)
-            else:
-                last_day = date(year, month + 1, 1) - timedelta(days=1)
-
-            date_from = first_day.strftime("%Y-%m-%d")
-            date_to = last_day.strftime("%Y-%m-%d")
-
-            if self.env["ir.model"].search([("model", "=", "pms.reservation")]):
-                return self._get_pms_reservation_data(self.hotel.id, date_from, date_to)
-            else:
-                revenue = self._get_accounting_revenue_data(
-                    self.hotel.id, date_from, date_to
-                )
-                return {
-                    "rooms_available": 0,
-                    "room_nights": 0,
-                    "room_revenue": revenue,
-                    "pax": 0,
-                }
-        except Exception:
-            return {
-                "rooms_available": 0,
-                "room_nights": 0,
-                "room_revenue": 0,
-                "pax": 0,
-            }
-
-    def _calculate_budget_value_for_month(
-        self, record_type, historical_data, month, year
-    ):
-        """
-        Calcula el valor presupuestado para un mes específico según el tipo de registro
-        """
-        calculation_methods = {
-            "room_nights": self._calculate_room_nights_budget,
-            "occupancy": self._calculate_occupancy_budget,
-            "adr": self._calculate_adr_budget,
-            "room_revenue": self._calculate_room_revenue_budget,
-            "pax": self._calculate_pax_budget,
-            "rooms_available_ly": self._calculate_rooms_available_ly,
-            "rooms_available": self._calculate_rooms_available,
-            "rn_growth_percentage": self._calculate_rn_growth_percentage,
-            "adr_growth_percentage": self._calculate_adr_growth_percentage,
-            "commission": self._calculate_commission_budget,
-            "revenue_percentage": self._calculate_revenue_percentage_budget,
-        }
-
-        if record_type in calculation_methods:
-            return calculation_methods[record_type](historical_data, month, year)
-        return 0.0
-
-    def _calculate_room_nights_budget(self, historical_data, month, year):
-        """Calculate room nights budget value"""
-        base_value = historical_data.get("room_nights", 0)
-        return base_value * (1 + self.rn_growth_factor / 100)
-
-    def _calculate_occupancy_budget(self, historical_data, month, year):
-        """Calculate occupancy budget value"""
-        rooms_available = self._get_current_month_rooms(month, year)
-        room_nights = historical_data.get("room_nights", 0) * (
-            1 + self.rn_growth_factor / 100
-        )
-        if rooms_available > 0:
-            return min((room_nights / rooms_available) * 100, 100.0)
-        return 0.0
-
-    def _calculate_adr_budget(self, historical_data, month, year):
-        """Calculate ADR budget value"""
-        room_nights_ly = historical_data.get("room_nights", 0)
-        room_revenue_ly = historical_data.get("room_revenue", 0)
-        if room_nights_ly > 0:
-            adr_ly = room_revenue_ly / room_nights_ly
-            return adr_ly * (1 + self.adr_growth_factor / 100)
-        return 0.0
-
-    def _calculate_room_revenue_budget(self, historical_data, month, year):
-        """Calculate room revenue budget value"""
-        room_nights = historical_data.get("room_nights", 0) * (
-            1 + self.rn_growth_factor / 100
-        )
-        room_nights_ly = historical_data.get("room_nights", 0)
-        room_revenue_ly = historical_data.get("room_revenue", 0)
-        if room_nights_ly > 0:
-            adr_ly = room_revenue_ly / room_nights_ly
-            adr_budget = adr_ly * (1 + self.adr_growth_factor / 100)
-            return room_nights * adr_budget
-        return 0.0
-
-    def _calculate_pax_budget(self, historical_data, month, year):
-        """Calculate PAX budget value"""
-        base_value = historical_data.get("pax", 0)
-        return base_value * (1 + self.rn_growth_factor / 100)
-
-    def _calculate_rooms_available_ly(self, historical_data, month, year):
-        """Calculate rooms available LY value"""
-        return historical_data.get("rooms_available", 0)
-
-    def _calculate_rooms_available(self, historical_data, month, year):
-        """Calculate rooms available current year value"""
-        return self._get_current_month_rooms(month, year)
-
-    def _calculate_rn_growth_percentage(self, historical_data, month, year):
-        """Calculate room nights growth percentage"""
-        rn_ly = historical_data.get("room_nights", 0)
-        rn_budget = rn_ly * (1 + self.rn_growth_factor / 100)
-        if rn_ly > 0:
-            return ((rn_budget - rn_ly) / rn_ly) * 100
-        return 0.0
-
-    def _calculate_adr_growth_percentage(self, historical_data, month, year):
-        """Calculate ADR growth percentage"""
-        room_nights_ly = historical_data.get("room_nights", 0)
-        room_revenue_ly = historical_data.get("room_revenue", 0)
-        if room_nights_ly > 0:
-            adr_ly = room_revenue_ly / room_nights_ly
-            adr_budget = adr_ly * (1 + self.adr_growth_factor / 100)
-            if adr_ly > 0:
-                return ((adr_budget - adr_ly) / adr_ly) * 100
-        return 0.0
-
-    def _calculate_commission_budget(self, historical_data, month, year):
-        """Calculate commission budget value"""
-        room_revenue = historical_data.get("room_revenue", 0) * (
-            1 + self.services_growth_factor / 100
-        )
-        return room_revenue * 0.08  # 8% promedio de comisiones
-
-    def _calculate_revenue_percentage_budget(self, historical_data, month, year):
-        """Calculate revenue percentage budget value"""
-        return 0.0  # Se calculará en un método separado
-
-    def _get_current_month_rooms(self, month, year):
-        """
-        Obtiene el número de habitaciones disponibles para un mes específico del año actual
-        """
-        try:
-            specific_date = date(year, month, 1)
-            return self._get_rooms_available_from_pms(
-                self.hotel.id, specific_date.strftime("%Y-%m-%d")
-            )
-        except Exception:
-            return 0
-
-    def refresh_monthly_pms_data(self):
-        """
-        Botón para refrescar datos mensuales del PMS
-        """
-        for record in self:
-            if record.record_type != "account_budget":
-                record._compute_monthly_amounts()
-
-    def generate_kpi_records(self):
-        """
-        Genera automáticamente registros para todos los KPIs de un hotel y año
-        """
-        kpi_types = [
-            "room_nights",
-            "occupancy",
-            "adr",
-            "room_revenue",
-            "pax",
-            "rooms_available_ly",
-            "rooms_available",
-            "rn_growth_percentage",
-            "adr_growth_percentage",
-            "commission",
-            "revenue_percentage",
-        ]
-
-        for record in self:
-            for kpi_type in kpi_types:
-                existing = self.search(
-                    [
-                        ("hotel", "=", record.hotel.id),
-                        ("year", "=", record.year),
-                        ("record_type", "=", kpi_type),
-                    ]
-                )
-
-                if not existing:
-                    self.create(
-                        {
-                            "hotel": record.hotel.id,
-                            "year": record.year,
-                            "record_type": kpi_type,
-                            "responsible": record.responsible,
-                            "description": (
-                                f"{kpi_type.replace('_', ' ').title()} - "
-                                f"{record.hotel.name}"
-                            ),
-                            "rn_growth_factor": record.rn_growth_factor,
-                            "adr_growth_factor": record.adr_growth_factor,
-                            "services_growth_factor": record.services_growth_factor,
-                        }
-                    )
-
-    # Metodos para integracion con el pms
-    def get_historical_data_from_pms(self):
-        """
-        Método de compatibilidad - llama al nuevo método refresh_monthly_pms_data
-        """
-        return self.refresh_monthly_pms_data()
-
-    # Obtiene los datos de reservas del pms para un hotel
-    def _get_pms_reservation_data(self, property_id, date_from, date_to):
-        PmsReservation = self.env.get("pms.reservation")
-        if not PmsReservation:
-            return {
-                "rooms_available": 0,
-                "room_nights": 0,
-                "room_revenue": 0,
-                "pax": 0,
-            }
-
-        domain = [
-            ("property_id", "=", property_id),
-            ("checkin", ">=", date_from),
-            ("checkout", "<=", date_to),
-            ("state", "!=", "cancelled"),
-        ]
-
-        reservations = PmsReservation.search(domain)
-
-        # Calcular métricas
-        room_nights = sum(reservation.nights for reservation in reservations)
-        room_revenue = sum(
-            reservation.amount_room
-            for reservation in reservations
-            if hasattr(reservation, "amount_room")
-        )
-        pax = sum(
-            reservation.adults + reservation.children for reservation in reservations
-        )
-
-        # Obtener habitaciones disponibles del año pasado
-        rooms_available = self._get_rooms_available_from_pms(property_id, date_from)
+        fiscal_year_record = self.fiscal_year_id
+        fiscal_start_year = fiscal_year_record.date_from.year
+        fiscal_end_year = fiscal_year_record.date_to.year
 
         return {
-            "rooms_available": rooms_available,
-            "room_nights": room_nights,
-            "room_revenue": room_revenue,
-            "pax": pax,
+            "oct": (fiscal_start_year, 10),
+            "nov": (fiscal_start_year, 11),
+            "dec": (fiscal_start_year, 12),
+            "jan": (fiscal_end_year, 1),
+            "feb": (fiscal_end_year, 2),
+            "mar": (fiscal_end_year, 3),
+            "apr": (fiscal_end_year, 4),
+            "may": (fiscal_end_year, 5),
+            "jun": (fiscal_end_year, 6),
+            "jul": (fiscal_end_year, 7),
+            "aug": (fiscal_end_year, 8),
+            "sep": (fiscal_end_year, 9),
         }
 
-    # Obtiene el numero de habitaciones disponibles desde el pms
-    def _get_rooms_available_from_pms(self, property_id, date):
-        PmsRoom = self.env.get("pms.room")
-        if not PmsRoom:
-            return 0
+    @api.depends("record_type", "budget_type", "hotel", "fiscal_year_id")
+    def _compute_monthly_amounts(self):
+        """
+        Compute monthly amounts based on record_type and budget_type
+        """
+        for record in self:
+            monthly_values = {month: 0 for month in months}
 
-        rooms = PmsRoom.search(
-            [
-                ("property_id", "=", property_id),
-            ]
+            # Handle different record types that need data from budget.data
+            if record.budget_type == "budgeted":
+                if record.record_type == "rooms_available":
+                    monthly_values = record._get_rooms_available_from_budget_data()
+                elif record.record_type == "rn_ly":
+                    monthly_values = record._get_rooms_nights_from_budget_data()
+                # Add more record types here as needed
+
+            for month in months:
+                setattr(record, month, monthly_values[month])
+
+    def _get_rooms_available_from_budget_data(self):
+        """Get rooms available data from budget.data model"""
+        return self._get_budget_data_values(
+            "rooms_disponibles", "total_rooms_available"
         )
 
-        return len(rooms)
+    def action_refresh_rooms_available(self):
+        """
+        Refresh rooms available from budget.data with improved fiscal logic
+        """
+        updated_count = 0
 
-    # Obtiene el numero de habitaciones disponibles del pms para un año especifico
-    def _get_current_year_rooms_from_pms(self, property_id, year=None):
-        if year:
-            year_int = int(year)
-            specific_date = date(year_int, 10, 1)
-            return self._get_rooms_available_from_pms(
-                property_id, specific_date.strftime("%Y-%m-%d")
-            )
-        else:
-            return self._get_rooms_available_from_pms(property_id, fields.Date.today())
-
-    # Obtiene los datos de ingresos desde contabilidad
-    def _get_accounting_revenue_data(self, property_id, date_from, date_to):
-        return self.get_accounting_data_from_odoo("70", date_from, date_to)
-
-    # Obtiene los datos contables desde odoo
-    def get_accounting_data_from_odoo(self, account_code, date_from, date_to):
-        AccountMoveLine = self.env["account.move.line"]
-
-        domain = [
-            ("account_id.code", "=", account_code),
-            ("date", ">=", date_from),
-            ("date", "<=", date_to),
-        ]
-
-        if self.hotel:
-            domain.append(("property_id", "=", self.hotel.id))
-
-        lines = AccountMoveLine.search(domain)
-        total_balance = sum(lines.mapped("balance"))
-
-        return total_balance
-
-    def calculate_revenue_percentages(self):
         for record in self:
-            if record.record_type == "revenue_percentage":
-                try:
-                    # Buscar el registro de room_revenue para este hotel y año
-                    room_revenue_record = self.search(
+
+            if record._is_rooms_available_budgeted():
+                if not (record.fiscal_year_id and record.hotel):
+                    _logger.warning(
+                        "Record %s missing fiscal_year_id or hotel, skipping sync",
+                        record.id,
+                    )
+                    continue
+
+                monthly_values = record._get_rooms_available_from_budget_data()
+                record.write(monthly_values)
+                updated_count += 1
+
+                _logger.info(
+                    "Refreshed rooms available for %s fiscal %s: "
+                    "Oct=%s, Nov=%s, Dec=%s, Jan=%s, Feb=%s, Mar=%s, "
+                    "Apr=%s, May=%s, Jun=%s, Jul=%s, Aug=%s, Sep=%s",
+                    record.hotel.name,
+                    record.fiscal_year_id.name,
+                    monthly_values["oct"],
+                    monthly_values["nov"],
+                    monthly_values["dec"],
+                    monthly_values["jan"],
+                    monthly_values["feb"],
+                    monthly_values["mar"],
+                    monthly_values["apr"],
+                    monthly_values["may"],
+                    monthly_values["jun"],
+                    monthly_values["jul"],
+                    monthly_values["aug"],
+                    monthly_values["sep"],
+                )
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "Rooms Available Refreshed (Improved)",
+                "message": (
+                    "Updated %s records with correct fiscal "
+                    "year mapping from budget.data" % updated_count
+                ),
+                "type": "success",
+                "sticky": True,
+            },
+        }
+
+    def action_sync_all_rooms_available(self):
+        """
+        Synchronization of all available rooms.
+        """
+        domain = [("record_type", "=", "rooms_available")]
+        revenue_records = self.search(domain)
+
+        if not revenue_records:
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": "Sin Registros",
+                    "message": 'No records of type "Rooms Available" were found to synchronize',
+                    "type": "warning",
+                },
+            }
+
+        # Syncronization process
+        for record in revenue_records:
+            record._sync_rooms_available_from_fiscal_year()
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "✅ Sincronización Completada",
+                "message": (
+                    "Se sincronizaron %s registros de rooms available "
+                    "con los datos del año fiscal." % len(revenue_records)
+                ),
+                "type": "success",
+            },
+        }
+
+    def action_show_sync_status(self):
+        """
+        Show detailed sync status and diagnostics for rooms available
+        """
+        for record in self:
+            if record._is_rooms_available_budgeted():
+                if not record.fiscal_year_id:
+                    continue
+
+                message = (
+                    "📊 SYNC STATUS - %s (Fiscal Year %s):\n\n FULL SYNCHRONIZATION CHECK: "
+                    % (
+                        record.hotel.name,
+                        record.fiscal_year_id.name,
+                    )
+                )
+                # Check if there are any budget.data records for this hotel
+                all_budget_data = self.env["budget.data"].search(
+                    [("pms_property_id", "=", record.hotel.id)]
+                )
+
+                message += "\n📋 Total record in budget.data for %s: %s" % (
+                    record.hotel.name,
+                    len(all_budget_data),
+                )
+
+                if not all_budget_data:
+                    message += (
+                        "\n❌ PROBLEM: No records in " "budget.data for this hotel"
+                    )
+                    message += (
+                        "\n💡 SOLUTION: Create records in "
+                        "budget.data or load from pms.budget"
+                    )
+                else:
+                    # Show some sample data
+                    sample_data = all_budget_data[:5]
+                    message += "\n\n📝 Examples of available data:"
+                    for data in sample_data:
+                        message += "\n• %s/%s: %s rooms" % (
+                            data.year,
+                            data.month.zfill(2),
+                            data.total_rooms_available,
+                        )
+
+                # Use the auxiliary fiscal mapping
+                month_year_mapping = record._get_fiscal_month_mapping()
+                fiscal_start_year = record.fiscal_year_id.date_from.year
+
+                message += "\n\n🗓️ MAPEO FISCAL YEAR %s (Oct %s - Sep %s):" % (
+                    fiscal_start_year,
+                    fiscal_start_year,
+                    fiscal_start_year + 1,
+                )
+
+                found_data = []
+                missing_data = []
+
+                for month_field, (
+                    calendar_year,
+                    calendar_month,
+                ) in month_year_mapping.items():
+                    # Search in budget.data
+                    budget_data = self.env["budget.data"].search(
                         [
-                            ("hotel", "=", record.hotel.id),
-                            ("year", "=", record.year),
-                            ("record_type", "=", "room_revenue"),
+                            ("pms_property_id", "=", record.hotel.id),
+                            ("year", "=", str(calendar_year)),
+                            ("month", "=", str(calendar_month)),
                         ],
                         limit=1,
                     )
 
-                    if room_revenue_record and room_revenue_record.total > 0:
-                        monthly_percentages = {}
-                        months = [
-                            "oct",
-                            "nov",
-                            "dec",
-                            "jan",
-                            "feb",
-                            "mar",
-                            "apr",
-                            "may",
-                            "jun",
-                            "jul",
-                            "aug",
-                            "sep",
-                        ]
+                    current_value = getattr(record, month_field, 0)
 
-                        for month in months:
-                            room_revenue_month = getattr(room_revenue_record, month, 0)
-                            # Por ahora, revenue_percentage = 100% del room revenue
-                            monthly_percentages[month] = (
-                                100.0 if room_revenue_month > 0 else 0.0
+                    if budget_data:
+                        status = (
+                            "✅"
+                            if current_value == budget_data.total_rooms_available
+                            else "⚠️"
+                        )
+                        found_data.append(
+                            "%s %s: %s/%02d → Budget: %s, Revenue: %s"
+                            % (
+                                status,
+                                month_field.upper(),
+                                calendar_year,
+                                calendar_month,
+                                budget_data.total_rooms_available,
+                                current_value,
+                            )
+                        )
+                    else:
+                        missing_data.append(
+                            "❌ %s: %s/%02d → NO DATA in budget.data"
+                            % (
+                                month_field.upper(),
+                                calendar_year,
+                                calendar_month,
+                            )
+                        )
+
+                if found_data:
+                    message += "\n\n✅ Data Found:"
+                    for data in found_data:
+                        message += "\n%s" % data
+
+                if missing_data:
+                    message += "\n\n❌ Missing Data:"
+                    for data in missing_data:
+                        message += "\n%s" % data
+
+                # User-specific example for fiscal year
+                if fiscal_start_year == 2024:
+                    message += "\n\n🎯 USER-SPECIFIC EXAMPLE:"
+                    message += (
+                        "\nIf in budget.data Sept 2025 you have 10 rooms → "
+                        "it must appear in revenue fiscal 2024 field 'sep'"
+                    )
+
+                    sept_data = self.env["budget.data"].search(
+                        [
+                            ("pms_property_id", "=", record.hotel.id),
+                            ("year", "=", "2025"),
+                            ("month", "=", "9"),
+                        ],
+                        limit=1,
+                    )
+
+                    if sept_data:
+                        message += (
+                            "\n• Budget.Data Sept 2025: %s rooms"
+                            % sept_data.total_rooms_available
+                        )
+                        message += (
+                            "\n• Revenue Sep (fiscal 2024): %s rooms" % record.sep
+                        )
+                        if record.sep == sept_data.total_rooms_available:
+                            message += "\n• ✅ CORRECT SYNCHRONIZATION"
+                        else:
+                            message += (
+                                "\n• ⚠️ OUT OF SYNC - Use 'Refresh Rooms Available'"
+                            )
+                    else:
+                        message += "\n• ❌ No data in budget.data for September 2025"
+                        message += "\n• 💡 Create record in budget.data for Sept 2025"
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "Sync Status - %s" % record.hotel.name,
+                "message": message,
+                "type": "info",
+                "sticky": True,
+            },
+        }
+
+    def action_diagnose_current_records(self):
+        """
+        Diagnostic to identify sync problems in rooms available budgeted records:
+        """
+        problems = []
+
+        for record in self:
+            if record._is_rooms_available_budgeted():
+                if not record.fiscal_year_id:
+                    problems.append("Record %s: Falta fiscal_year_id" % record.id)
+
+                elif not record.hotel:
+                    problems.append("Record %s: Falta hotel" % record.id)
+
+                elif record.hotel:
+                    data_count = self.env["budget.data"].search_count(
+                        [("pms_property_id", "=", record.hotel.id)]
+                    )
+                    if not data_count:
+                        problems.append(
+                            "Record %s (%s): No budget.data"
+                            % (record.id, record.hotel.name)
+                        )
+
+        if problems:
+            message = "⚠️ PROBLEM FOUND:\n" + "\n".join(problems)
+            message += "\n\n💡 Use 'Fix Sync Problems' to automatically correct"
+        else:
+            message = "✅ All records are configured correctly"
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "🔍 Quick Diagnosis",
+                "message": message,
+                "type": "warning" if problems else "success",
+            },
+        }
+
+    def action_fix_sync_problems(self):
+        """
+        Fix sync problems in rooms available budgeted records.
+        """
+        fixes_applied = []
+        errors_found = []
+
+        for record in self:
+            if record._is_rooms_available_budgeted():
+
+                # FIX 1: fiscal year missing
+                if not record.fiscal_year_id:
+                    if record.hotel:
+                        available_data = self.env["budget.data"].search(
+                            [("pms_property_id", "=", record.hotel.id)]
+                        )
+
+                        if available_data:
+                            available_years = [
+                                int(data.year) for data in available_data
+                            ]
+                            latest_year = max(available_years)
+
+                            fiscal_year = self.env["account.fiscal.year"].search(
+                                [
+                                    ("date_from", "<=", f"{latest_year}-12-31"),
+                                    ("date_to", ">=", f"{latest_year}-01-01"),
+                                ],
+                                limit=1,
                             )
 
-                        record.update(monthly_percentages)
-                except Exception:
-                    # Si hay error, establecer valores en 0
-                    months = [
-                        "oct",
-                        "nov",
-                        "dec",
-                        "jan",
-                        "feb",
-                        "mar",
-                        "apr",
-                        "may",
-                        "jun",
-                        "jul",
-                        "aug",
-                        "sep",
-                    ]
-                    zero_values = {month: 0.0 for month in months}
-                    record.update(zero_values)
+                            if fiscal_year:
+                                try:
+                                    record.write({"fiscal_year_id": fiscal_year.id})
+                                    fixes_applied.append(
+                                        "Record %s (%s): fiscal_year_id None → '%s'"
+                                        % (
+                                            record.id,
+                                            record.hotel.name,
+                                            fiscal_year.name,
+                                        )
+                                    )
+                                except Exception as e:
+                                    errors_found.append(
+                                        "Record %s: Error setting fiscal_year_id - %s"
+                                        % (record.id, e)
+                                    )
+                            else:
+                                errors_found.append(
+                                    "Record %s: No fiscal year found for data year %s"
+                                    % (record.id, latest_year)
+                                )
+                        else:
+                            errors_found.append(
+                                (
+                                    "Record %s (%s): No budget.data"
+                                    " available to suggest fiscal year"
+                                )
+                                % (
+                                    record.id,
+                                    record.hotel.name,
+                                )
+                            )
+                    else:
+                        errors_found.append("Record %s: No hotel assigned" % record.id)
 
-    # Métodos de cálculo para los nuevos campos
-    @api.depends(
-        "record_type",
-        "hotel",
-        "year",
-        "oct",
-        "nov",
-        "dec",
-        "jan",
-        "feb",
-        "mar",
-        "apr",
-        "may",
-        "jun",
-        "jul",
-        "aug",
-        "sep",
-    )
-    def _compute_growth_percentages(self):
+                # FIX 2: check if hotel has budget.data
+                elif record.hotel and record.fiscal_year_id:
+                    fixes_applied.append(
+                        "Record %s: Ready for auto-sync with fiscal year %s"
+                        % (
+                            record.id,
+                            record.fiscal_year_id.name,
+                        )
+                    )
+
+        # Final summary message
+        message = "🔧 FIXES APPLIED:\n\n       " "✅ FIXES APPLIED (%s):\n        " % len(
+            fixes_applied
+        )
+        for fix in fixes_applied:
+            message += "\n• %s" % fix
+
+        if errors_found:
+            message += "\n\n❌ ERRORS FOUND (%s):" % len(errors_found)
+            for error in errors_found:
+                message += "\n• %s" % error
+
+        message += (
+            "\n\n💡 RECOMMENDATION: Monthly fields will be "
+            "automatically updated when changing fiscal_year_id."
+        )
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "🔧 Automatic Correction Completed",
+                "message": message,
+                "type": "success" if fixes_applied else "warning",
+                "sticky": True,
+            },
+        }
+
+    def _get_rooms_nights_from_budget_data(self):
+        "Get room nights data from budget.data model"
+        return self._get_budget_data_values("rn_ly", "room_nights")
+
+    def _get_budget_data_values(self, record_type, field_name):
         """
-        Calcula los porcentajes de crecimiento real vs año pasado
+        Generic method to get values from budget.data
+        for different record types and fields
         """
-        for record in self:
-            if record.record_type not in ["room_nights", "adr"]:
-                record.rn_growth_percentage = 0.0
-                record.adr_growth_percentage = 0.0
-                continue
+        _logger.info(
+            "Starting _get_budget_data_values for hotel: %s, "
+            "Record Type: %s, Field: %s",
+            self.hotel,
+            record_type,
+            field_name,
+        )
+        _logger.info(
+            "Fiscal Year: %s",
+            self.fiscal_year_id.name if self.fiscal_year_id else "No fiscal year",
+        )
 
-            try:
-                # Obtener totales del año pasado
-                ly_total = record._get_last_year_total()
-                current_total = record.total
+        monthly_values = {month: 0 for month in months}
 
-                if ly_total > 0:
-                    growth_percentage = ((current_total - ly_total) / ly_total) * 100
+        if not self.hotel or not self.fiscal_year_id:
+            _logger.info("Missing hotel or fiscal_year_id - returning zeros")
+            return monthly_values
 
-                    if record.record_type == "room_nights":
-                        record.rn_growth_percentage = growth_percentage
-                        record.adr_growth_percentage = 0.0
-                    elif record.record_type == "adr":
-                        record.adr_growth_percentage = growth_percentage
-                        record.rn_growth_percentage = 0.0
-                else:
-                    record.rn_growth_percentage = 0.0
-                    record.adr_growth_percentage = 0.0
-            except Exception:
-                record.rn_growth_percentage = 0.0
-                record.adr_growth_percentage = 0.0
+        # Get fiscal-month mapping for the fiscal year
+        month_mapping = self._get_fiscal_month_mapping()
+        _logger.info("Month mapping: %s", month_mapping)
 
-    @api.depends("record_type", "hotel", "year", "total")
-    def _compute_commission_data(self):
-        for record in self:
-            if record.record_type not in ["room_revenue", "commission"]:
-                record.commission_ly = 0.0
-                record.commission_budget = 0.0
-                continue
+        # Search in budget.data using year/month
+        # (without record_type/budget_type filters)
+        for fiscal_month, (calendar_year, calendar_month) in month_mapping.items():
+            budget_data_records = self.env["budget.data"].search(
+                [
+                    ("pms_property_id", "=", self.hotel.id),
+                    ("year", "=", str(calendar_year)),
+                    ("month", "=", str(calendar_month)),
+                ]
+            )
 
-            try:
-                if record.record_type == "commission":
-                    record.commission_budget = record.total
-                    ly_total = record._get_last_year_total()
-                    record.commission_ly = ly_total
-                else:
-                    ly_revenue = record._get_last_year_total()
-                    record.commission_ly = ly_revenue * 0.08
-                    record.commission_budget = record.total * 0.08
-            except Exception:
-                record.commission_ly = 0.0
-                record.commission_budget = 0.0
+            _logger.info(
+                "Searching for %s/%02d - Found %s records",
+                calendar_year,
+                calendar_month,
+                len(budget_data_records),
+            )
 
-    @api.depends("record_type", "hotel", "year", "total")
-    def _compute_revenue_percentage(self):
-        """
-        Calcula el porcentaje que representa este ingreso del total de revenue del hotel
-        """
-        for record in self:
-            if record.record_type not in ["room_revenue", "account_budget"]:
-                record.revenue_percentage = 0.0
-                continue
-
-            try:
-                room_revenue_record = self.search(
-                    [
-                        ("hotel", "=", record.hotel.id),
-                        ("year", "=", record.year),
-                        ("record_type", "=", "room_revenue"),
-                    ],
-                    limit=1,
+            for budget_data in budget_data_records:
+                current_value = getattr(budget_data, field_name, 0) or 0
+                monthly_values[fiscal_month] = current_value
+                _logger.info(
+                    "Mapped %s/%02d to fiscal month %s: %s",
+                    calendar_year,
+                    calendar_month,
+                    fiscal_month,
+                    current_value,
                 )
 
-                if room_revenue_record and room_revenue_record.total > 0:
-                    if record.record_type == "room_revenue":
-                        record.revenue_percentage = 100.0
-                    else:
-                        record.revenue_percentage = (
-                            record.total / room_revenue_record.total
-                        ) * 100
-                else:
-                    record.revenue_percentage = 0.0
-            except Exception:
-                record.revenue_percentage = 0.0
+        _logger.info("Final monthly values: %s", monthly_values)
+        return monthly_values
 
-    def _get_last_year_total(self):
-        try:
-            last_year = str(int(self.year) - 1)
-            last_year_record = self.search(
-                [
-                    ("hotel", "=", self.hotel.id),
-                    ("year", "=", last_year),
-                    ("record_type", "=", self.record_type),
-                ],
-                limit=1,
-            )
+    def action_refresh_room_nights(self):
+        """
+        Refresh room nights from budget.data with fiscal year logic
+        """
+        updated_count = 0
 
-            if last_year_record:
-                return last_year_record.total
-            else:
-                return self._calculate_ly_total_from_historical_data()
-        except Exception:
-            return 0.0
+        for record in self:
+            if record._is_room_nights_budgeted():
+                if not (record.fiscal_year_id and record.hotel):
+                    _logger.warning(
+                        "Record %s missing fiscal_year_id or hotel, skipping sync",
+                        record.id,
+                    )
+                    continue
 
-    def _calculate_ly_total_from_historical_data(self):
-        try:
-            last_year = int(self.year) - 1
-            first_day = date(last_year, 10, 1)
-            last_day = date(int(self.year), 9, 30)
+                old_values = {month: getattr(record, month) for month in months}
+                record._compute_monthly_amounts()
+                new_values = {month: getattr(record, month) for month in months}
 
-            date_from = first_day.strftime("%Y-%m-%d")
-            date_to = last_day.strftime("%Y-%m-%d")
+                if old_values != new_values:
+                    updated_count += 1
+                    _logger.info(
+                        f"Updated record {record.id}: "
+                        f"{record.hotel.name} fiscal {record.fiscal_year_id.name}"
+                    )
 
-            historical_data = self._get_pms_reservation_data(
-                self.hotel.id, date_from, date_to
-            )
+        message = f"Room nights sync completed. Updated {updated_count} records."
+        _logger.info(message)
 
-            if self.record_type == "room_nights":
-                return historical_data.get("room_nights", 0)
-            elif self.record_type == "room_revenue":
-                return historical_data.get("room_revenue", 0)
-            elif self.record_type == "pax":
-                return historical_data.get("pax", 0)
-            elif self.record_type == "adr":
-                room_nights = historical_data.get("room_nights", 0)
-                room_revenue = historical_data.get("room_revenue", 0)
-                if room_nights > 0:
-                    return room_revenue / room_nights
-                return 0.0
-            else:
-                return 0.0
-        except Exception:
-            return 0.0
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "Room Nights Sync",
+                "message": message,
+                "type": "success",
+                "sticky": False,
+            },
+        }
+
+    def action_sync_all_room_nights(self):
+        """
+        Server action to sync all room nights records in bulk
+        """
+        room_nights_records = self.filtered(lambda r: r._is_room_nights_budgeted())
+
+        if not room_nights_records:
+            message = "No room nights budgeted records found to sync."
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": "Room Nights Bulk Sync",
+                    "message": message,
+                    "type": "warning",
+                    "sticky": False,
+                },
+            }
+
+        updated_count = 0
+        for record in room_nights_records:
+            if record.fiscal_year_id and record.hotel:
+                old_values = {month: getattr(record, month) for month in months}
+                record._compute_monthly_amounts()
+                new_values = {month: getattr(record, month) for month in months}
+
+                if old_values != new_values:
+                    updated_count += 1
+
+        message = (
+            f"RN sync completed. Updated "
+            f"{updated_count} of {len(room_nights_records)} records."
+        )
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "Room Nights Bulk Sync",
+                "message": message,
+                "type": "success",
+                "sticky": False,
+            },
+        }
