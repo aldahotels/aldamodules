@@ -134,6 +134,7 @@
             </xpath>
             <xpath expr="//field[@name='email_cc']" position="after">
                 <field name="company_external_id" widget="boolean_toggle" />
+                <field name="is_room" invisible='1' />
                 <field
                     name="is_property_operated_normaly"
                     widget="boolean_toggle"
