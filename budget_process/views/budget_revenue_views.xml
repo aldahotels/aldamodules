@@ -80,6 +80,12 @@
               <field name="description" />
               <field name="record_type" />
               <field name="budget_type" />
+              <field
+                                name="percentage_increase_decrease"
+                                attrs="{'invisible': [('record_type', '!=', 'increase_decrease_rn_ly')],
+                             'required': [('record_type', '=', 'increase_decrease_rn_ly')]}"
+                                widget="percentage"
+                            />
             </group>
             <group name="location_info" string="Location &amp; Fiscal Year">
               <field name="hotel" />
