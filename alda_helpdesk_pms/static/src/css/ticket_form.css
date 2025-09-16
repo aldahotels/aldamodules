@@ -1,0 +1,29 @@
+.star-rating .star {
+    color: #ccc;
+    cursor: pointer;
+    margin: 0 2px;
+}
+.star-rating .star:before {
+    transition: color 0.2s;
+}
+.star-rating .star.filled,
+.star-rating .star:hover {
+    color: gold;
+}
+.star-rating .star:hover ~ .star {
+    color: #ccc;
+}
+
+.star-rating {
+    font-size: 2rem;
+    cursor: pointer;
+    user-select: none;
+}
+.star-rating .star {
+    color: #ccc;
+    margin: 0 3px;
+    transition: color 0.2s;
+}
+.star-rating .star.filled {
+    color: gold;
+}

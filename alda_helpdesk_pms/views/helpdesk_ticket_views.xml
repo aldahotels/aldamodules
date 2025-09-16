@@ -134,7 +134,7 @@
             </xpath>
             <xpath expr="//field[@name='email_cc']" position="after">
                 <field name="company_external_id" widget="boolean_toggle" />
-                <field name="is_room" invisible='1' />
+                <field name="is_room" invisible="1" />
                 <field
                     name="is_property_operated_normaly"
                     widget="boolean_toggle"
@@ -154,78 +154,6 @@
                     }
                 </attribute>
             </xpath>
-            <xpath expr="//field[@name='description']" position="after">
-                <field name="is_room_blocked" invisible='1' />
-                <field name="alert_level" invisible='1' />
-                <field name="occupancy_rate" invisible='1' />
-                <div
-                    class="text-center fw-bold fs-5 text-black mb-3"
-                    attrs="{'invisible': ['|',('alert_level', '=', 'none'), ('priority_rule_id', '=', False)]}"
-                >
-                        &#9889; Recommended actions based on Alert Level Estimated
-                </div>
-                <div
-                    class="bg-light p-3 rounded-3 fw-bold shadow-sm r"
-                    attrs="{'invisible': [('alert_level', '=', 'none')]}"
-                    style="margin:0 3.5rem 0 3.5rem;"
-                >
-                    <div groups="helpdesk.group_helpdesk_manager" class="mb-3">
-                        🛡️
-                        <field name="priority_rule_id" />
-                        <span style="margin-right: 8px;margin-left: 8px;"> →</span>
-                        <field name="priority_estimated" widget="priority" />
-                    </div>
-                    <div groups="!helpdesk.group_helpdesk_manager" class="mb-3">
-                        🛡️
-                        <field
-                            name="priority_rule_id"
-                            readonly="1"
-                            options="{'no_open': True}"
-                        />
-                        <span style="margin-right: 8px;margin-left: 8px;"> →</span>
-                        <field
-                            name="priority_estimated"
-                            widget="priority"
-                            readonly="1"
-                        />
-                    </div>
-                    <div><field name="priority_suggestion_action" /></div>
-                    <div
-                        class="row"
-                        attrs="{'invisible': [('is_room_blocked', '=', True)]}"
-                    >
-                        <div class="col-12 col-sm-6 col-lg-4 text-info mb-2">
-                            <strong>⚠️ <field name="alert_level" />:
-                            <field name="occupancy_rate" widget="percentage" /></strong>
-                        </div>
-                    </div>
-                    <div
-                        class="row justify-content-center text-center"
-                        attrs="{'invisible': [('is_room_blocked', '=', False)]}"
-                    >
-                        <div class="col-12 col-sm-6 col-lg-4 text-info mb-2">
-                            <strong>⚠️ <field name="alert_level" />:
-                            <field name="occupancy_rate" widget="percentage" /></strong>
-                        </div>
-                        <div
-                            class="col-12 col-sm-6 col-lg-4 text-info mb-2"
-                            attrs="{'invisible': [('total_days_blocked', '=', 0)]}"
-                        >
-                            <strong>🕒 Days blocked: <field
-                                    name="total_days_blocked"
-                                /> days</strong>
-                        </div>
-                        <div
-                            class="col-12 col-sm-6 col-lg-4 text-info mb-2"
-                            attrs="{'invisible': [('total_days_blocked', '=', 0)]}"
-                        >
-                            <strong>📉 Potential impact: <field
-                                    name="ticket_blocked_room_adr_accumulated"
-                                /> €</strong>
-                        </div>
-                    </div>
-                </div>
-            </xpath>
         </field>
     </record>
     <record id="helpdesk_ticket_type_view_form_pms" model="ir.ui.view">
@@ -240,7 +168,15 @@
                 <field name="is_room_blocked" invisible="1" />
                 <field name="is_room" invisible="1" />
                 <field name="is_bathroom" invisible="1" />
-                <field name="location_type" />
+                <field name="is_location_required" invisible="1" />
+                <field
+                    name="location_type"
+                    attrs="{'invisible': [
+                        '|',
+                        ('pms_property_id', '=', False),
+                        ('is_location_required', '=', False)
+                    ]}"
+                />
             </xpath>
             <xpath expr="//field[@name='pms_room_id']" position="attributes">
                 <attribute name="attrs">
@@ -265,7 +201,6 @@
                 <field name="is_room" optional="hide" />
                 <field name="is_room_blocked" optional="hide" />
                 <field name="is_bathroom" optional="hide" />
-                <field name="alert_level" optional="hide" />
                 <field
                     name="tag_detail"
                     widget="many2many_tags"
@@ -346,17 +281,6 @@
                     name="group_company_external"
                     context="{'group_by': 'company_external_id'}"
                 />
-                <filter
-                    string="Priority Estimated"
-                    name="group_priority_estimated"
-                    context="{'group_by': 'priority_estimated'}"
-                />
-                <separator string="Alert by Occupancy" />
-                <filter
-                    string="Alert Level"
-                    name="filter_alert_level"
-                    context="{'group_by': 'alert_level'}"
-                />
             </xpath>
             <xpath expr="//filter[@name='my_follow_ticket']" position="before">
                 <filter
@@ -383,27 +307,6 @@
                     string="Repair External ID"
                     name="filter_company_external"
                     domain="[('company_external_id','!=', False)]"
-                />
-                <separator string="Priority Estimated" />
-                <filter
-                    string="Low Priority Estimated"
-                    name="filter_low_priority_estimated"
-                    domain="[('priority_estimated', '!=', False),('priority_estimated', '=', '0')]"
-                />
-                <filter
-                    string="Medium Priority Estimated"
-                    name="filter_urgent_priority_estimated"
-                    domain="[('priority_estimated', '!=', False),('priority_estimated', '=', '1')]"
-                />
-                <filter
-                    string="High Priority Estimated"
-                    name="filter_high_priority_estimated"
-                    domain="[('priority_estimated', '!=', False),('priority_estimated', '=', '2')]"
-                />
-                <filter
-                    string="Urgent Priority Estimated"
-                    name="filter_urgent_priority_estimated"
-                    domain="[('priority_estimated', '!=', False),('priority_estimated', '=', '3')]"
                 />
                 <separator />
             </xpath>

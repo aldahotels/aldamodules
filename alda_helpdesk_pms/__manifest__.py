@@ -31,16 +31,18 @@
     "category": "PMS",
     "data": [
         "security/ir.model.access.csv",
+        "report/helpdesk_analysis_views.xml",
         "views/menu_item.xml",
         "views/helpdesk_ticket_type_views.xml",
         "views/helpdesk_ticket_views.xml",
         "views/helpdesk_pms_form_template.xml",
-        "views/helpdesk_ticket_priority_rule_views.xml",
+        "views/helpdesk_team_views.xml",
         "data/ir_cron.xml",
     ],
     "assets": {
         "web.assets_frontend": [
             "alda_helpdesk_pms/static/src/js/ticket_form.js",
+            "alda_helpdesk_pms/static/src/css/ticket_form.css",
         ],
     },
     "installable": True,

@@ -1,7 +1,7 @@
+import base64
 import logging
-from datetime import datetime
 
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 from odoo.addons.web.controllers.utils import ensure_db
@@ -13,6 +13,13 @@ class HelpdeskFormController(http.Controller):
     @http.route("/helpdesk/ticket/new", type="http", auth="public", website=True)
     def helpdesk_ticket_form(self, **kwargs):
         ensure_db()
+        if not (
+            request.env.user.has_group("base.group_user")
+            or request.env.user.has_group("base.group_portal")
+        ):
+            _logger.warning("Acceso denegado para usuario %s", request.env.user.name)
+            return request.redirect("/web/login")
+
         user_id = request.env.user
         partner_id = request.env.user.partner_id
         property_id = int(kwargs.get("property_id", 0))
@@ -27,7 +34,16 @@ class HelpdeskFormController(http.Controller):
         team_ids = (
             request.env["helpdesk.team"]
             .sudo()
-            .search([("privacy_visibility", "in", visibility_filter)])
+            .search(
+                [
+                    ("privacy_visibility", "in", visibility_filter),
+                    ("is_pms_form", "=", True),
+                ]
+            )
+        )
+
+        is_location_required_ids = (
+            True if team_ids.filtered(lambda t: t.is_location_required) else False
         )
 
         ticket_type_ids = (
@@ -35,12 +51,14 @@ class HelpdeskFormController(http.Controller):
             .sudo()
             .search([("team_id", "in", team_ids.ids)])
         )
+
         is_overnight_room = (
             request.env["pms.room.type"]
             .sudo()
             .search([("overnight_room", "=", True)])
             .ids
         )
+
         room_ids = (
             request.env["pms.room"]
             .sudo()
@@ -69,6 +87,7 @@ class HelpdeskFormController(http.Controller):
                 "portal_user_id": user_id.id,
                 "user_name": user_id.name,
                 "team_ids": team_ids,
+                "is_location_required": is_location_required_ids,
                 "ticket_type_ids": ticket_type_ids,
                 "partner_name": partner_id.company_name if partner_id else "",
                 "partner_id": partner_id.id if partner_id else None,
@@ -98,9 +117,8 @@ class HelpdeskFormController(http.Controller):
         ticket_type_id = post.get("ticket_type_id", "")
         is_property_operated_normaly = post.get("is_property_operated_normaly") == "on"
         pms_room_id = int(room_id) if room_id else False
-        pms_property_id = int(pms_property) if pms_property else False
-        date = datetime.now()
         is_room_operated_normaly = True
+        reference_data = post.get("reference_data", "")
 
         if pms_room_id:
             room = request.env["pms.room"].browse(pms_room_id)
@@ -110,55 +128,80 @@ class HelpdeskFormController(http.Controller):
                 else True
             )
 
-        result = (
-            request.env["helpdesk.ticket"]
-            .sudo()
-            ._get_priority_estimated(
-                pms_property_id,
-                pms_room_id,
-                date,
-                is_room_operated_normaly,
-                is_property_operated_normaly,
+        if reference_data:
+            description_text = (
+                "\n\n"
+                + _("Data reference/reservation number: ")
+                + reference_data
+                + "\n\n <br/><br/>"
+                + post.get("description", "")
             )
-        )
-
-        _logger.info("Resultado de prioridad: %s", result)
-        priority_rule_id = result[0] if result else "0"
-        priority_estimated = result[1] if result else "0"
-        is_room_operated_normaly = result[3] if result else is_room_operated_normaly
-        is_property_operated_normaly = (
-            result[4] if result else is_property_operated_normaly
-        )
-
+            subject_text = post.get("subject", "") + " - Ref: " + reference_data
+        else:
+            description_text = post.get("description", "")
+            subject_text = post.get("subject", "")
         ticket = (
             request.env["helpdesk.ticket"]
             .with_context(from_web_create=True)
             .sudo()
             .create(
                 {
-                    "name": post.get("subject"),
+                    "name": subject_text,
                     "partner_id": int(post.get("partner_id")),
                     "partner_name": post.get("partner_name"),
-                    "pms_property_id": int(post.get("property_id")),
+                    "pms_property_id": int(pms_property),
                     "team_id": int(post.get("team_id")),
                     "ticket_type_id": ticket_type_id,
                     "location_type": post.get("location_type"),
                     "pms_room_id": pms_room_id,
                     "company_external_id": post.get("company_external_id"),
-                    "description": post.get("description"),
-                    "priority_rule_id": priority_rule_id,
-                    "priority": priority_estimated,
+                    "description": description_text,
+                    "priority": post.get("priority"),
                     "is_property_operated_normaly": is_property_operated_normaly,
                     "is_room_operated_normaly": is_room_operated_normaly,
                 }
             )
         )
-        _logger.info(
-            "Ticket creado: %s %s %s",
-            ticket.id,
-            ticket.is_property_operated_normaly,
-            ticket.is_room_operated_normaly,
-        )
+        _logger.info("Ticket creado: %s %s %s", ticket.id)
+
+        attachment = request.httprequest.files.get("attachment")
+        if post.get("attachment", False):
+            attachments = request.httprequest.files.getlist("attachment")
+            attachment_ids = []
+
+            for attachment in attachments:
+                if attachment and attachment.filename:
+                    try:
+                        attachment_data = base64.b64encode(attachment.read()).decode(
+                            "utf-8"
+                        )
+                        att = (
+                            request.env["ir.attachment"]
+                            .sudo()
+                            .create(
+                                {
+                                    "name": attachment.filename,
+                                    "type": "binary",
+                                    "datas": attachment_data,
+                                    "res_model": "helpdesk.ticket",
+                                    "res_id": ticket.id,
+                                    "public": True,
+                                    "mimetype": attachment.content_type,
+                                }
+                            )
+                        )
+                        attachment_ids.append(att.id)
+                    except Exception as e:
+                        _logger.error("Upload file failed %s: %s", ticket.id, str(e))
+
+            if attachment_ids:
+                message_body = post.get("description", "")
+                ticket.message_post(
+                    body=message_body,
+                    attachment_ids=attachment_ids,
+                    message_type="comment",
+                    subtype_xmlid="mail.mt_comment",
+                )
 
         return request.redirect(f"/helpdesk/ticket/confirmation/{ticket.id}")
 

@@ -33,6 +33,7 @@
                             <h2><center>Form New Ticket</center></h2>
                             <form
                             action="/helpdesk/ticket/submit"
+                            enctype="multipart/form-data"
                             method="POST"
                             class="mt-4"
                         >
@@ -89,8 +90,12 @@
                                 >
                                     <option value="">Select a department</option>
                                         <t t-foreach="team_ids" t-as="team">
-                                            <option t-att-value="team.id">
-                                            <t t-out="team.name" /></option>
+                                            <option
+                                            t-att-value="team.id"
+                                            t-att-data-requires-location="team.is_location_required"
+                                        >
+                                                <t t-out="team.name" />
+                                            </option>
                                         </t>
                                     </select>
                                 </div>
@@ -114,11 +119,7 @@
                                 </div>
                                 <div class="mb-3" id="location_field">
                                     <label class="form-label">Location</label>
-                                    <select
-                                    name="location_type"
-                                    class="form-control"
-                                    required="1"
-                                >
+                                    <select name="location_type" class="form-control">
                                         <option value="">Select Place</option>
                                         <t t-foreach="location_type_options" t-as="opt">
                                             <option t-att-value="opt[0]">
@@ -126,6 +127,21 @@
                                             </option>
                                         </t>
                                     </select>
+                                </div>
+
+                                <div
+                                class="mb-3"
+                                id="reference_data_field"
+                                style="display: none;"
+                            >
+                                    <label
+                                    class="form-label"
+                                >Reference/Reservation Number</label>
+                                    <input
+                                    type="text"
+                                    name="reference_data"
+                                    class="form-control"
+                                />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Room</label>
@@ -160,55 +176,97 @@
                                     <label
                                     class="form-label d-block"
                                 >will this be fixed by an external company?</label>
-
-                                    <div class="form-check form-check-inline">
+                                    <div class="form-check form-switch">
                                         <input
                                         class="form-check-input"
-                                        type="radio"
+                                        type="checkbox"
+                                        role="switch"
                                         name="company_external_id"
-                                        id="external_yes"
-                                        value="True"
+                                        id="is_company_external_id"
+                                        t-att-value="company_external_id or 'False'"
                                     />
-                                        <label
-                                        class="form-check-label"
-                                        for="external_yes"
-                                    >Yes</label>
-                                    </div>
-
-                                    <div class="form-check form-check-inline">
-                                        <input
-                                        class="form-check-input"
-                                        type="radio"
-                                        name="company_external_id"
-                                        id="external_no"
-                                        value=""
-                                        checked="checked"
-                                    />
-                                        <label
-                                        class="form-check-label"
-                                        for="external_no"
-                                    >No</label>
                                     </div>
                                 </div>
-
+                                <div class="mb-3">
+                                    <label class="form-label">Prioridad</label>
+                                    <div class="priority-widget">
+                                        <input
+                                        type="hidden"
+                                        name="priority"
+                                        id="priority_value"
+                                        value="0"
+                                    />
+                                        <div class="star-rating" data-priority="0">
+                                            <span
+                                            class="star"
+                                            data-value="1"
+                                        >&#9734;</span>
+                                            <span
+                                            class="star"
+                                            data-value="2"
+                                        >&#9734;</span>
+                                            <span
+                                            class="star"
+                                            data-value="3"
+                                        >&#9734;</span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="mb-3">
                                     <label class="form-label">Description</label>
                                     <textarea
                                     name="description"
                                     class="form-control"
                                     rows="4"
+                                    required="1"
                                 />
+                                    <small class="form-text text-muted mt-1">
+                                        What are you seeing? If is to error, What are you trying to do?
+                                    </small>
                                 </div>
+                                <div class="form-group row s_website_form_field mb-3">
+                                    <label
+                                    class="col-sm-3 col-form-label s_website_form_label"
+                                    for="attachment"
+                                >
+                                        <span
+                                        class="s_website_form_label_content"
+                                    >Attachment File</span>
+                                    </label>
+                                    <div class="col-sm">
+                                        <input
+                                        type="file"
+                                        class="form-control s_website_form_input"
+                                        name="attachment"
+                                        id="attachment"
+                                        multiple="true"
+                                    />
+                                        <small class="form-text text-muted mt-1">
+                                            Please send us a photo, screenshot, digital document, or any other resource
+                                            that provides relevant information to help us address your request.
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >Send ticket
+                                    </button>
+                                    <br />
+                                </div>
+                                <div class="mt-3">
+                                    <small class="form-text text-muted">
 
-                                <button
-                                type="submit"
-                                class="btn btn-primary"
-                            >Send ticket</button>
+                                    </small>
+                                </div>
                             </form>
                         </div>
                     </div>
+
             </div>
         </t>
+
     </template>
 
     <template id="confirmation_ticket" name="Confirmation Ticket">
@@ -253,47 +311,6 @@
                             </div>
                         </t>
                     </div>
-                </div>
-            </div>
-        </t>
-    </template>
-
-    <template id="access_denied_page_minimal" name="Access Denied Minimal">
-        <t t-call="web.empty_layout">
-            <style>
-                body {
-                    background-color: #f8f9fa;
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                }
-                .message-box {
-                    background: white;
-                    padding: 3rem;
-                    border-radius: 12px;
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-                    max-width: 500px;
-                    margin: 0 auto;
-                }
-                .message-box h1 {
-                    color: #dc3545;
-                    margin-bottom: 1rem;
-                }
-                .message-box p {
-                    color: #6c757d;
-                    font-size: 1.1rem;
-                }
-                .btn-primary {
-                    background-color: #007bff;
-                    border-color: #007bff;
-                    padding: 10px 25px;
-                    font-weight: 500;
-                }
-            </style>
-
-            <div class="container-fluid min-vh-100 d-flex align-items-center">
-                <div class="message-box">
-                    <h1>Acceso Denegado</h1>
-                    <p>No tienes permisos para ver este formulario.</p>
-                    <a href="/web/login" class="btn btn-primary">Iniciar sesión</a>
                 </div>
             </div>
         </t>
