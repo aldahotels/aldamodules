@@ -51,27 +51,56 @@ class BudgetData(models.Model):
         help="Room Revenue from pms.budget DataBI",
     )
 
+    # New fields for real PMS data
+    room_nights_real = fields.Float(
+        string="Room Nights (Real)",
+        compute="_compute_real_data_from_pms",
+        store=True,
+        digits=(6, 2),
+        help="Real Room Nights from PMS reservations",
+    )
+
+    room_revenue_real = fields.Float(
+        string="Room Revenue (Real)",
+        compute="_compute_real_data_from_pms",
+        store=True,
+        digits=(6, 2),
+        help="Real Room Revenue from PMS reservations",
+    )
+
+    blocked_rooms = fields.Float(
+        compute="_compute_real_data_from_pms",
+        store=True,
+        digits=(6, 2),
+        help="Blocked rooms from PMS",
+    )
+
     # Field for total rooms available in the month
     total_rooms_available = fields.Integer(
         compute="_compute_total_rooms_available",
         store=True,
-        help="Total rooms available from pms.availability for all days of the specified month",
+        help="Total rooms available",
     )
 
     # Field for total pax in the month
     total_pax = fields.Integer(
-        compute="_compute_total_pax",
+        compute="_compute_real_data_from_pms",
         store=True,
-        help="Total guests (pax) from PMS reservations for all days of the specified month",
+        help="Total guests (pax) from PMS reservations",
     )
+
+    def _get_excluded_room_type_ids(self):
+        "Get list of excluded room type IDs"
+        return [103, 79, 80, 81, 28, 9, 102, 82, 83, 86, 87, 84, 85, 21, 99, 96]
 
     @api.depends("pms_property_id", "year", "month")
     def _compute_total_rooms_available(self):
-        "Sum the total available rooms from pms.availability"
+        "Calculate total rooms available"
         for record in self:
             if not (record.pms_property_id and record.year and record.month):
                 record.total_rooms_available = 0
                 continue
+
             try:
                 year_int = int(record.year)
                 month_int = int(record.month)
@@ -80,31 +109,38 @@ class BudgetData(models.Model):
                     last_day = date(year_int + 1, 1, 1) - timedelta(days=1)
                 else:
                     last_day = date(year_int, month_int + 1, 1) - timedelta(days=1)
-                # Buscar todos los registros de disponibilidad para el mes completo
-                availabilities = self.env["pms.availability"].search(
+
+                # Get excluded room type IDs
+                excluded_room_type_ids = record._get_excluded_room_type_ids()
+
+                # Count total rooms
+                total_rooms = self.env["pms.room"].search_count(
                     [
-                        ("date", ">=", first_day),
-                        ("date", "<=", last_day),
                         ("pms_property_id", "=", record.pms_property_id.id),
+                        ("room_type_id", "not in", excluded_room_type_ids),
+                        ("active", "=", True),
+                        ("room_type_id.overnight_room", "=", True),
                     ]
                 )
-                # Sumar todas las habitaciones disponibles de todos los días del mes
-                record.total_rooms_available = sum(availabilities.mapped("real_avail"))
+
+                # Calculate days in month
+                days_in_month = (last_day - first_day).days + 1
+
+                # Total rooms available = total_rooms * days_in_month
+                record.total_rooms_available = total_rooms * days_in_month
+
                 _logger.info(
-                    "Calculated total_rooms_available for %s "
-                    "%s/%s: %s "
-                    "(from %s availability records from %s to %s)",
+                    "Calculated total_rooms_available for %s %s/%s: %s rooms × %s days = %s",
                     record.pms_property_id.name,
                     record.year,
                     record.month,
+                    total_rooms,
+                    days_in_month,
                     record.total_rooms_available,
-                    len(availabilities),
-                    first_day,
-                    last_day,
                 )
             except (ValueError, TypeError) as e:
                 _logger.warning(
-                    "Error calculating total_rooms_available for %s " "%s/%s: %s",
+                    "Error calculating total_rooms_available for %s %s/%s: %s",
                     record.pms_property_id.name,
                     record.year,
                     record.month,
@@ -113,12 +149,16 @@ class BudgetData(models.Model):
                 record.total_rooms_available = 0
 
     @api.depends("pms_property_id", "year", "month")
-    def _compute_total_pax(self):
-        "Sum total de pax (adult + child)"
+    def _compute_real_data_from_pms(self):
+        "Compute real data from PMS"
         for record in self:
             if not (record.pms_property_id and record.year and record.month):
+                record.room_nights_real = 0
+                record.room_revenue_real = 0
+                record.blocked_rooms = 0
                 record.total_pax = 0
                 continue
+
             try:
                 year_int = int(record.year)
                 month_int = int(record.month)
@@ -127,46 +167,82 @@ class BudgetData(models.Model):
                     last_day = date(year_int + 1, 1, 1) - timedelta(days=1)
                 else:
                     last_day = date(year_int, month_int + 1, 1) - timedelta(days=1)
+
+                excluded_room_type_ids = record._get_excluded_room_type_ids()
+
+                # Get filtered reservation lines
                 reservation_lines = self.env["pms.reservation.line"].search(
                     [
                         ("date", ">=", first_day),
                         ("date", "<=", last_day),
-                        ("occupies_availability", "=", True),
+                        ("pms_property_id", "=", record.pms_property_id.id),
+                        ("room_id.room_type_id", "not in", excluded_room_type_ids),
+                        ("room_id.room_type_id.overnight_room", "=", True),
+                        ("room_id.active", "=", True),
+                        "|",
+                        "&",
+                        ("reservation_id.reservation_type", "=", "normal"),
+                        ("state", "not in", ["draft", "cancel"]),
+                        "&",
+                        ("reservation_id.reservation_type", "=", "out"),
+                        ("state", "not in", ["draft", "cancel"]),
                     ]
                 )
-                # Filtrar solo las reservas activas (no canceladas ni draft)
+
+                # Initialize counters
                 total_pax = 0
+                total_revenue = 0
+                room_nights = 0
+                blocked_rooms = 0
+
+                # Process each reservation line
                 for line in reservation_lines:
                     reservation = line.reservation_id
-                    if (
-                        reservation
-                        and reservation.pms_property_id.id == record.pms_property_id.id
-                        and reservation.state not in ("cancel", "draft")
-                    ):
-                        total_pax += reservation.adults + reservation.children
+
+                    if reservation.reservation_type == "normal":
+                        # Count PAX (adults + children)
+                        total_pax += (reservation.adults or 0) + (
+                            reservation.children or 0
+                        )
+                        # Sum revenue
+                        total_revenue += line.price_day_total or 0
+                        # Count room nights
+                        room_nights += 1
+                    elif reservation.reservation_type == "out":
+                        # Count blocked rooms
+                        blocked_rooms += 1
+
+                # Assign computed values
                 record.total_pax = total_pax
+                record.room_revenue_real = total_revenue
+                record.room_nights_real = room_nights
+                record.blocked_rooms = blocked_rooms
+
                 _logger.info(
-                    "Calculated total_pax for %s "
-                    "%s/%s: %s "
-                    "(from %s reservation lines "
-                    "from %s to %s)",
+                    "Calculated real PMS data for %s %s/%s: "
+                    "PAX=%s, Revenue=%s, RN=%s, Blocked=%s (from %s reservation lines)",
                     record.pms_property_id.name,
                     record.year,
                     record.month,
                     record.total_pax,
+                    record.room_revenue_real,
+                    record.room_nights_real,
+                    record.blocked_rooms,
                     len(reservation_lines),
-                    first_day,
-                    last_day,
                 )
+
             except (ValueError, TypeError) as e:
                 _logger.warning(
-                    "Error calculating total_pax for %s " "%s/%s: %s",
+                    "Error calculating real PMS data for %s %s/%s: %s",
                     record.pms_property_id.name,
                     record.year,
                     record.month,
                     e,
                 )
                 record.total_pax = 0
+                record.room_revenue_real = 0
+                record.room_nights_real = 0
+                record.blocked_rooms = 0
 
     def action_diagnose_availability(self):
         "Diagnostic of availability and guests"
@@ -181,6 +257,7 @@ class BudgetData(models.Model):
                     last_day = date(year_int + 1, 1, 1) - timedelta(days=1)
                 else:
                     last_day = date(year_int, month_int + 1, 1) - timedelta(days=1)
+
                 availabilities = self.env["pms.availability"].search(
                     [
                         ("date", ">=", first_day),
@@ -188,14 +265,16 @@ class BudgetData(models.Model):
                         ("pms_property_id", "=", record.pms_property_id.id),
                     ]
                 )
-                # Tipos de habitación
+
+                # Room types in the property
                 room_types = self.env["pms.room.type"].search(
                     [
                         ("room_ids.pms_property_id", "=", record.pms_property_id.id),
                         ("room_ids.active", "=", True),
                     ]
                 )
-                # Diagnóstico de huéspedes (PAX) por día
+
+                # Guests (PAX) for days in the month
                 reservation_lines = self.env["pms.reservation.line"].search(
                     [
                         ("date", ">=", first_day),
@@ -203,6 +282,7 @@ class BudgetData(models.Model):
                         ("occupies_availability", "=", True),
                     ]
                 )
+
                 pax_by_day = {}
                 for line in reservation_lines:
                     reservation = line.reservation_id
@@ -215,8 +295,9 @@ class BudgetData(models.Model):
                         pax_by_day[line.date] += (
                             reservation.adults + reservation.children
                         )
+
                 message = (
-                    "AVAILABILITY & PAX DIAGNOSIS - "
+                    f"AVAILABILITY & PAX DIAGNOSIS - "
                     f"{record.pms_property_id.name} {record.year}/{record.month}: \n"
                     f"📅 Period: {first_day} to {last_day}\n"
                     f"📊 Availability records found: {len(availabilities)}\n"
@@ -227,23 +308,29 @@ class BudgetData(models.Model):
                     f"{sum(room_types.mapped('total_rooms_count'))}\n"
                     "📋 AVAILABILITY detail by day:"
                 )
+
                 for avail in availabilities.sorted("date"):
                     message += (
                         f"\n  {avail.date} - {avail.room_type_id.name}: "
                         f"{avail.real_avail} rooms"
                     )
+
                 if not availabilities:
                     message += "\n⚠️  No availability records found for this period"
+
                 message += "\n\n📋 PAX detail by day:"
                 for day in sorted(pax_by_day.keys()):
                     message += f"\n  {day}: {pax_by_day[day]} pax"
+
                 if not pax_by_day:
                     message += "\n⚠️  No reservation lines found for this period"
+
                 total_rooms = sum(availabilities.mapped("real_avail"))
                 total_pax = sum(pax_by_day.values())
                 message += "\n\n✅ CALCULATED TOTALS:"
                 message += f"\n   🛏️ Available rooms: {total_rooms}"
                 message += f"\n   👥 Total pax: {total_pax}"
+
                 return {
                     "type": "ir.actions.client",
                     "tag": "display_notification",
@@ -366,6 +453,54 @@ class BudgetData(models.Model):
                     f"Updated {updated_count} existing records "
                     "from pms.budget DataBI."
                 ),
+                "type": "success",
+                "sticky": True,
+            },
+        }
+
+    def action_load_from_pms_real_data(self):
+        "Load real data from PMS using ORM (replaces DataBI dependency)"
+        for record in self:
+            if record.pms_property_id and record.year and record.month:
+                # Trigger recomputation of real data
+                record._compute_real_data_from_pms()
+                record._compute_total_rooms_available()
+
+                return {
+                    "type": "ir.actions.client",
+                    "tag": "display_notification",
+                    "params": {
+                        "title": "Real PMS Data Loaded",
+                        "message": (
+                            f"Loaded from PMS: "
+                            f"RN={record.room_nights_real}, "
+                            f"Revenue={record.room_revenue_real}, "
+                            f"PAX={record.total_pax}, "
+                            f"Blocked={record.blocked_rooms}, "
+                            f"Available={record.total_rooms_available}"
+                        ),
+                        "type": "success",
+                    },
+                }
+
+    def action_load_all_real_data(self):
+        "Load real PMS data for all records"
+        records = self.search([])
+        processed_count = 0
+
+        for record in records:
+            if record.pms_property_id and record.year and record.month:
+                # Trigger recomputation
+                record._compute_real_data_from_pms()
+                record._compute_total_rooms_available()
+                processed_count += 1
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "Bulk Real Data Load Complete",
+                "message": f"Processed {processed_count} records with real PMS data.",
                 "type": "success",
                 "sticky": True,
             },

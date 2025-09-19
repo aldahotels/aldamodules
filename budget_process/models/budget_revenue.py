@@ -38,9 +38,9 @@ class BudgetRevenue(models.Model):
             ("rooms_available", "Rooms Available"),
             ("rn_ly", "Room Nights"),
             ("increase_decrease_rn_ly", "increase or decrease RN LY"),
-            ("rn_presupuestadas", "RN Presupuestadas"),
-            ("occ_presupuestada", "Occ Presupuestada"),
-            ("pax_presupuestadas", "Pax Presupuestadas"),
+            ("rn_budgeted", "Budgeted RN"),
+            ("occ_budgeted", "Budgeted Occ"),
+            ("pax_budgeted", "Budgeted Pax"),
             ("room_revenue_ly_sin_iva", "Room Revenue LY (SIN IVA)"),
             ("adr_ly_sin_iva", "ADR LY (SIN IVA)"),
             ("aumento_disminucion_adr_ly", "Aumento o Disminución ADR / LY"),
@@ -162,7 +162,7 @@ class BudgetRevenue(models.Model):
 
     def _get_rooms_nights_from_budget_data(self):
         """Get room nights data from budget.data model"""
-        return self._get_budget_data_values("rn_ly", "room_nights")
+        return self._get_budget_data_values("rn_ly", "room_nights_real")
 
     def _get_increase_decrease_rn_ly_values(self):
         """

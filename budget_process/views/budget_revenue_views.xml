@@ -57,14 +57,6 @@
                         help="Show current synchronization status"
                     />
           <button
-                        name="action_refresh_room_nights"
-                        type="object"
-                        string="🌙 Refresh Room Nights"
-                        class="btn-primary"
-                        attrs="{'invisible': ['|', ('record_type', '!=', 'rn_ly'), ('budget_type', '!=', 'budgeted')]}"
-                        help="Refresh room nights data from Budget Data"
-                    />
-          <button
                         name="action_diagnose_current_records"
                         type="object"
                         string="🔍 Diagnose Records"
@@ -83,7 +75,7 @@
               <field
                                 name="percentage_increase_decrease"
                                 attrs="{'invisible': [('record_type', '!=', 'increase_decrease_rn_ly')],
-                             'required': [('record_type', '=', 'increase_decrease_rn_ly')]}"
+                    'required': [('record_type', '=', 'increase_decrease_rn_ly')]}"
                                 widget="percentage"
                             />
             </group>

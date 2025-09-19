@@ -21,6 +21,16 @@
                 <field name="month" />
                 <field name="room_nights" string="Room Nights" />
                 <field name="room_revenue" string="Room Revenue" />
+                <field
+                    name="room_nights_real"
+                    string="Room Nights (Real)"
+                    sum="Total Real RN"
+                />
+                <field
+                    name="room_revenue_real"
+                    string="Room Revenue (Real)"
+                    sum="Total Real Revenue"
+                />
                 <field name="total_rooms_available" string="Total Rooms Available" />
                 <field name="total_pax" string="Total Pax" />
 
@@ -50,20 +60,33 @@
                     />
                 </header>
                 <sheet>
-                    <group>
+                    <group string="Identification Info" colspan="2">
                         <field name="pms_property_id" />
                         <field name="year" />
                         <field name="month" />
                     </group>
 
-                    <group string="Budget Data from DataBI" colspan="2">
+                    <group
+                        string="Real Data from PMS vs Budget Data from DataBI"
+                        colspan="2"
+                    >
+                        <group>
+                            <field
+                                name="room_nights_real"
+                                readonly="1"
+                                help="Real Room Nights from PMS reservations"
+                            />
+                            <field
+                                name="room_revenue_real"
+                                readonly="1"
+                                help="Real Room Revenue from PMS reservations"
+                            />
+                            <field name="total_rooms_available" />
+                            <field name="total_pax" />
+                        </group>
                         <group>
                             <field name="room_nights" />
                             <field name="room_revenue" />
-                        </group>
-                        <group>
-                            <field name="total_rooms_available" />
-                            <field name="total_pax" />
                         </group>
                     </group>
                 </sheet>
@@ -100,7 +123,7 @@
         name="Budget Data"
         parent="menu_budget_root"
         action="action_budget_property_data"
-        sequence="10"
+        sequence="0"
         groups="base.group_user"
     />
 </odoo>
