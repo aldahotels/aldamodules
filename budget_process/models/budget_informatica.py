@@ -56,19 +56,19 @@ class BudgetInformatica(models.Model):
         ),
     )
 
-    # Automatic monthly fields
-    oct = fields.Float(compute="_compute_monthly_amounts", store=True)
-    nov = fields.Float(compute="_compute_monthly_amounts", store=True)
-    dec = fields.Float(compute="_compute_monthly_amounts", store=True)
-    jan = fields.Float(compute="_compute_monthly_amounts", store=True)
-    feb = fields.Float(compute="_compute_monthly_amounts", store=True)
-    mar = fields.Float(compute="_compute_monthly_amounts", store=True)
-    apr = fields.Float(compute="_compute_monthly_amounts", store=True)
-    may = fields.Float(compute="_compute_monthly_amounts", store=True)
-    jun = fields.Float(compute="_compute_monthly_amounts", store=True)
-    jul = fields.Float(compute="_compute_monthly_amounts", store=True)
-    aug = fields.Float(compute="_compute_monthly_amounts", store=True)
-    sep = fields.Float(compute="_compute_monthly_amounts", store=True)
+    # Automatic monthly fields that should be computed automatically
+    oct = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    nov = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    dec = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    jan = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    feb = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    mar = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    apr = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    may = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    jun = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    jul = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    aug = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    sep = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
 
     # Auxiliary methods
     def _is_rooms_available_budgeted(self):

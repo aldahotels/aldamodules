@@ -55,6 +55,6 @@
         name="Hotels"
         parent="menu_budget_root"
         action="action_budget_hotel"
-        sequence="0"
+        sequence="10"
     />
 </odoo>
