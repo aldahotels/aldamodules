@@ -11,6 +11,4 @@ from . import budget_fb
 from . import budget_controller
 from . import budget_cfo
 from . import budget_capex
-from . import budget_hotel
-from . import budget_rn
 from . import budget_data

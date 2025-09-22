@@ -93,14 +93,6 @@
             </form>
         </field>
     </record>
-    <!-- Action wizard -->
-    <record id="action_budget_load_wizard" model="ir.actions.act_window">
-        <field name="name">Load Budget Data by Year</field>
-        <field name="res_model">budget.load.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="view_budget_load_wizard_form" />
-        <field name="target">new</field>
-    </record>
     <!-- Acción para mostrar vista de presupuesto con datos PMS -->
     <record id="action_budget_property_data" model="ir.actions.act_window">
         <field name="name">Budget Data</field>
@@ -113,17 +105,16 @@
                 Create a comparison record to load Budget data from DataBI!
             </p>
             <p>
-                Use the " Load Budget by Year" menu to get data from pms.budget DataBI.
-            </p>
+                Use the " Load Budget by Year" menu to get data from pms reservation           </p>
         </field>
     </record>
       <!-- Menú principal del módulo Budget Data    -->
     <menuitem
-        id="menu_budget__main"
+        id="menu_budget_data"
         name="Budget Data"
         parent="menu_budget_root"
         action="action_budget_property_data"
-        sequence="0"
+        sequence="1"
         groups="base.group_user"
     />
 </odoo>

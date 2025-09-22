@@ -10,11 +10,6 @@ access_budget_taz_user,Presupuesto TAZ,model_budget_taz,base.group_user,1,1,1,1
 access_budget_controller_user,Presupuesto Controller,model_budget_controller,base.group_user,1,1,1,1
 access_budget_base_user,Presupuesto Base,model_budget_base,base.group_user,1,1,1,1
 access_budget_capex_group,budget.capex group,model_budget_capex,group_budget_capex,1,1,1,1
-access_budget_hotel_manager,budget.hotel.manager,model_budget_hotel,budget_group_manager,1,1,1,1
-access_budget_hotel_user,budget.hotel.user,model_budget_hotel,budget_group_user,1,1,1,1
-access_budget_hotel_base_user,budget.hotel.base.user,model_budget_hotel,base.group_user,1,1,1,1
-access_budget_hotel_all,budget.hotel.all,model_budget_hotel,,1,0,0,0
-access_budget_rn_user,Presupuesto Room Nights,model_budget_rn,base.group_user,1,1,1,1
 access_budget_data_user,Budget Data,model_budget_data,base.group_user,1,1,1,1
 access_budget_data_manager,Budget Data Manager,model_budget_data,budget_group_manager,1,1,1,1
 access_budget_load_wizard_user,Budget Load Wizard,model_budget_load_wizard,base.group_user,1,1,1,1

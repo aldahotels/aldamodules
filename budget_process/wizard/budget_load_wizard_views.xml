@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- Wizard View -->
     <record id="view_budget_load_wizard_form" model="ir.ui.view">
         <field name="name">budget.load.wizard.form</field>
@@ -8,14 +7,14 @@
         <field name="arch" type="xml">
             <form string="Load Budget Data by Year">
                 <group>
-                    <field name="year" />
+                    <field name="year" required="1" />
                     <field name="property_ids" widget="many2many_tags" />
                 </group>
                 <footer>
                     <button
                         name="action_load_budget_data"
+                        string="Load Budget Data"
                         type="object"
-                        string=" Load Budget Data"
                         class="btn-primary"
                     />
                     <button string="Cancel" class="btn-secondary" special="cancel" />
@@ -24,4 +23,12 @@
         </field>
     </record>
 
+    <!-- Action Wizard -->
+    <record id="action_budget_load_wizard" model="ir.actions.act_window">
+        <field name="name">Load Budget by Year</field>
+        <field name="res_model">budget.load.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_budget_load_wizard_form" />
+    </record>
 </odoo>
