@@ -162,12 +162,12 @@
     </field>
   </record>
 
-  <menuitem
-        id="menu_budget_capex_action"
+    <menuitem
+        id="menu_budget_capex"
         name="Capex"
         parent="menu_budget_root"
         action="action_budget_capex"
         sequence="10"
+        groups="base.group_user"
     />
-
 </odoo>
