@@ -163,11 +163,12 @@
   </record>
 
   <menuitem
-        id="menu_budget_operaciones_action"
+        id="menu_budget_operaciones"
         name="Operaciones"
         parent="menu_budget_root"
         action="action_budget_operaciones"
         sequence="4"
+        groups="base.group_user"
     />
 
 </odoo>

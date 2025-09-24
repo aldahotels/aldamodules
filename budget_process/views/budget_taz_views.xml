@@ -163,11 +163,12 @@
   </record>
 
   <menuitem
-        id="menu_budget_taz_action"
+        id="menu_budget_taz"
         name="Taz"
         parent="menu_budget_root"
         action="action_budget_taz"
         sequence="8"
+        groups="base.group_user"
     />
 
 </odoo>

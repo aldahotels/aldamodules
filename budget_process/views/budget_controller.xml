@@ -163,11 +163,12 @@
   </record>
 
   <menuitem
-        id="menu_budget_controller_action"
+        id="menu_budget_controller"
         name="Controller"
         parent="menu_budget_root"
         action="action_budget_controller"
         sequence="9"
+        groups="base.group_user"
     />
 
 </odoo>

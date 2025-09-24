@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Root Menu -->
+    <menuitem
+        id="menu_budget_root"
+        name="Budget Process"
+        sequence="1"
+        groups="base.group_user"
+        web_icon="budget_process,static/description/icon.png"
+    />
+</odoo>

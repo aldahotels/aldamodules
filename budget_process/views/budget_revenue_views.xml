@@ -217,11 +217,12 @@
     </field>
   </record>
 
-  <menuitem
-        id="menu_budget_revenue_action"
+    <menuitem
+        id="menu_budget_revenue"
         name="Revenue"
         parent="menu_budget_root"
         action="action_budget_revenue"
         sequence="2"
+        groups="base.group_user"
     />
 </odoo>
