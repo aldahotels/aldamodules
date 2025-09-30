@@ -163,11 +163,12 @@
   </record>
 
   <menuitem
-        id="menu_budget_marketing_action"
+        id="menu_budget_marketing"
         name="Marketing"
         parent="menu_budget_root"
         action="action_budget_marketing"
         sequence="3"
+        groups="base.group_user"
     />
 
 </odoo>

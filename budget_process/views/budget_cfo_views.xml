@@ -167,7 +167,7 @@
         name="CFO"
         parent="menu_budget_root"
         action="action_budget_cfo"
-        sequence="2"
+        sequence="7"
+        groups="base.group_user"
     />
-
 </odoo>

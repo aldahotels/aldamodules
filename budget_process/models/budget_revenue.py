@@ -1,7 +1,6 @@
 # Copyright 2025 Alexandra Suarez Graterol (Alda hotels) <saya.alex20@gmail.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-
 import logging
 
 from odoo import api, fields, models
@@ -37,11 +36,11 @@ class BudgetRevenue(models.Model):
         [
             ("rooms_available_ly", "Rooms Available LY"),
             ("rooms_available", "Rooms Available"),
-            ("rn_ly", "RN LY"),
-            ("aumento_disminucion_rn_ly", "Aumento o Disminución RN / LY"),
-            ("rn_presupuestadas", "RN Presupuestadas"),
-            ("occ_presupuestada", "Occ Presupuestada"),
-            ("pax_presupuestadas", "Pax Presupuestadas"),
+            ("rn_ly", "Room Nights"),
+            ("increase_decrease_rn_ly", "increase or decrease RN LY"),
+            ("rn_budgeted", "Budgeted RN"),
+            ("occ_budgeted", "Budgeted Occ"),
+            ("pax_budgeted", "Budgeted Pax"),
             ("room_revenue_ly_sin_iva", "Room Revenue LY (SIN IVA)"),
             ("adr_ly_sin_iva", "ADR LY (SIN IVA)"),
             ("aumento_disminucion_adr_ly", "Aumento o Disminución ADR / LY"),
@@ -69,18 +68,24 @@ class BudgetRevenue(models.Model):
     )
 
     # Automatic monthly fields that should be computed automatically
-    oct = fields.Float(compute="_compute_monthly_amounts", store=True)
-    nov = fields.Float(compute="_compute_monthly_amounts", store=True)
-    dec = fields.Float(compute="_compute_monthly_amounts", store=True)
-    jan = fields.Float(compute="_compute_monthly_amounts", store=True)
-    feb = fields.Float(compute="_compute_monthly_amounts", store=True)
-    mar = fields.Float(compute="_compute_monthly_amounts", store=True)
-    apr = fields.Float(compute="_compute_monthly_amounts", store=True)
-    may = fields.Float(compute="_compute_monthly_amounts", store=True)
-    jun = fields.Float(compute="_compute_monthly_amounts", store=True)
-    jul = fields.Float(compute="_compute_monthly_amounts", store=True)
-    aug = fields.Float(compute="_compute_monthly_amounts", store=True)
-    sep = fields.Float(compute="_compute_monthly_amounts", store=True)
+    oct = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    nov = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    dec = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    jan = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    feb = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    mar = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    apr = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    may = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    jun = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    jul = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    aug = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+    sep = fields.Float(compute="_compute_monthly_amounts", store=True, readonly=False)
+
+    percentage_increase_decrease = fields.Float(
+        string="Percentage (%)",
+        help=("Percentage for increase/decrease RN LY calculation. "),
+        digits=(5, 2),  # 5 dígitos totales, 2 decimales (ej: 125.50%)
+    )
 
     # Auxiliary methods
     def _is_rooms_available_budgeted(self):
@@ -88,6 +93,13 @@ class BudgetRevenue(models.Model):
 
     def _is_room_nights_budgeted(self):
         return self.record_type == "rn_ly" and self.budget_type == "budgeted"
+
+    def _is_increase_decrease_rn_ly_budgeted(self):
+        """Check if it's a budgeted increase/decrease RN LY record"""
+        return self.record_type == "increase_decrease_rn_ly" and self.budget_type in [
+            "budgeted",
+            "real",
+        ]
 
     def _get_fiscal_month_mapping(self):
         """
@@ -115,7 +127,13 @@ class BudgetRevenue(models.Model):
             "sep": (fiscal_end_year, 9),
         }
 
-    @api.depends("record_type", "budget_type", "hotel", "fiscal_year_id")
+    @api.depends(
+        "record_type",
+        "budget_type",
+        "hotel",
+        "fiscal_year_id",
+        "percentage_increase_decrease",
+    )
     def _compute_monthly_amounts(self):
         """
         Compute monthly amounts based on record_type and budget_type
@@ -129,7 +147,9 @@ class BudgetRevenue(models.Model):
                     monthly_values = record._get_rooms_available_from_budget_data()
                 elif record.record_type == "rn_ly":
                     monthly_values = record._get_rooms_nights_from_budget_data()
-                # Add more record types here as needed
+
+            if record.record_type == "increase_decrease_rn_ly":
+                monthly_values = record._get_increase_decrease_rn_ly_values()
 
             for month in months:
                 setattr(record, month, monthly_values[month])
@@ -139,6 +159,143 @@ class BudgetRevenue(models.Model):
         return self._get_budget_data_values(
             "rooms_disponibles", "total_rooms_available"
         )
+
+    def _get_rooms_nights_from_budget_data(self):
+        """Get room nights data from budget.data model"""
+        return self._get_budget_data_values("rn_ly", "room_nights_real")
+
+    def _get_increase_decrease_rn_ly_values(self):
+        """
+        Get percentage values for increase/decrease RN LY
+        Fills all monthly fields with the same percentage value
+        """
+        monthly_values = {month: 0 for month in months}
+
+        # Only fill if it's the correct record type and budget type
+        if self._is_increase_decrease_rn_ly_budgeted():
+            percentage_value = self.percentage_increase_decrease or 0.0
+
+            # Fill all months with the same percentage value
+            for month in months:
+                monthly_values[month] = percentage_value
+
+            _logger.info(
+                "Applied percentage %s%% to all months for %s (fiscal %s)",
+                percentage_value,
+                self.hotel.name if self.hotel else "No Hotel",
+                self.fiscal_year_id.name if self.fiscal_year_id else "No Fiscal Year",
+            )
+
+        return monthly_values
+
+    def _get_budget_data_values(self, record_type, field_name):
+        """
+        Generic method to get values from budget.data
+        for different record types and fields
+        """
+        _logger.info(
+            "Starting _get_budget_data_values for hotel: %s, "
+            "Record Type: %s, Field: %s",
+            self.hotel,
+            record_type,
+            field_name,
+        )
+        _logger.info(
+            "Fiscal Year: %s",
+            self.fiscal_year_id.name if self.fiscal_year_id else "No fiscal year",
+        )
+
+        monthly_values = {month: 0 for month in months}
+
+        if not self.hotel or not self.fiscal_year_id:
+            _logger.info("Missing hotel or fiscal_year_id - returning zeros")
+            return monthly_values
+
+        # Get fiscal-month mapping for the fiscal year
+        month_mapping = self._get_fiscal_month_mapping()
+        _logger.info("Month mapping: %s", month_mapping)
+
+        # Search in budget.data using year/month
+        # (without record_type/budget_type filters)
+        for fiscal_month, (calendar_year, calendar_month) in month_mapping.items():
+            budget_data_records = self.env["budget.data"].search(
+                [
+                    ("pms_property_id", "=", self.hotel.id),
+                    ("year", "=", str(calendar_year)),
+                    ("month", "=", str(calendar_month)),
+                ]
+            )
+
+            _logger.info(
+                "Searching for %s/%02d - Found %s records",
+                calendar_year,
+                calendar_month,
+                len(budget_data_records),
+            )
+
+            for budget_data in budget_data_records:
+                current_value = getattr(budget_data, field_name, 0) or 0
+                monthly_values[fiscal_month] = current_value
+                _logger.info(
+                    "Mapped %s/%02d to fiscal month %s: %s",
+                    calendar_year,
+                    calendar_month,
+                    fiscal_month,
+                    current_value,
+                )
+
+        _logger.info("Final monthly values: %s", monthly_values)
+        return monthly_values
+
+    @api.onchange("percentage_increase_decrease")
+    def _onchange_percentage_increase_decrease(self):
+        """
+        Recalculate monthly amounts when percentage changes
+        Only for increase_decrease_rn_ly budgeted records
+        """
+        if self._is_increase_decrease_rn_ly_budgeted():
+            self._compute_monthly_amounts()
+
+    def action_apply_percentage_to_months(self):
+        """
+        Apply percentage to all monthly fields for increase/decrease RN LY records
+        """
+        updated_count = 0
+
+        for record in self:
+            if record._is_increase_decrease_rn_ly_budgeted():
+                if not record.fiscal_year_id:
+                    _logger.warning(
+                        "Record %s missing fiscal_year_id, skipping", record.id
+                    )
+                    continue
+
+                percentage_value = record.percentage_increase_decrease or 0.0
+                monthly_updates = {month: percentage_value for month in months}
+
+                record.write(monthly_updates)
+                updated_count += 1
+
+                _logger.info(
+                    "Applied %s%% to all months for record %s (%s)",
+                    percentage_value,
+                    record.id,
+                    record.hotel.name if record.hotel else "No Hotel",
+                )
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "Percentage Applied",
+                "message": (
+                    "Applied percentage to %s "
+                    "increase/decrease RN LY records" % updated_count
+                ),
+                "type": "success",
+                "sticky": True,
+            },
+        }
 
     def action_refresh_rooms_available(self):
         """
@@ -451,8 +608,8 @@ class BudgetRevenue(models.Model):
 
                             fiscal_year = self.env["account.fiscal.year"].search(
                                 [
-                                    ("date_from", "<=", f"{latest_year}-12-31"),
-                                    ("date_to", ">=", f"{latest_year}-01-01"),
+                                    ("date_from", "<=", "%s-12-31" % latest_year),
+                                    ("date_to", ">=", "%s-01-01" % latest_year),
                                 ],
                                 limit=1,
                             )
@@ -530,69 +687,6 @@ class BudgetRevenue(models.Model):
             },
         }
 
-    def _get_rooms_nights_from_budget_data(self):
-        "Get room nights data from budget.data model"
-        return self._get_budget_data_values("rn_ly", "room_nights")
-
-    def _get_budget_data_values(self, record_type, field_name):
-        """
-        Generic method to get values from budget.data
-        for different record types and fields
-        """
-        _logger.info(
-            "Starting _get_budget_data_values for hotel: %s, "
-            "Record Type: %s, Field: %s",
-            self.hotel,
-            record_type,
-            field_name,
-        )
-        _logger.info(
-            "Fiscal Year: %s",
-            self.fiscal_year_id.name if self.fiscal_year_id else "No fiscal year",
-        )
-
-        monthly_values = {month: 0 for month in months}
-
-        if not self.hotel or not self.fiscal_year_id:
-            _logger.info("Missing hotel or fiscal_year_id - returning zeros")
-            return monthly_values
-
-        # Get fiscal-month mapping for the fiscal year
-        month_mapping = self._get_fiscal_month_mapping()
-        _logger.info("Month mapping: %s", month_mapping)
-
-        # Search in budget.data using year/month
-        # (without record_type/budget_type filters)
-        for fiscal_month, (calendar_year, calendar_month) in month_mapping.items():
-            budget_data_records = self.env["budget.data"].search(
-                [
-                    ("pms_property_id", "=", self.hotel.id),
-                    ("year", "=", str(calendar_year)),
-                    ("month", "=", str(calendar_month)),
-                ]
-            )
-
-            _logger.info(
-                "Searching for %s/%02d - Found %s records",
-                calendar_year,
-                calendar_month,
-                len(budget_data_records),
-            )
-
-            for budget_data in budget_data_records:
-                current_value = getattr(budget_data, field_name, 0) or 0
-                monthly_values[fiscal_month] = current_value
-                _logger.info(
-                    "Mapped %s/%02d to fiscal month %s: %s",
-                    calendar_year,
-                    calendar_month,
-                    fiscal_month,
-                    current_value,
-                )
-
-        _logger.info("Final monthly values: %s", monthly_values)
-        return monthly_values
-
     def action_refresh_room_nights(self):
         """
         Refresh room nights from budget.data with fiscal year logic
@@ -615,11 +709,13 @@ class BudgetRevenue(models.Model):
                 if old_values != new_values:
                     updated_count += 1
                     _logger.info(
-                        f"Updated record {record.id}: "
-                        f"{record.hotel.name} fiscal {record.fiscal_year_id.name}"
+                        "Updated record %s: " "%s fiscal %s",
+                        record.id,
+                        record.hotel.name,
+                        record.fiscal_year_id.name,
                     )
 
-        message = f"Room nights sync completed. Updated {updated_count} records."
+        message = "Room nights sync completed. Updated %s records." % updated_count
         _logger.info(message)
 
         return {
@@ -662,9 +758,9 @@ class BudgetRevenue(models.Model):
                 if old_values != new_values:
                     updated_count += 1
 
-        message = (
-            f"RN sync completed. Updated "
-            f"{updated_count} of {len(room_nights_records)} records."
+        message = "RN sync completed. Updated " "%s of %s records." % (
+            updated_count,
+            len(room_nights_records),
         )
 
         return {

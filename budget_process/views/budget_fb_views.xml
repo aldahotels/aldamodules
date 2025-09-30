@@ -163,11 +163,12 @@
   </record>
 
   <menuitem
-        id="menu_budget_fb_action"
+        id="menu_budget_fb"
         name="FB"
         parent="menu_budget_root"
         action="action_budget_fb"
         sequence="6"
+        groups="base.group_user"
     />
 
 </odoo>

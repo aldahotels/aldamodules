@@ -175,10 +175,10 @@
   </record>
   <!-- Action -->
   <record id="action_budget_informatica" model="ir.actions.act_window">
-    <field name="name">Informatica</field>
+    <field name="name">Informática</field>
     <field name="res_model">budget.informatica</field>
     <field name="view_mode">tree,form,pivot</field>
-    <field
+     <field
             name="context"
         >{'search_default_group_by_year': 1, 'search_default_group_by_hotel': 1, 'search_default_group_by_budget_type': 1}</field>
     <field name="help" type="html">
@@ -187,11 +187,13 @@
       </p>
     </field>
   </record>
+
   <menuitem
-        id="menu_budget_informatica_action"
-        name="Informatica"
+        id="menu_budget_informatica"
+        name="Informática"
         parent="menu_budget_root"
         action="action_budget_informatica"
         sequence="5"
+        groups="base.group_user"
     />
 </odoo>
