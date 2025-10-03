@@ -1,0 +1,121 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* helpdesk_hr
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-03 12:22+0000\n"
+"PO-Revision-Date: 2025-10-03 12:22+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: helpdesk_hr
+#: model_terms:ir.ui.view,arch_db:helpdesk_hr.view_hr_job_form_inherit_team
+msgid ""
+"<strong>Note:</strong> Associate the helpdesk team and the ticket types that"
+" this job position can handle."
+msgstr ""
+"<strong>Note:</strong> Relacionar los equipos y tipos de tickets del "
+"Servicio de Asistencia a este Puesto de Trabajo."
+
+#. module: helpdesk_hr
+#: model:ir.model.fields,help:helpdesk_hr.field_hr_job__ticket_team_id
+msgid "Employee this job position will be related to this helpdesk team."
+msgstr ""
+"El empleado en este puesto estará relacionado con este equipo de soporte."
+
+#. module: helpdesk_hr
+#: model_terms:ir.ui.view,arch_db:helpdesk_hr.view_hr_job_form_inherit_team
+msgid "Helpdesk"
+msgstr "Servicio de Asistencia"
+
+#. module: helpdesk_hr
+#: model_terms:ir.ui.view,arch_db:helpdesk_hr.view_hr_job_search_inherit_team
+msgid "Helpdesk Team"
+msgstr "Equipo de Servicio de Asistencia"
+
+#. module: helpdesk_hr
+#: model_terms:ir.ui.view,arch_db:helpdesk_hr.view_hr_job_form_inherit_team
+msgid "Helpdesk Team Configuration"
+msgstr "Configuración del Equipo de Servicio de Asistencia"
+
+#. module: helpdesk_hr
+#: model:ir.model.fields,help:helpdesk_hr.field_hr_job__is_ticket_type_ids
+msgid ""
+"Indicates if the selected helpdesk team has any ticket types associated."
+msgstr ""
+"Indica si el Equipo del Servicio de Asistencia tiene tipos de tickets "
+"asociados."
+
+#. module: helpdesk_hr
+#: model:ir.model,name:helpdesk_hr.model_hr_job
+msgid "Job Position"
+msgstr "Puesto de trabajo"
+
+#. module: helpdesk_hr
+#. odoo-python
+#: code:addons/helpdesk_hr/models/helpdesk_hr.py:0
+#, python-format
+msgid "No Ticket Types"
+msgstr "Sin tipos de ticket"
+
+#. module: helpdesk_hr
+#: model:ir.model.fields,field_description:helpdesk_hr.field_hr_job__is_ticket_type_ids
+msgid "Team Has Ticket Types"
+msgstr "El equipo tiene tipos de ticket"
+
+#. module: helpdesk_hr
+#: model:ir.model.fields,field_description:helpdesk_hr.field_hr_job__ticket_team_id
+msgid "Team Helpdesk"
+msgstr "Equipo de Servicio de Asistencia"
+
+#. module: helpdesk_hr
+#. odoo-python
+#: code:addons/helpdesk_hr/models/helpdesk_hr.py:0
+#, python-format
+msgid ""
+"The following ticket types do not belong to the selected helpdesk team: %s"
+msgstr "Los siguientes tipos de ticket no pertenecen al equipo de helpdesk seleccionado: %s"
+
+#. module: helpdesk_hr
+#. odoo-python
+#: code:addons/helpdesk_hr/models/helpdesk_hr.py:0
+#, python-format
+msgid ""
+"The selected team has no ticket types associated. The ticket types selection"
+" has been cleared."
+msgstr ""
+"El equipo seleccionado no tiene tipos de ticket relacionados, las opciones "
+"de tipos de ticket han sido actualizadas."
+
+#. module: helpdesk_hr
+#: model:ir.model.fields,field_description:helpdesk_hr.field_hr_job__ticket_type_ids
+msgid "Ticket Types"
+msgstr "Tipos de ticket"
+
+#. module: helpdesk_hr
+#: model_terms:ir.ui.view,arch_db:helpdesk_hr.view_hr_job_form_inherit_team
+msgid "Ticket Types Configuration"
+msgstr "Configuración de tipos de ticket"
+
+#. module: helpdesk_hr
+#: model_terms:ir.ui.view,arch_db:helpdesk_hr.view_hr_job_search_inherit_team
+#: model_terms:ir.ui.view,arch_db:helpdesk_hr.view_hr_job_tree_inherit_team
+msgid "Ticket type"
+msgstr "Tipo de ticket"
+
+#. module: helpdesk_hr
+#: model:ir.model.fields,help:helpdesk_hr.field_hr_job__ticket_type_ids
+msgid "Ticket types that this job position can handle."
+msgstr "Tipos de ticket que este puesto de trabajo puede gestionar."
+
+#. module: helpdesk_hr
+#: model:ir.model.fields,field_description:helpdesk_hr.field_hr_job__type_avalible
+msgid "Type Avalible"
+msgstr "Tipo Disponible"

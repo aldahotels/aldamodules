@@ -1,0 +1,84 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* alda_helpdesk_autoassign
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-03 08:27+0000\n"
+"PO-Revision-Date: 2025-10-03 08:27+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: alda_helpdesk_autoassign
+#: model:ir.model.fields,field_description:alda_helpdesk_autoassign.field_helpdesk_team__assign_by_property
+msgid "Assign based on Property and Ticket Type"
+msgstr "Asignar según la propiedad y el tipo de ticket"
+
+#. module: alda_helpdesk_autoassign
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_autoassign.helpdesk_team_view_form_inherit_hotel_assign
+msgid "Assign tickets based on property."
+msgstr "Asignar tickets según la propiedad."
+
+#. module: alda_helpdesk_autoassign
+#: model:ir.model.fields,field_description:alda_helpdesk_autoassign.field_helpdesk_team__team_job_ids
+msgid "Associated Jobs"
+msgstr "Puestos asociados"
+
+#. module: alda_helpdesk_autoassign
+#: model:ir.model,name:alda_helpdesk_autoassign.model_helpdesk_team
+msgid "Helpdesk Team"
+msgstr "Equipo de servicio de asistencia"
+
+#. module: alda_helpdesk_autoassign
+#: model:ir.model,name:alda_helpdesk_autoassign.model_helpdesk_ticket
+msgid "Helpdesk Ticket"
+msgstr "Ticket de asistencia"
+
+#. module: alda_helpdesk_autoassign
+#: model:ir.model.fields,help:alda_helpdesk_autoassign.field_helpdesk_team__assign_by_property
+msgid ""
+"If selected, tickets will be assigned to employees based, on the property "
+"associated with the ticket."
+msgstr ""
+"Si se selecciona, los tickets se asignarán a los empleados según la propiedad "
+"asociada al ticket."
+
+#. module: alda_helpdesk_autoassign
+#: model:ir.model.fields,help:alda_helpdesk_autoassign.field_helpdesk_team__team_job_ids
+msgid "Job positions associated with this helpdesk team."
+msgstr "Puestos de trabajo asociados a este equipo de asistencia."
+
+#. module: alda_helpdesk_autoassign
+#. odoo-python
+#: code:addons/alda_helpdesk_autoassign/models/helpdesk.py:0
+#, python-format
+msgid "Missing Jobs"
+msgstr "Faltan puestos"
+
+#. module: alda_helpdesk_autoassign
+#. odoo-python
+#: code:addons/alda_helpdesk_autoassign/models/helpdesk.py:0
+#, python-format
+msgid ""
+"To use 'Assign based on Hotel and Ticket Type', at least one job position "
+"must be associated with the team."
+msgstr ""
+"Para usar 'Asignar según el hotel y el tipo de ticket', debe haber al menos un puesto "
+"asociado al equipo."
+
+#. module: alda_helpdesk_autoassign
+#. odoo-python
+#: code:addons/alda_helpdesk_autoassign/models/helpdesk.py:0
+#, python-format
+msgid ""
+"You must associate at least one job with the team before enabling assignment"
+" by property."
+msgstr ""
+"Debe asociar al menos un puesto al equipo antes de habilitar la asignación"
+" por propiedad."
