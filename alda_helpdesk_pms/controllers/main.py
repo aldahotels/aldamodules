@@ -10,6 +10,52 @@ _logger = logging.getLogger(__name__)
 
 
 class HelpdeskFormController(http.Controller):
+    def _prepare_ticket_vals(self, post):
+        room_id = post.get("room_ids", "")
+        pms_property = post.get("property_id", "")
+        ticket_type_id = post.get("ticket_type_id", "")
+        is_property_operated_normaly = post.get("is_property_operated_normaly") == "on"
+        pms_room_id = int(room_id) if room_id else False
+        reference_data = post.get("reference_data", "")
+
+        if reference_data:
+            description_text = (
+                "\n\n"
+                + _("Data reference/reservation number: ")
+                + reference_data
+                + "\n\n <br/><br/>"
+                + post.get("description", "")
+            )
+            subject_text = post.get("subject", "") + " - Ref: " + reference_data
+        else:
+            description_text = post.get("description", "")
+            subject_text = post.get("subject", "")
+
+        is_room_operated_normaly = True
+        if pms_room_id:
+            room = request.env["pms.room"].browse(pms_room_id)
+            is_room_operated_normaly = (
+                not request.env["helpdesk.ticket"].sudo()._is_room_blocked(room)
+            )
+
+        vals = {
+            "name": subject_text,
+            "partner_id": int(post.get("partner_id")),
+            "partner_name": post.get("partner_name"),
+            "pms_property_id": int(pms_property),
+            "team_id": int(post.get("team_id")),
+            "ticket_type_id": ticket_type_id,
+            "location_type": post.get("location_type"),
+            "pms_room_id": pms_room_id,
+            "company_external_id": post.get("company_external_id"),
+            "description": description_text,
+            "priority": post.get("priority"),
+            "is_property_operated_normaly": is_property_operated_normaly,
+            "is_room_operated_normaly": is_room_operated_normaly,
+        }
+
+        return vals
+
     @http.route("/helpdesk/ticket/new", type="http", auth="public", website=True)
     def helpdesk_ticket_form(self, **kwargs):
         ensure_db()
@@ -17,7 +63,6 @@ class HelpdeskFormController(http.Controller):
             request.env.user.has_group("base.group_user")
             or request.env.user.has_group("base.group_portal")
         ):
-            _logger.warning("Acceso denegado para usuario %s", request.env.user.name)
             return request.redirect("/web/login")
 
         user_id = request.env.user
@@ -112,63 +157,20 @@ class HelpdeskFormController(http.Controller):
     )
     def helpdesk_ticket_submit(self, **post):
         ensure_db()
-        room_id = post.get("room_ids", "")
-        pms_property = post.get("property_id", "")
-        ticket_type_id = post.get("ticket_type_id", "")
-        is_property_operated_normaly = post.get("is_property_operated_normaly") == "on"
-        pms_room_id = int(room_id) if room_id else False
-        is_room_operated_normaly = True
-        reference_data = post.get("reference_data", "")
 
-        if pms_room_id:
-            room = request.env["pms.room"].browse(pms_room_id)
-            is_room_operated_normaly = (
-                False
-                if request.env["helpdesk.ticket"].sudo()._is_room_blocked(room)
-                else True
-            )
+        ticket_vals = self._prepare_ticket_vals(post)
 
-        if reference_data:
-            description_text = (
-                "\n\n"
-                + _("Data reference/reservation number: ")
-                + reference_data
-                + "\n\n <br/><br/>"
-                + post.get("description", "")
-            )
-            subject_text = post.get("subject", "") + " - Ref: " + reference_data
-        else:
-            description_text = post.get("description", "")
-            subject_text = post.get("subject", "")
         ticket = (
             request.env["helpdesk.ticket"]
             .with_context(from_web_create=True)
             .sudo()
-            .create(
-                {
-                    "name": subject_text,
-                    "partner_id": int(post.get("partner_id")),
-                    "partner_name": post.get("partner_name"),
-                    "pms_property_id": int(pms_property),
-                    "team_id": int(post.get("team_id")),
-                    "ticket_type_id": ticket_type_id,
-                    "location_type": post.get("location_type"),
-                    "pms_room_id": pms_room_id,
-                    "company_external_id": post.get("company_external_id"),
-                    "description": description_text,
-                    "priority": post.get("priority"),
-                    "is_property_operated_normaly": is_property_operated_normaly,
-                    "is_room_operated_normaly": is_room_operated_normaly,
-                }
-            )
+            .create(ticket_vals)
         )
-        _logger.info("Ticket creado: %s %s %s", ticket.id)
 
         attachment = request.httprequest.files.get("attachment")
         if post.get("attachment", False):
             attachments = request.httprequest.files.getlist("attachment")
             attachment_ids = []
-
             for attachment in attachments:
                 if attachment and attachment.filename:
                     try:

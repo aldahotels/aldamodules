@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="helpdesk_team_view_form_inherit_hotel_assign" model="ir.ui.view">
+        <field name="name">helpdesk.team.form.inherit.hotel.assign</field>
+        <field name="model">helpdesk.team</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='assign_method']" position="after">
+                <div class="o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="assign_by_property" widget="boolean_toggle" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="assign_by_property" />
+                        <div class="text-muted">
+                            Assign tickets based on property.
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

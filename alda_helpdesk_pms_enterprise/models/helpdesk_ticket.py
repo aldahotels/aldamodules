@@ -26,140 +26,115 @@ class HelpdeskPmsEnterprise(models.Model):
         help="The room associated with this ticket. It must belong to the selected property.",
     )
 
-    @api.model
     def _get_allowed_property_ids(self):
-        employee = (
-            self.env["hr.employee"]
-            .sudo()
-            .search([("user_id", "=", self.env.user.id)], limit=1)
-        )
-        return employee.property_ids.ids if employee else []
+        allowed_ids = self.env.context.get("allowed_pms_property_ids")
+        if allowed_ids:
+            return allowed_ids
+        return self.env.user.pms_property_ids.ids
+
+    @api.model
+    def default_get(self, fields):
+        result = super().default_get(fields)
+
+        user = self.env.user
+        if "pms_property_id" in fields and user.pms_property_id:
+            allowed_property_ids = self._get_allowed_property_ids()
+            if user.pms_property_id.id in allowed_property_ids:
+                result["pms_property_id"] = user.pms_property_id.id
+
+        return result
 
     @api.onchange("pms_property_id")
-    def _onchange_pms_property(self):
-        employee = (
-            self.env["hr.employee"]
-            .sudo()
-            .search([("user_id", "=", self.env.user.id)], limit=1)
-        )
-        property_domain = (
-            [("id", "in", employee.property_ids.ids)]
-            if employee
-            else [("id", "=", False)]
-        )
-
-        room_domain = [("pms_property_id", "=", self.pms_property_id.id)]
-
-        if (
-            self.pms_room_id
-            and self.pms_room_id.pms_property_id != self.pms_property_id
-        ):
-            self.pms_room_id = False
-
-        if self._origin and self._origin.id:
-            old_property = self._origin.pms_property_id
-            new_property = self.pms_property_id
+    def _onchange_pms_property_id(self):
+        for ticket in self:
+            old_property = ticket._origin.pms_property_id if ticket._origin else False
 
             if (
-                old_property
-                and old_property.partner_id
-                and old_property != new_property
+                ticket.pms_room_id
+                and ticket.pms_room_id.pms_property_id != ticket.pms_property_id
             ):
-                try:
-                    self.message_unsubscribe(partner_ids=old_property.partner_id.ids)
-                except Exception:
-                    _logger.warning(
-                        "Unsuscribe property was not posible %s for ticket %s from onchange",
-                        old_property.partner_id.id,
-                        self._origin.id,
-                    )
+                ticket.pms_room_id = False
 
-            if (
-                new_property
-                and new_property.partner_id
-                and old_property != new_property
-            ):
-                try:
-                    self.message_subscribe(partner_ids=new_property.partner_id.ids)
-                except Exception:
-                    _logger.warning(
-                        "Subscribe property was not posible %s for ticket %s from onchange",
-                        new_property.partner_id.id,
-                        self._origin.id,
-                    )
+            if ticket._origin and ticket._origin.id:
+                new_property = ticket.pms_property_id
 
-        return {
-            "domain": {
-                "pms_property_id": property_domain,
-                "pms_room_id": room_domain,
-            }
-        }
+                if old_property != new_property:
+                    if old_property and old_property.partner_id:
+                        ticket.message_unsubscribe(
+                            partner_ids=[old_property.partner_id.id]
+                        )
+
+                    if new_property and new_property.partner_id:
+                        existing_followers = ticket.message_follower_ids.filtered(
+                            lambda f: f.partner_id == new_property.partner_id
+                        )
+                        if not existing_followers:
+                            ticket.message_subscribe(
+                                partner_ids=[new_property.partner_id.id]
+                            )
 
     @api.constrains("pms_property_id", "pms_room_id")
-    def _check_property_assignment(self):
+    def _check_property_consistency(self):
         for ticket in self:
-            if ticket.pms_property_id:
-                employee = (
-                    self.env["hr.employee"]
-                    .sudo()
-                    .search([("user_id", "=", ticket.env.uid)], limit=1)
-                )
-                if employee and ticket.pms_property_id not in employee.property_ids:
-                    raise ValidationError(
-                        _("You do not have permission to assign this property.")
-                    )
             if (
                 ticket.pms_room_id
                 and ticket.pms_room_id.pms_property_id != ticket.pms_property_id
             ):
                 raise ValidationError(
-                    _("The selected room does not belong to the specified hotel.")
+                    _("The selected room does not belong to the specified property.")
                 )
+
+            if ticket.pms_property_id:
+                allowed_property_ids = ticket._get_allowed_property_ids()
+                if ticket.pms_property_id.id not in allowed_property_ids:
+                    raise ValidationError(
+                        _("You do not have permission to assign this property.")
+                    )
 
             if ticket.pms_room_id and not ticket.pms_property_id:
                 raise ValidationError(
                     _("You must select a hotel before assigning a room.")
                 )
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        tickets = super().create(vals_list)
-        for ticket in tickets:
-            res_partner = getattr(ticket.pms_property_id, "partner_id", False)
-            if res_partner:
-                try:
-                    ticket.message_subscribe(partner_ids=res_partner.ids)
-                    _logger.info(
-                        "Hotel partner %s suscrito automáticamente al ticket %s",
-                        res_partner.id,
-                        ticket.id,
-                    )
-                except Exception as e:
-                    _logger.error(
-                        "Error al suscribir el hotel %s al ticket %s: %s",
-                        res_partner.id,
-                        ticket.id,
-                        e,
-                    )
-        return tickets
+    @api.model
+    def create(self, vals):
+        ticket = super().create(vals)
+        if ticket.pms_property_id and ticket.pms_property_id.partner_id:
+            ticket.message_subscribe(partner_ids=[ticket.pms_property_id.partner_id.id])
+        return ticket
 
     def write(self, vals):
-        res = super().write(vals)
-        for ticket in self:
-            res_partner = getattr(ticket.pms_property_id, "partner_id", False)
-            if res_partner:
-                try:
-                    ticket.message_subscribe(partner_ids=res_partner.id)
-                    _logger.info(
-                        "Hotel partner %s sigue suscrito al ticket %s",
-                        res_partner.id,
-                        ticket.id,
-                    )
-                except Exception as e:
-                    _logger.error(
-                        "Error al actualizar la suscripción del hotel %s en ticket %s: %s",
-                        res_partner.id,
-                        ticket.id,
-                        e,
-                    )
-        return res
+        old_properties = {}
+        if "pms_property_id" in vals:
+            for ticket in self:
+                old_properties[ticket.id] = ticket.pms_property_id
+
+        result = super().write(vals)
+
+        if "pms_property_id" in vals:
+            for ticket in self:
+                old_property = old_properties.get(ticket.id)
+                new_property = ticket.pms_property_id
+
+                if old_property != new_property:
+                    self._manage_property_followers(ticket, old_property, new_property)
+
+        return result
+
+    def _manage_property_followers(self, ticket, old_property, new_property):
+        try:
+
+            if old_property and old_property.partner_id:
+                ticket.message_unsubscribe(partner_ids=[old_property.partner_id.id])
+
+            if new_property and new_property.partner_id:
+                existing_followers = ticket.message_follower_ids.filtered(
+                    lambda f: f.partner_id == new_property.partner_id
+                )
+                if not existing_followers:
+                    ticket.message_subscribe(partner_ids=[new_property.partner_id.id])
+
+        except Exception as e:
+            _logger.error(
+                "Error managing property followers for ticket %s: %s", ticket.id, str(e)
+            )

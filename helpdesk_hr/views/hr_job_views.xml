@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_hr_job_form_inherit_team" model="ir.ui.view">
+        <field name="name">hr.job.form.inherit.team</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Helpdesk" name="helpdesk_association_page">
+                    <field name="is_ticket_type_ids" invisible='1' />
+                    <div class="alert alert-info">
+                        <strong
+                        >Note:</strong> Associate the helpdesk team and the ticket types that this job position can handle.
+                    </div>
+                    <separator string="Helpdesk Team Configuration" />
+                    <group>
+                        <field
+                            name="ticket_team_id"
+                            options="{'no_create': True}"
+                            class="w-25 border p-2"
+                        />
+                    </group>
+                    <group attrs="{'invisible': [('ticket_team_id', '=', False)]}">
+                    <separator string="Ticket Types Configuration" />
+                        <field
+                            name="ticket_type_ids"
+                            options="{'no_create': True}"
+                            attrs="{'invisible': [('is_ticket_type_ids', '=', False)]}"
+                            domain="['|', ('team_id', '=', ticket_team_id), ('team_id', '=', False)]"
+                            widget="many2many_checkboxes"
+                            class="w-50 p-8"
+                        >
+                            <tree>
+                                <field name="name" options="{'no_create': True}" />
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_hr_job_tree_inherit_team" model="ir.ui.view">
+        <field name="name">hr.job.tree.inherit.team</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="ticket_team_id" optional="show" />
+                <field
+                    name="ticket_type_ids"
+                    string="Ticket type"
+                    widget="many2many_tags"
+                    optional="show"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_hr_job_search_inherit_team" model="ir.ui.view">
+        <field name="name">hr.job.search.inherit.team</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_job_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="ticket_team_id" string="Helpdesk Team" />
+                <field
+                    name="ticket_type_ids"
+                    string="Ticket type"
+                    widget="many2many_tags"
+                />
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter
+                    string="Helpdesk Team"
+                    name="helpdesk_team"
+                    context="{'group_by':'ticket_team_id'}"
+                />
+                <filter
+                    string="Ticket type"
+                    name="ticket_type"
+                    context="{'group_by':'ticket_type_ids'}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
