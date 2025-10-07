@@ -30,6 +30,7 @@
     "website": "https://github.com/OCA/pms",
     "category": "PMS",
     "data": [
+        "data/mail_template_data.xml",
         "views/actions.xml",
         "views/pms_property_views.xml",
         "views/helpdesk_ticket_views.xml",

@@ -564,7 +564,7 @@ class HelpdeskTicket(models.Model):
         )
 
         total_days_blocked = len(blocked_lines)
-
+        adr_accumulated = 0.0
         if total_days_blocked > 0:
             adr_accumulated = room_type_price * total_days_blocked
 

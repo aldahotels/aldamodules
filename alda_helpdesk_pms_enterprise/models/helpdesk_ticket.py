@@ -27,22 +27,17 @@ class HelpdeskPmsEnterprise(models.Model):
     )
 
     def _get_allowed_property_ids(self):
-        allowed_ids = self.env.context.get("allowed_pms_property_ids")
-        if allowed_ids:
-            return allowed_ids
+        allowed_property_ids = self.env.context.get("allowed_pms_property_ids")
+        company_ids = (
+            self.env.context.get("allowed_company_ids") or self.env.company.ids
+        )
+        if allowed_property_ids:
+            domain = [("id", "in", allowed_property_ids)]
+            if company_ids:
+                domain += [("company_id", "in", company_ids), ("active", "=", True)]
+                property_ids = self.env["pms.property"].sudo().search(domain)
+            return property_ids.ids
         return self.env.user.pms_property_ids.ids
-
-    @api.model
-    def default_get(self, fields):
-        result = super().default_get(fields)
-
-        user = self.env.user
-        if "pms_property_id" in fields and user.pms_property_id:
-            allowed_property_ids = self._get_allowed_property_ids()
-            if user.pms_property_id.id in allowed_property_ids:
-                result["pms_property_id"] = user.pms_property_id.id
-
-        return result
 
     @api.onchange("pms_property_id")
     def _onchange_pms_property_id(self):
