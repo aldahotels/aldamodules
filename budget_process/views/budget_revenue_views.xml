@@ -39,7 +39,7 @@
     <field name="arch" type="xml">
       <form string="Budget Revenue">
         <header>
-          <!-- Sync Buttons -->
+          <!-- Sync Buttons for Rooms Available -->
           <button
                         name="action_refresh_rooms_available"
                         type="object"
@@ -63,6 +63,32 @@
                         class="btn-warning"
                         attrs="{'invisible': ['|', ('record_type', '!=', 'rooms_available'), ('budget_type', '!=', 'budgeted')]}"
                         help="Advanced diagnosis of current records"
+                    />
+
+          <!-- RN Budgeted Debug Buttons -->
+          <button
+                        name="action_check_rn_budgeted_dependencies"
+                        type="object"
+                        string="✅ Check RN Dependencies required for the formula"
+                        class="btn-success"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'rn_budgeted'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Check if all required records exist for RN Budgeted calculation"
+                    />
+          <button
+                        name="action_debug_rn_budgeted"
+                        type="object"
+                        string="🔍 Debug RN Budgeted"
+                        class="btn-warning"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'rn_budgeted'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Debug RN Budgeted formula and calculation"
+                    />
+          <button
+                        name="action_force_recalculate_rn_budgeted"
+                        type="object"
+                        string="🔄 Recalculate"
+                        class="btn-secondary"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'rn_budgeted'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Force recalculation of RN Budgeted values"
                     />
         </header>
         <sheet>
