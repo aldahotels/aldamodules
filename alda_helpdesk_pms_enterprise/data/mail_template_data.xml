@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="alda_confirmation_ticket" model="mail.template">
+        <field name="name">Confirmación de Creación de Ticket - Alda-PMS</field>
+        <field
+            name="model_id"
+            ref="alda_helpdesk_pms_enterprise.model_helpdesk_ticket"
+        />
+        <field
+            name="subject"
+        >Confirmation Received: {{object.id}} {{object.name}}</field>
+        <field name="email_from">${{object.user_id.email or user.email}}</field>
+        <field
+            name="description"
+        >Set this template on a project's stage to automate email when tasks reach stages</field>
+        <field
+            name="email_to"
+        >{{ ', '.join(filter(None, [ (object.partner_email), (object.pms_property_id.partner_id.email if object.pms_property_id and object.pms_property_id.partner_id and object.pms_property_id.partner_id.email else '') ])) }}
+        </field>
+        <field
+            name="partner_to"
+        >{{ ', '.join(filter(None, [ object.partner_id.email, object.pms_property_id.partner_id.email ])) }}
+        </field>
+
+        <field name="body_html" type="html">
+             <div
+                style="box-sizing:border-box; font-family:'Satoshi',sans-serif; background-color:#f9f9f9; margin:0; padding:0;"
+            >
+                 <table
+                    cellpadding="0"
+                    cellspacing="0"
+                    width="100%"
+                    style="box-sizing:border-box; border-collapse:collapse; max-width:100%; margin:0 auto; padding:20px;"
+                >
+                     <tbody>
+                         <tr>
+                             <td align="center">
+                                 <table
+                                    cellpadding="0"
+                                    cellspacing="0"
+                                    width="560"
+                                    style="box-sizing:border-box; border-collapse:collapse; background-color:#ffffff; border-radius:8px; overflow:hidden; font-family:'Satoshi',sans-serif;"
+                                >
+                                     <tbody>
+                                         <tr>
+                                             <td
+                                                style="background-color:#1b1b1b; padding:20px; text-align:center; color:#fff;"
+                                            >
+                                                 <table
+                                                    width="100%"
+                                                    style="box-sizing:border-box; border-collapse:collapse; text-align:center;"
+                                                >
+                                                     <tbody>
+                                                         <tr>
+                                                             <td
+                                                                align="left"
+                                                                width="50%"
+                                                            >
+                                                                 <img
+                                                                    src="https://odoo.gestionalda.es/web/image/1985649-4ebfb289/Logo_Alda2025_blanco_sin_fondo.png"
+                                                                    alt="Alda Hotels"
+                                                                    style="max-width:120px; width:100%; height:auto; object-fit:cover;"
+                                                                />
+                                                             </td>
+                                                             <td
+                                                                align="right"
+                                                                width="50%"
+                                                            >
+                                                                 <a
+                                                                    href="https://www.facebook.com/AldaHotels/"
+                                                                    style="text-decoration:none; color:#008f8c; margin:0 4px;"
+                                                                >
+                                                                     <img
+                                                                        src="https://firma.aldahotels.es/img/fb_white.png"
+                                                                        width="24"
+                                                                        height="24"
+                                                                        style="vertical-align:middle;"
+                                                                    />
+                                                                 </a>
+                                                                 <a
+                                                                    href="https://www.youtube.com/channel/UCJ20x2dNJt5JIOgONS59aDw"
+                                                                    style="text-decoration:none; color:#008f8c; margin:0 4px;"
+                                                                >
+                                                                     <img
+                                                                        src="https://firma.aldahotels.es/img/yt_white.png"
+                                                                        width="24"
+                                                                        height="24"
+                                                                        style="vertical-align:middle;"
+                                                                    />
+                                                                 </a>
+                                                                 <a
+                                                                    href="https://www.instagram.com/aldahotels/?hl=en"
+                                                                    style="text-decoration:none; color:#008f8c; margin:0 4px;"
+                                                                >
+                                                                     <img
+                                                                        src="https://firma.aldahotels.es/img/ig_white.png"
+                                                                        width="24"
+                                                                        height="24"
+                                                                        style="vertical-align:middle;"
+                                                                    />
+                                                                 </a>
+                                                                 <a
+                                                                    href="https://es.linkedin.com/company/aldahotels"
+                                                                    style="text-decoration:none; color:#008f8c; margin:0 4px;"
+                                                                >
+                                                                     <img
+                                                                        src="https://firma.aldahotels.es/img/in_white.png"
+                                                                        width="24"
+                                                                        height="25"
+                                                                        style="vertical-align:middle;"
+                                                                    />
+                                                                 </a>
+                                                                 <a
+                                                                    href="https://twitter.com/AldaHotels"
+                                                                    style="text-decoration:none; color:#008f8c; margin:0 4px;"
+                                                                >
+                                                                     <img
+                                                                        src="https://firma.aldahotels.es/img/x_white.png"
+                                                                        width="24"
+                                                                        height="24"
+                                                                        style="vertical-align:middle;"
+                                                                    />
+                                                                 </a>
+                                                                 <div
+                                                                    style="margin-top:8px;"
+                                                                >
+                                                                     <a
+                                                                        href="https://www.aldahotels.es/"
+                                                                        style="color:#ffffff; text-decoration:none; font-size:13px;"
+                                                                    >aldahotels.es</a>
+                                                                 </div>
+                                                             </td>
+                                                         </tr>
+                                                     </tbody>
+                                                 </table>
+                                             </td>
+                                         </tr>
+                                         <tr>
+                                             <td
+                                                style="padding:40px 30px; color:#333333; font-size:16px; line-height:1.5;"
+                                            >
+                                                 Dear <t
+                                                    t-out="object.sudo().partner_id.name or 'Customer'"
+                                                >Customer</t>,<br />
+                                                 Your request
+                                                 <t t-if="object.get_portal_url()">
+                                                     <a
+                                                        t-attf-href="/my/ticket/{{ object.id }}/{{ object.access_token }}"
+                                                        style="color:#008f8c; text-decoration:none;"
+                                                        t-out="object.name or ''"
+                                                    />
+                                                 </t>
+                                                 has been received and is being reviewed by our team <t
+                                                    t-out="object.team_id.name or ''"
+                                                >Helpdesk</t>.<br />
+                                                 The reference of your ticket is <strong
+                                                    style="font-weight:bold;"
+                                                >#<t
+                                                        t-out="object.ticket_ref or ''"
+                                                    >15</t></strong>.<br /><br />
+                                                 <div
+                                                    style="text-align:center; margin:20px 0;"
+                                                >
+                                                     <a
+                                                        style="background-color:#875A7B; color:#fff; padding:10px 20px; text-decoration:none; border-radius:4px; display:inline-block;"
+                                                        t-att-href="object.get_portal_url()"
+                                                        target="_blank"
+                                                    >View the ticket</a>
+                                                 </div>
+                                                 To add additional comments, reply to this email and we will get back to you soon.<br
+                                                /><br />
+                                                 <t
+                                                    t-if="object.team_id.show_knowledge_base"
+                                                >
+                                                     Please don’t hesitate to visit our
+                                                     <a
+                                                        t-attf-href="{{ object.team_id.get_knowledge_base_url() }}"
+                                                        style="color:#008f8c; text-decoration:none;"
+                                                    >Help Center</a>.
+                                                     You might find the answer to your question.<br
+                                                    /><br />
+                                                 </t>
+                                                 Thank you,<br /><br />
+                                                 The <t
+                                                    t-out="object.team_id.name or 'Helpdesk'"
+                                                >Helpdesk</t> Team.
+                                             </td>
+                                         </tr>
+                                     </tbody>
+                                 </table>
+                             </td>
+                         </tr>
+                     </tbody>
+                 </table>
+             </div>
+         </field>
+         <field
+            name="lang"
+        >{{ object.partner_id.lang or object.user_id.lang or user.lang }}</field>
+         <field name="auto_delete" eval="False" />
+    </record>
+</odoo>

@@ -172,9 +172,7 @@
                 <field
                     name="location_type"
                     attrs="{'invisible': [
-                        '|',
                         ('pms_property_id', '=', False),
-                        ('is_location_required', '=', False)
                     ]}"
                 />
             </xpath>
