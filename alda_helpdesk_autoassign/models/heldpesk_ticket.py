@@ -51,18 +51,19 @@ class HelpdeskTicket(models.Model):
                 ticket._assign_user_based_on_property_type(
                     tickets_with_property=True,
                 )
+            else:
+                ticket.user_id = False
 
     @api.model
     def default_get(self, fields):
-
         result = super(HelpdeskTicket, self).default_get(fields)
-
         if result.get("team_id") and fields:
             team = self.env["helpdesk.team"].browse(result["team_id"])
 
             if "stage_id" in fields and "stage_id" not in result:
                 result["stage_id"] = team._determine_stage()[team.id].id
 
+            result["user_id"] = False
         return result
 
     @api.model_create_multi

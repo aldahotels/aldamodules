@@ -26,7 +26,30 @@ class HelpdeskPmsEnterprise(models.Model):
         help="The room associated with this ticket. It must belong to the selected property.",
     )
 
+    has_allowed_properties = fields.Boolean(
+        string="Tiene propiedades permitidas",
+        compute="_compute_has_allowed_properties",
+        store=False,
+    )
+
+    @api.depends("team_id")
+    def _compute_has_allowed_properties(self):
+        for ticket in self:
+            allowed_property_ids = self.env.context.get("allowed_pms_property_ids")
+            company_ids = (
+                self.env.context.get("allowed_company_ids") or self.env.company.ids
+            )
+            if allowed_property_ids:
+                domain = [("id", "in", allowed_property_ids)]
+                if company_ids:
+                    domain += [("company_id", "in", company_ids), ("active", "=", True)]
+                property_ids = self.env["pms.property"].sudo().search(domain)
+                ticket.has_allowed_properties = bool(property_ids)
+            else:
+                ticket.has_allowed_properties = False
+
     def _get_allowed_property_ids(self):
+        allowed_property_ids = self.env.context.get("allowed_pms_property_ids")
         allowed_property_ids = self.env.context.get("allowed_pms_property_ids")
         company_ids = (
             self.env.context.get("allowed_company_ids") or self.env.company.ids
@@ -36,6 +59,9 @@ class HelpdeskPmsEnterprise(models.Model):
             if company_ids:
                 domain += [("company_id", "in", company_ids), ("active", "=", True)]
                 property_ids = self.env["pms.property"].sudo().search(domain)
+                self.has_allowed_properties = True
+                self.has_allowed_properties = bool(property_ids)
+
             return property_ids.ids
         return self.env.user.pms_property_ids.ids
 
