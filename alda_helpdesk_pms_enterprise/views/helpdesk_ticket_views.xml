@@ -1,24 +1,41 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-        <record id="pms_helpdesk_ticket_view_form" model="ir.ui.view">
-            <field name="name">helpdesk.ticket.form.inherit.pms</field>
-            <field name="model">helpdesk.ticket</field>
-            <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form" />
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='priority']" position="before">
-                    <field
+    <record id="pms_quick_create_ticket_form" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.quick_create.inherid</field>
+        <field name="inherit_id" ref="helpdesk.quick_create_ticket_form" />
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <xpath expr="//group/field[@name='team_id']" position="after">
+                <field name="has_allowed_properties" invisible='1' />
+                <field
+                    name="pms_property_id"
+                    options="{'no_open': True, 'no_create': True}"
+                    domain="[('id', 'in', context.get('allowed_pms_property_ids', []))]"
+                    attrs="{'invisible': [('has_allowed_properties', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="pms_helpdesk_ticket_view_form" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.inherit.pms</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='priority']" position="before">
+                <field
                     name="pms_property_id"
                     options="{'no_open': True,'no_create': True}"
                 />
-                    <field
+                <field
                     name="pms_room_id"
                     options="{'no_open': True,'no_create': True}"
                     attrs="{'invisible': [('pms_property_id', '=', False)]}"
                 />
-                </xpath>
-            </field>
-        </record>
+            </xpath>
+        </field>
+    </record>
 
     <!-- Vista tree -->
     <record id="pms_helpdesk_ticket_view_tree" model="ir.ui.view">

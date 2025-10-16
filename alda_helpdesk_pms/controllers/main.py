@@ -16,7 +16,7 @@ class HelpdeskFormController(http.Controller):
         ticket_type_id = post.get("ticket_type_id", "")
         is_property_operated_normaly = post.get("is_property_operated_normaly") == "on"
         pms_room_id = int(room_id) if room_id else False
-        reference_data = post.get("reference_data", "")
+        reference_data = (post.get("reference_data") or "").strip()
 
         if reference_data:
             description_text = (

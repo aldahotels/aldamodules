@@ -18,6 +18,26 @@
                     </div>
                 </div>
             </xpath>
+            <xpath expr="//field[@name='member_ids']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('assign_by_property', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='member_ids']" position="after">
+                <div
+                    class="o_setting_right_pane"
+                    attrs="{'invisible': [
+                            ('assign_by_property', '=', False)
+                            ]}
+                        "
+                >
+                    <div class="text-muted">
+                        Team members are automatically managed
+                        based on the associated jobs. To modify the members, change the jobs,
+                        associated jobs, or disable assignment by ownership.
+                    </div>
+                </div>
+            </xpath>
         </field>
     </record>
 </odoo>

@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template
+        id="pms_portal_helpdesk_ticket"
+        name="My Tickets with Property"
+        inherit_id="helpdesk.portal_helpdesk_ticket"
+        priority="100"
+    >
+        <xpath expr="//t[@t-call='portal.portal_table']" position="replace">
+            <t t-call="portal.portal_table">
+                <thead>
+                    <tr>
+                        <th>Ticket</th>
+                        <th
+                            class="text-end"
+                            t-if="groupby != 'create_date'"
+                        >Reported on</th>
+                        <th
+                            class="text-end"
+                            t-if="groupby != 'pms_property_id'"
+                        >Hotel</th>
+                        <th
+                            id="ticket_user_header"
+                            t-if="groupby != 'user'"
+                        >Assigned to</th>
+                        <th
+                            t-if="groupby != 'stage'"
+                            colspan="5"
+                            class="text-end"
+                        >Stage</th>
+                    </tr>
+                </thead>
+                <t t-foreach="grouped_tickets" t-as="tickets">
+                    <tbody>
+                        <tr t-if="not groupby =='none'" class="table-light">
+                            <th t-if="groupby == 'stage'" colspan="5">
+                                <span t-field="tickets[0].stage_id.name" />
+                            </th>
+                            <th t-if="groupby == 'pms_property_id'" colspan="5">
+                                <span t-field="tickets[0].pms_property_id.name" />
+                            </th>
+                            <th t-if="groupby == 'user'" colspan="5">
+                                <span
+                                    t-if="tickets[0].user_id"
+                                    t-out="tickets[0].user_id.name"
+                                />
+                                <span t-else="">Unassigned</span>
+                            </th>
+                            <th t-if="groupby == 'create_date'" colspan="5">
+                                <span t-field="tickets[0].create_date" />
+                            </th>
+                        </tr>
+                    </tbody>
+                    <t t-foreach="tickets" t-as="ticket">
+                        <tr>
+                            <td class="text-start"><a
+                                    t-attf-href="/helpdesk/ticket/#{ticket.id}"
+                                ><small>#</small><t t-out="ticket.ticket_ref" /><span
+                                        class="ms-2"
+                                        t-field="ticket.name"
+                                    /></a></td>
+                            <td class="text-end" t-if="groupby != 'create_date'">
+                                <span
+                                    t-field="ticket.create_date"
+                                    t-options='{"widget": "datetime", "hide_seconds": True}'
+                                />
+                            </td>
+                            <td class="text-end" t-if="groupby != 'pms_property_id'">
+                                <span t-field="ticket.pms_property_id" />
+                            </td>
+                            <td id="ticket_user_body" t-if="groupby != 'user'">
+                                <img
+                                    t-if="ticket.user_id"
+                                    class="rounded-circle o_portal_contact_img"
+                                    t-attf-src="#{image_data_uri(ticket.user_id.sudo().avatar_128)}"
+                                    alt="Contact"
+                                    style="width: 20px; height: 20px;"
+                                />
+                                <span t-field="ticket.user_id" />
+                            </td>
+                            <td t-if="groupby != 'stage'" class="text-end">
+                                <span
+                                    t-attf-class="badge rounded-pill #{'text-bg-info' if ticket.stage_id.fold else 'text-bg-light'}"
+                                    t-esc="ticket.stage_id.name"
+                                />
+                            </td>
+                        </tr>
+                    </t>
+                </t>
+            </t>
+        </xpath>
+    </template>
+
+    <template
+        id="pms_tickets_followup"
+        inherit_id="helpdesk.tickets_followup"
+        priority="100"
+    >
+        <xpath
+            expr="//li[@t-if=&quot;ticket.team_id.allow_portal_ticket_closing and not ticket.stage_id.fold and not ticket.closed_by_partner&quot;]"
+            position="attributes"
+        >
+            <attribute name="t-if">
+                (
+                    ticket.team_id.allow_portal_ticket_closing or
+                    (ticket.team_id.allow_portal_ticket_closing_technician
+                    and (current_user_id == ticket.user_id.id))
+                )
+                and not ticket.stage_id.fold and not ticket.closed_by_partner
+            </attribute>
+        </xpath>
+        <xpath
+            expr="//li[@t-if='ticket.user_id or ticket.partner_id']"
+            position="replace"
+        >
+            <li
+                t-if="ticket.user_id or ticket.partner_id"
+                class="list-group-item flex-grow-1"
+            >
+                <div class="col-12 col-md-12 pb-2" t-if="ticket.partner_id">
+                    <strong>Customer</strong>
+                    <div class="d-flex ps-3 flex-nowrap mt-1">
+                        <img
+                            class="rounded-circle o_portal_contact_img"
+                            t-att-src="image_data_uri(ticket.partner_id.avatar_128)"
+                            alt="Contact"
+                        />
+                        <div class="ms-2">
+                            <div
+                                t-field="ticket.partner_id"
+                                t-options='{"widget": "contact", "fields": ["name"]}'
+                            />
+                            <a
+                                t-attf-href="mailto:{{ticket.partner_id.email}}"
+                                t-if="ticket.partner_id.email"
+                            ><div
+                                    t-field="ticket.partner_id"
+                                    t-options='{"widget": "contact", "fields": ["email"]}'
+                                /></a>
+                            <a
+                                t-attf-href="tel:{{ticket.partner_id.phone}}"
+                                t-if="ticket.partner_id.phone"
+                            ><div
+                                    t-field="ticket.partner_id"
+                                    t-options='{"widget": "contact", "fields": ["phone"]}'
+                                /></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-12 pb-2" t-if="ticket.pms_property_id">
+                    <strong>Referida al Hotel:</strong>
+                    <div class="d-flex ps-3 flex-nowrap mt-1">
+                        <img
+                            class="rounded-circle o_portal_contact_img"
+                            t-att-src="image_data_uri(ticket.pms_property_id.partner_id.avatar_128)"
+                            alt="Hotel"
+                        />
+                        <div class="ms-2">
+                            <div
+                                t-out="ticket.pms_property_id"
+                                t-options='{"widget": "contact", "fields": ["name"]}'
+                                class="mt-2"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="col-6 col-md-12 pb-2"
+                    t-if="ticket.pms_property_id and ticket.pms_room_id"
+                >
+                    <strong>Habitación:</strong>
+                    <div class="d-flex ps-3 flex-nowrap mt-1">
+                        <div class="ms-2">
+                            <div t-out="ticket.pms_room_id.name" class="mt-2" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-12 pb-2" t-if="ticket.user_id">
+                    <strong>Assigned to</strong>
+                    <div class="d-flex ps-3 flex-nowrap mt-1">
+                        <img
+                            class="rounded-circle o_portal_contact_img"
+                            t-att-src="image_data_uri(ticket.user_id.avatar_128)"
+                            alt="Contact"
+                        />
+                        <div class="ms-2">
+                            <div
+                                t-out="ticket.user_id"
+                                t-options='{"widget": "contact", "fields": ["name"]}'
+                                class="mt-2"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </xpath>
+        <xpath expr="//div[@id='card_body']" position="replace">
+            <div id="card_body" class="card-body">
+                <div class="row mb-2">
+                    <span class="col-lg-6 col-sm-6"><strong>Priority</strong>
+                        <t t-if="ticket.priority">
+                            <span class="text-warning">
+                                <t t-foreach="range(int(ticket.priority))" t-as="i">
+                                    <i class="fa fa-star me-1" />
+                                </t>
+                                <t t-foreach="range(3 - int(ticket.priority))" t-as="i">
+                                    <i class="fa fa-star-o me-1" />
+                                </t>
+                            </span>
+                        </t>
+                        <t t-else="">
+                            <span class="text-warning">
+                                <t t-foreach="range(3)" t-as="i">
+                                    <i class="fa fa-star-o me-1" />
+                                </t>
+                            </span>
+                        </t>
+                    </span>
+                    <div
+                        t-if="ticket.location_type"
+                        class="col-lg-6 col-sm-6"
+                        name="location"
+                    >
+                        <div class="col-lg-12">
+                            <span><strong>Incident location </strong></span>
+                            <t t-set="location_label">
+                                <t t-if="ticket.location_type == 'room'">Room</t>
+                                <t
+                                    t-elif="ticket.location_type == 'bathroom'"
+                                >Bathroom</t>
+                                <t
+                                    t-elif="ticket.location_type == 'reception'"
+                                >Reception</t>
+                                <t t-else="">
+                                    <t t-out="ticket.location_type" />
+                                </t>
+                            </t>
+                            <span
+                                t-out="location_label"
+                                class="badge bg-warning text-black"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4" style="background: rgba(200, 200, 238, 0.42);">
+                    <strong class="col-lg-2 col-sm-12">Reported on</strong>
+                    <span
+                        class="col-lg-4 col-sm-6 pb-2"
+                        t-field="ticket.create_date"
+                        t-options='{"widget": "datetime", "hide_seconds": True}'
+                    />
+                    <div
+                        class="col-lg-6 text-center border rounded-lg p-2 pb-2"
+                        style="background: rgba(170, 22, 172, 0.15);"
+                    >
+                        <span
+                            t-if="ticket.is_room_blocked"
+                            class="badge bg-danger text-white"
+                        >
+                            <i class="fa fa-lock me-1" />Out of service
+                        </span>
+                        <span
+                            t-if="ticket.company_external_id"
+                            class="badge bg-info text-white"
+                        >
+                            <i class="fa fa-lock me-1" />Company external
+                        </span>
+                    </div>
+                </div>
+                <div
+                    t-if="not is_html_empty(ticket.description)"
+                    class="row mb-4"
+                    name="description"
+                >
+                        <div class="col-lg-12">
+                            <span><strong>Description </strong></span>
+                            <div class="col-lg-12" t-field="ticket.description" />
+                        </div>
+                </div>
+                <div class="row mb-4" t-if="ticket.team_id.portal_show_rating">
+                    <strong class="col-lg-2">Managed by</strong>
+                    <span class="col-lg-10">
+                        <a t-attf-href="/helpdesk/rating/#{ticket.team_id.id}">
+                            <span t-field="ticket.team_id.name" />
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

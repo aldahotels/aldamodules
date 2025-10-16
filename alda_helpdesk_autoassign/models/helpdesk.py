@@ -41,6 +41,20 @@ class HelpdeskTeam(models.Model):
         )
         return list(set(employees.mapped("user_id.id")))
 
+    def _update_team_members_from_employee(self, employee):
+        if not employee.user_id or not employee.active:
+            return
+
+        teams_to_update = self.search(
+            [
+                ("assign_by_property", "=", True),
+                ("team_job_ids", "in", employee.job_id.ids),
+            ]
+        )
+
+        for team in teams_to_update:
+            team.member_ids = team._get_filtered_member_ids()
+
     def _get_members_without_assigned_by_property(self):
         self.ensure_one()
         if not self.assign_by_property:
@@ -123,7 +137,7 @@ class HelpdeskTeam(models.Model):
 
         return users_filtered
 
-    @api.onchange("assign_by_property", "team_job_ids")
+    @api.onchange("assign_by_property", "team_job_ids", "member_ids")
     def _onchange_assign_by_property(self):
         for team in self:
             if team.assign_by_property and not team.team_job_ids:
@@ -137,8 +151,9 @@ class HelpdeskTeam(models.Model):
                         ),
                     }
                 }
-            else:
-                team.member_ids = team._get_filtered_member_ids()
+            if team.assign_by_property:
+                filtered_member_ids = team._get_filtered_member_ids()
+                team.member_ids = [(6, 0, filtered_member_ids)]
 
     @api.constrains("assign_by_property", "team_job_ids")
     def _check_assign_by_property(self):
@@ -150,6 +165,21 @@ class HelpdeskTeam(models.Model):
                         "at least one job position must be associated with the team."
                     )
                 )
+
+    @api.constrains("assign_by_property", "member_ids")
+    def _check_member_ids_modification(self):
+        for team in self:
+            if team.assign_by_property:
+                expected_members = set(team._get_filtered_member_ids())
+                current_members = set(team.member_ids.ids)
+                if current_members != expected_members:
+                    raise ValidationError(
+                        _(
+                            "You cannot manually modify team members when "
+                            "'Assign by Property' is active. "
+                            "Members are automatically assigned based on jobs and properties. "
+                        )
+                    )
 
     def _determine_user_to_assign(self, ticket=None, vals=None):
         result = dict.fromkeys(self.ids, self.env["res.users"])

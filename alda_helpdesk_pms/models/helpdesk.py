@@ -19,6 +19,11 @@ class HelpdeskTeam(models.Model):
         help="Indicates if location will be required in the form.",
     )
 
+    allow_portal_ticket_closing_technician = fields.Boolean(
+        "Closure by Technician",
+        help="Allows the assigned technician to close tickets via the portal interface.",
+    )
+
     @api.onchange("is_pms_form")
     def _onchange_is_pms_form(self):
         if not self.is_pms_form:
