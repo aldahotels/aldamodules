@@ -1,11 +1,18 @@
+from operator import itemgetter
+
+from markupsafe import Markup
+
 from odoo import http
 from odoo.exceptions import AccessError, MissingError, UserError
 from odoo.http import request
+from odoo.osv.expression import AND, OR
+from odoo.tools import groupby as groupbyelem
 from odoo.tools.translate import _
 
 from odoo.addons.helpdesk.controllers.portal import (
     CustomerPortal as HelpdeskCustomerPortal,
 )
+from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class PmsHelpdeskTicketClose(HelpdeskCustomerPortal):  # noqa: C901
@@ -15,153 +22,212 @@ class PmsHelpdeskTicketClose(HelpdeskCustomerPortal):  # noqa: C901
         date_begin=None,
         date_end=None,
         sortby=None,
-        filterby=None,
-        groupby="none",
+        filterby="all",
         search=None,
+        groupby="none",
         search_in="content",
-        **kw
     ):
-        """Preparar valores para la vista de tickets"""
-        values = {
-            "page": page,
-            "date": date_begin,
-            "sortby": sortby,
-            "filterby": filterby,
-            "groupby": groupby,
-            "search_in": search_in,
-            "search": search,
+        values = self._prepare_portal_layout_values()
+        domain = self._prepare_helpdesk_tickets_domain()
+
+        searchbar_sortings = {
+            "date": {"label": _("Newest"), "order": "create_date desc"},
+            "reference": {"label": _("Reference"), "order": "id"},
+            "name": {"label": _("Subject"), "order": "name"},
+            "user": {"label": _("Assigned to"), "order": "user_id"},
+            "stage": {"label": _("Stage"), "order": "stage_id"},
+            "pms_property_id": {"label": _("Property"), "order": "name"},
+            "update": {
+                "label": _("Last Stage Update"),
+                "order": "date_last_stage_update desc",
+            },
+        }
+        searchbar_filters = {
+            "all": {"label": _("All"), "domain": []},
+            "assigned": {"label": _("Assigned"), "domain": [("user_id", "!=", False)]},
+            "unassigned": {
+                "label": _("Unassigned"),
+                "domain": [("user_id", "=", False)],
+            },
+            "open": {"label": _("Open"), "domain": [("close_date", "=", False)]},
+            "pms_property_id": {
+                "label": _("Property"),
+                "domain": [("pms_property_id", "!=", False)],
+            },
+            "closed": {"label": _("Closed"), "domain": [("close_date", "!=", False)]},
+        }
+        searchbar_inputs = {
+            "content": {
+                "input": "content",
+                "label": Markup(_('Search <span class="nolabel"> (in Content)</span>')),
+            },
+            "ticket_ref": {"input": "ticket_ref", "label": _("Search in Reference")},
+            "message": {"input": "message", "label": _("Search in Messages")},
+            "user": {"input": "user", "label": _("Search in Assigned to")},
+            "status": {"input": "status", "label": _("Search in Stage")},
+            "pms_property_id": {
+                "input": "pms_property_id",
+                "label": _("Search in Property"),
+            },
         }
 
+        searchbar_groupby = {
+            "none": {"input": "none", "label": _("None")},
+            "stage": {"input": "stage_id", "label": _("Stage")},
+            "user": {"input": "user_id", "label": _("Assigned to")},
+            "pms_property_id": {"input": "pms_property_id", "label": _("Property")},
+        }
+
+        if not sortby:
+            sortby = "date"
+        order = searchbar_sortings[sortby]["order"]
+        if groupby in searchbar_groupby and groupby != "none":
+            order = f'{searchbar_groupby[groupby]["input"]}, {order}'
+
+        if filterby in ["last_message_sup", "last_message_cust"]:
+            discussion_subtype_id = request.env.ref("mail.mt_comment").id
+            messages = request.env["mail.message"].search_read(
+                [
+                    ("model", "=", "helpdesk.ticket"),
+                    ("subtype_id", "=", discussion_subtype_id),
+                ],
+                fields=["res_id", "author_id"],
+                order="date desc",
+            )
+            last_author_dict = {}
+            for message in messages:
+                if message["res_id"] not in last_author_dict:
+                    last_author_dict[message["res_id"]] = message["author_id"][0]
+
+            ticket_author_list = request.env["helpdesk.ticket"].search_read(
+                fields=["id", "partner_id"]
+            )
+            ticket_author_dict = {
+                ticket_author["id"]: ticket_author["partner_id"][0]
+                if ticket_author["partner_id"]
+                else False
+                for ticket_author in ticket_author_list
+            }
+
+            last_message_cust = []
+            last_message_sup = []
+            ticket_ids = set(last_author_dict.keys()) & set(ticket_author_dict.keys())
+            for ticket_id in ticket_ids:
+                if last_author_dict[ticket_id] == ticket_author_dict[ticket_id]:
+                    last_message_cust.append(ticket_id)
+                else:
+                    last_message_sup.append(ticket_id)
+
+            if filterby == "last_message_cust":
+                domain = AND([domain, [("id", "in", last_message_cust)]])
+            else:
+                domain = AND([domain, [("id", "in", last_message_sup)]])
+
+        else:
+            domain = AND([domain, searchbar_filters[filterby]["domain"]])
+
         if date_begin and date_end:
-            values["date_end"] = date_end
+            domain = AND(
+                [
+                    domain,
+                    [("create_date", ">", date_begin), ("create_date", "<=", date_end)],
+                ]
+            )
 
-        # Searchbar configurations
-        searchbar_sortings = self._get_searchbar_sortings()
-        searchbar_inputs = self._get_searchbar_inputs()
-        searchbar_filters = self._get_searchbar_filters()
-        searchbar_groupby = self._get_groupby_options()
-
-        # Base domain
-        domain = self._get_base_domain()
-
-        # Apply date filter
-        domain = self._apply_date_filter(domain, date_begin, date_end)
-
-        # Apply search filter
-        domain = self._apply_search_filter(domain, search_in, search)
-
-        # Apply additional filters
-        domain = self._apply_additional_filters(domain, filterby, searchbar_filters)
-
-        # Get tickets with sorting
-        tickets = self._get_tickets_with_sorting(domain, sortby, searchbar_sortings)
-
-        # Setup pager
-        pager_values = self._setup_pager(tickets, page, values)
-
-        # Prepare final values
-        final_values = self._prepare_final_values(
-            values,
-            tickets,
-            searchbar_sortings,
-            searchbar_inputs,
-            searchbar_filters,
-            searchbar_groupby,
-            pager_values,
-        )
-
-        return final_values
-
-    def _get_base_domain(self):
-        """Get base domain for tickets"""
-        return [("partner_id", "child_of", request.env.user.partner_id.id)]
-
-    def _apply_date_filter(self, domain, date_begin, date_end):
-        """Apply date filter to domain"""
-        if date_begin and date_end:
-            domain.append(("create_date", ">=", date_begin))
-            domain.append(("create_date", "<=", date_end))
-        return domain
-
-    def _apply_search_filter(self, domain, search_in, search):
-        """Apply search filter to domain"""
         if search and search_in:
             search_domain = []
-            if search_in in ("content", "all"):
-                search_domain.append(
-                    ["|", ("name", "ilike", search), ("description", "ilike", search)]
+            if search_in == "ticket_ref":
+                search_domain = OR([search_domain, [("ticket_ref", "ilike", search)]])
+            if search_in == "content":
+                search_domain = OR(
+                    [
+                        search_domain,
+                        [
+                            "|",
+                            ("name", "ilike", search),
+                            ("description", "ilike", search),
+                        ],
+                    ]
                 )
-            if search_in in ("customer", "all"):
-                search_domain.append([("partner_id", "ilike", search)])
-            if search_in in ("message", "all"):
-                search_domain.append([("message_ids.body", "ilike", search)])
-            if search_in in ("stage", "all"):
-                search_domain.append([("stage_id", "ilike", search)])
-            if search_in in ("user", "all"):
-                search_domain.append([("user_id", "ilike", search)])
-            if search_domain:
-                domain += search_domain
-        return domain
+            if search_in == "user":
+                assignees = (
+                    request.env["res.users"].sudo()._search([("name", "ilike", search)])
+                )
+                search_domain = OR([search_domain, [("user_id", "in", assignees)]])
+            if search_in == "pms_property_id":
+                assignees = (
+                    request.env["pms.property"]
+                    .sudo()
+                    ._search([("name", "ilike", search)])
+                )
+                search_domain = OR(
+                    [search_domain, [("pms_property_id", "in", assignees)]]
+                )
+            if search_in == "message":
+                discussion_subtype_id = request.env.ref("mail.mt_comment").id
+                search_domain = OR(
+                    [
+                        search_domain,
+                        [
+                            ("message_ids.body", "ilike", search),
+                            ("message_ids.subtype_id", "=", discussion_subtype_id),
+                        ],
+                    ]
+                )
+            if search_in == "status":
+                search_domain = OR([search_domain, [("stage_id", "ilike", search)]])
+            domain = AND([domain, search_domain])
 
-    def _apply_additional_filters(self, domain, filterby, searchbar_filters):
-        """Apply additional filters to domain"""
-        if filterby and filterby != "all":
-            domain += searchbar_filters[filterby]["domain"]
-        return domain
-
-    def _get_tickets_with_sorting(self, domain, sortby, searchbar_sortings):
-        """Get tickets with applied sorting"""
-        sort_order = searchbar_sortings.get(sortby, searchbar_sortings["create_date"])[
-            "order"
-        ]
-        return request.env["helpdesk.ticket"].sudo().search(domain, order=sort_order)
-
-    def _setup_pager(self, tickets, page, values):
-        """Setup pager for tickets"""
-        ticket_count = len(tickets)
-        pager = request.website.pager(
+        tickets_count = request.env["helpdesk.ticket"].search_count(domain)
+        pager = portal_pager(
             url="/my/tickets",
-            url_args=values,
-            total=ticket_count,
+            url_args={
+                "date_begin": date_begin,
+                "date_end": date_end,
+                "sortby": sortby,
+                "search_in": search_in,
+                "search": search,
+                "groupby": groupby,
+                "filterby": filterby,
+            },
+            total=tickets_count,
             page=page,
             step=self._items_per_page,
         )
-        paged_tickets = tickets[
-            (page - 1) * self._items_per_page : page * self._items_per_page
-        ]
-        return {"pager": pager, "tickets": paged_tickets, "ticket_count": ticket_count}
 
-    def _prepare_final_values(
-        self,
-        values,
-        tickets,
-        searchbar_sortings,
-        searchbar_inputs,
-        searchbar_filters,
-        searchbar_groupby,
-        pager_values,
-    ):
-        """Prepare final values dictionary"""
+        tickets = request.env["helpdesk.ticket"].search(
+            domain, order=order, limit=self._items_per_page, offset=pager["offset"]
+        )
+        request.session["my_tickets_history"] = tickets.ids[:100]
+
+        if groupby != "none":
+            grouped_tickets = [
+                request.env["helpdesk.ticket"].concat(*g)
+                for k, g in groupbyelem(
+                    tickets, itemgetter(searchbar_groupby[groupby]["input"])
+                )
+            ]
+        else:
+            grouped_tickets = [tickets]
+
         values.update(
             {
-                "tickets": pager_values["tickets"],
+                "date": date_begin,
+                "grouped_tickets": grouped_tickets,
                 "page_name": "ticket",
-                "pager": pager_values["pager"],
                 "default_url": "/my/tickets",
+                "pager": pager,
                 "searchbar_sortings": searchbar_sortings,
-                "searchbar_groupby": searchbar_groupby,
-                "searchbar_inputs": searchbar_inputs,
                 "searchbar_filters": searchbar_filters,
-                "ticket_count": pager_values["ticket_count"],
+                "searchbar_inputs": searchbar_inputs,
+                "searchbar_groupby": searchbar_groupby,
+                "sortby": sortby,
+                "groupby": groupby,
+                "search_in": search_in,
+                "search": search,
+                "filterby": filterby,
             }
         )
-
-        # Group tickets if needed
-        if values["groupby"] != "none":
-            values["grouped_tickets"] = self._group_tickets(
-                pager_values["tickets"], values["groupby"]
-            )
-
         return values
 
     @http.route(
