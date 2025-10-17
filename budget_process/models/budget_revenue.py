@@ -22,6 +22,8 @@ class BudgetRevenue(models.Model):
         "budget.revenue.rn.actions.mixin",
         "budget.revenue.percentage.actions.mixin",
         "budget.revenue.rn.budgeted.actions.mixin",
+        "budget.revenue.occ.compute.mixin",
+        "budget.revenue.pax.compute.mixin",
     ]
 
     department = fields.Selection(
@@ -35,8 +37,8 @@ class BudgetRevenue(models.Model):
             ("rn_ly", "Room Nights LY"),
             ("increase_decrease_rn_ly", "increase or decrease RN LY"),
             ("rn_budgeted", "Room Nights"),
-            ("occ_budgeted", "Budgeted Occ"),
-            ("pax_budgeted", "Budgeted Pax"),
+            ("occ_budgeted", "Occuppancy"),
+            ("pax_budgeted", "Pax"),
             ("room_revenue_ly_sin_iva", "Room Revenue LY (SIN IVA)"),
             ("adr_ly_sin_iva", "ADR LY (SIN IVA)"),
             ("aumento_disminucion_adr_ly", "Aumento o Disminución ADR / LY"),
@@ -109,6 +111,27 @@ class BudgetRevenue(models.Model):
                     monthly_values = record._get_rn_budgeted_values()
                     _logger.info(
                         "COMPUTE: RN budgeted result for record %s: %s",
+                        record.id,
+                        monthly_values,
+                    )
+                elif record.record_type == "occ_budgeted":
+                    _logger.info(
+                        "COMPUTE: Getting occupancy budgeted values for record %s",
+                        record.id,
+                    )
+                    monthly_values = record._get_occ_budgeted_values()
+                    _logger.info(
+                        "COMPUTE: Occupancy budgeted result for record %s: %s",
+                        record.id,
+                        monthly_values,
+                    )
+                elif record.record_type == "pax_budgeted":
+                    _logger.info(
+                        "COMPUTE: Getting pax budgeted values for record %s", record.id
+                    )
+                    monthly_values = record._get_pax_budgeted_values()
+                    _logger.info(
+                        "COMPUTE: Pax budgeted result for record %s: %s",
                         record.id,
                         monthly_values,
                     )

@@ -90,6 +90,27 @@
                         attrs="{'invisible': ['|', ('record_type', '!=', 'rn_budgeted'), ('budget_type', '!=', 'budgeted')]}"
                         help="Force recalculation of RN Budgeted values"
                     />
+
+          <!-- PAX Budgeted Action Buttons -->
+          <button
+                        name="action_diagnose_pax_budgeted_formula"
+                        type="object"
+                        string="🔍 Diagnose PAX Formula"
+                        class="btn-info"
+                        title="Show diagnostic information about PAX budgeted formula calculation"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'pax_budgeted'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Check if all required records exist for PAX Budgeted calculation"
+                    />
+           <!-- OCC Budgeted Action Buttons -->
+          <button
+                        name="action_debug_occupancy_budgeted"
+                        type="object"
+                        string="🔍 Debug OCC Formula"
+                        class="btn-info"
+                        title="Show diagnostic information about OCC budgeted formula calculation"
+                        attrs="{'invisible': ['|', ('record_type', '!=', 'occ_budgeted'), ('budget_type', '!=', 'budgeted')]}"
+                        help="Debug occupancy calculation formula and dependencies"
+                    />
         </header>
         <sheet>
           <group>
@@ -228,7 +249,7 @@
     <field name="binding_view_types">list</field>
     <field name="state">code</field>
     <field name="code">
-      action = records.action_sync_all_rooms_disponibles()
+      action = records.action_sync_all_rooms_available()
     </field>
   </record>
 

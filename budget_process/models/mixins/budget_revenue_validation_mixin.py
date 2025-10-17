@@ -26,3 +26,6 @@ class BudgetRevenueValidationMixin(models.AbstractModel):
 
     def _is_rn_budgeted(self):
         return self.record_type == "rn_budgeted" and self.budget_type == "budgeted"
+
+    def _is_pax_budgeted(self):
+        return self.record_type == "pax_budgeted" and self.budget_type == "budgeted"
