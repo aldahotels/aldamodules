@@ -135,6 +135,24 @@ class BudgetRevenue(models.Model):
                         record.id,
                         monthly_values,
                     )
+                elif record.record_type == "room_revenue_ly_sin_iva":
+                    _logger.info(
+                        "COMPUTE: Getting room revenue LY sin IVA data for record %s",
+                        record.id,
+                    )
+                    monthly_values = (
+                        record._get_room_revenue_ly_sin_iva_from_budget_data(
+                            "[REVENUE]"
+                        )
+                    )
+                elif record.record_type == "adr_ly_sin_iva":
+                    _logger.info(
+                        "COMPUTE: Getting ADR LY sin IVA calculated data for record %s",
+                        record.id,
+                    )
+                    monthly_values = record._get_adr_ly_sin_iva_from_existing_records(
+                        "[REVENUE]"
+                    )
 
             if record.record_type == "increase_decrease_rn_ly":
                 _logger.info(

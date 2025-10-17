@@ -29,3 +29,14 @@ class BudgetRevenueValidationMixin(models.AbstractModel):
 
     def _is_pax_budgeted(self):
         return self.record_type == "pax_budgeted" and self.budget_type == "budgeted"
+
+    def _is_room_revenue_ly_sin_iva_budgeted(self):
+        """Validation for room revenue last year without IVA record type"""
+        return (
+            self.record_type == "room_revenue_ly_sin_iva"
+            and self.budget_type == "budgeted"
+        )
+
+    def _is_adr_ly_sin_iva_budgeted(self):
+        """Validation for ADR last year without IVA record type"""
+        return self.record_type == "adr_ly_sin_iva" and self.budget_type == "budgeted"
