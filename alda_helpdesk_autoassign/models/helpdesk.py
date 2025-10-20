@@ -186,11 +186,14 @@ class HelpdeskTeam(models.Model):
 
         context = self.env.context
         no_property_assignment = context.get("no_property_assignment", False)
+        no_property_vals = vals.get("pms_property_id", False) if vals else False
         default_tickets_with_property = context.get(
             "default_tickets_with_property", False
         )
 
-        if no_property_assignment:
+        if no_property_assignment and (
+            no_property_vals or not default_tickets_with_property
+        ):
             result = super()._determine_user_to_assign()
             return result
 
