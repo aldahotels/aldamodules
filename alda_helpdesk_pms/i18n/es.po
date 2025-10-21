@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-12 10:32+0000\n"
-"PO-Revision-Date: 2025-09-12 10:32+0000\n"
+"POT-Creation-Date: 2025-10-21 07:46+0000\n"
+"PO-Revision-Date: 2025-10-21 07:46+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -50,6 +50,18 @@ msgid ""
 "<br/>\n"
 "                                    <strong>Property:</strong>"
 msgstr ""
+"<br/>\n"
+"                                    <strong>Hotel:</strong>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<i class=\"fa fa-lock me-1\"/>Company external"
+msgstr "<i class=\"fa fa-lock me-1\"/>Compañía externa"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<i class=\"fa fa-lock me-1\"/>Out of service"
+msgstr "<i class=\"fa fa-lock me-1\"/>Bloqueada"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -96,6 +108,11 @@ msgstr ""
 "                                    </small>"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
+msgid "<small>#</small>"
+msgstr ""
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
 msgid "<span class=\"o_stat_text\"> Tickets</span>"
 msgstr ""
@@ -126,9 +143,54 @@ msgstr ""
 "                                Estás enviando una solicitud de soporte para:"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<span><strong>Description </strong></span>"
+msgstr "<span><strong>Descripción </strong></span>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<span><strong>Incident location </strong></span>"
+msgstr "<span><strong>Lugar </strong></span>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<strong class=\"col-lg-2 col-sm-12\">Reported on</strong>"
+msgstr "<strong class=\"col-lg-2 col-sm-12\">Reportado el</strong>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<strong class=\"col-lg-2\">Managed by</strong>"
+msgstr "<strong class=\"col-lg-2\">Gestionado por</strong>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<strong>Assigned to</strong>"
+msgstr "<strong>Asignado a</strong>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<strong>Customer</strong>"
+msgstr "<strong>Cliente</strong>"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "<strong>Hi&amp;nbsp;</strong>"
 msgstr "<strong>Hola&amp;nbsp;</strong>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<strong>Priority</strong>"
+msgstr "<strong>Prioridad</strong>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<strong>Property:</strong>"
+msgstr "<strong>Hotel:</strong>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "<strong>Room:</strong>"
+msgstr "<strong>Habitación:</strong>"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__ticket_blocked_room_adr_accumulated
@@ -142,8 +204,44 @@ msgstr "Total días (bloqueo)"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "All"
+msgstr "Todos"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_team_pms_view_form
+msgid "Allow your technician to close their own tickets"
+msgstr "Permitir al técnico cerrar sus tickets"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_team__allow_portal_ticket_closing_technician
+msgid ""
+"Allows the assigned technician to close tickets via the portal interface."
+msgstr ""
+"Permitir al técnico asignado cerrar el ticket desde el portal."
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Assigned"
+msgstr "Asignado"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
+#, python-format
+msgid "Assigned to"
+msgstr "Asignado a"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
 #, python-format
 msgid "Bathroom"
 msgstr "Baño"
@@ -178,6 +276,18 @@ msgstr ""
 "bloqueadas durante el período especificado."
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Closed"
+msgstr "Cerrado"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_team__allow_portal_ticket_closing_technician
+msgid "Closure by Technician"
+msgstr "Cerrado por el Técnico"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__color
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_type__color
 msgid "Color"
@@ -192,6 +302,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
 msgid "Company Logo"
 msgstr ""
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "Contact"
+msgstr "Contacto"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_report_analysis__blocked_room_count
@@ -295,12 +411,18 @@ msgid "High Season - Medium Occupation"
 msgstr "Temporada Alta - Ocupación Media"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
+msgid "Hotel"
+msgstr ""
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__id
 msgid "ID"
 msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_team__is_location_required
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__is_location_required
 msgid "Indicates if location will be required in the form."
 msgstr "Mostrar en el formulario web PMS-Roomdoo el lugar para seleccionar"
 
@@ -357,6 +479,13 @@ msgid "Last Modified on"
 msgstr "Última actualización en"
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Last Stage Update"
+msgstr "Actualización de la etapa"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Location"
 msgstr "Lugar"
@@ -372,6 +501,7 @@ msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_team__is_location_required
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__is_location_required
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_team_pms_view_form
 msgid "Location Required in form"
 msgstr "Lugar es requerido en el formulario PMS-Roomdoo"
@@ -416,10 +546,24 @@ msgstr "Nombre"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Newest"
+msgstr "Recientes"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "No longer related to Room"
 msgstr "No relacionado con una habitación"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "None"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__occupancy_rate
@@ -430,6 +574,13 @@ msgstr "Ocupación %"
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__occupancy_kpi_info
 msgid "Occupancy Rate Info"
 msgstr "Ocupación información"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Open"
+msgstr "Abierto"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__block_kpi_info
@@ -444,10 +595,16 @@ msgstr ""
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Prioridad"
-msgstr ""
+msgstr "Prioridad"
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_report_analysis__pms_property_id
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
+#, python-format
 msgid "Property"
 msgstr "Hotel"
 
@@ -482,9 +639,17 @@ msgstr ""
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
 #, python-format
 msgid "Reception"
 msgstr "Recepción"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Reference"
+msgstr "Referencia"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -505,6 +670,11 @@ msgid "Repair External ID"
 msgstr "Ticket atendido por empresa externa"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
+msgid "Reported on"
+msgstr "Reportado el"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__blocked_rooms
 msgid ""
 "Represents the total number of rooms that are, currently blocked or "
@@ -519,6 +689,7 @@ msgstr ""
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_report_analysis__pms_room_id
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
 #, python-format
 msgid "Room"
 msgstr "Habitación"
@@ -579,6 +750,48 @@ msgid "Rooms Blocked"
 msgstr "Habitaciones Bloqueadas"
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Search <span class=\"nolabel\"> (in Content)</span>"
+msgstr "Buscar <span class=\"nolabel\"> (por)</span>"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Search in Assigned to"
+msgstr "Buscar en Asignado a"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Search in Messages"
+msgstr "Buscar en Mensajes"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Search in Property"
+msgstr "Buscar por Hotel"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Search in Reference"
+msgstr "Buscar por Referencia"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Search in Stage"
+msgstr "Buscar por Estado del ticket"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__season_type
 msgid "Season"
 msgstr "Temporada"
@@ -614,7 +827,19 @@ msgstr ""
 "comparación con el total de habitaciones disponibles."
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
+#, python-format
+msgid "Stage"
+msgstr "Estado"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+#, python-format
 msgid "Subject"
 msgstr "Asunto"
 
@@ -651,6 +876,13 @@ msgstr ""
 "seleccione un tipo que corresponda al equipo elegido."
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "The team does not allow ticket closing through portal"
+msgstr "No está permitido cerrar el ticket a través del portal para este equipo"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket_type__team_id
 msgid "The team to which this ticket type belongs."
 msgstr "El equipo al que pertenece este tipo de ticket."
@@ -672,6 +904,11 @@ msgid "This ticket is not associated with any property."
 msgstr "Este ticket no está asociado a ningún hotel"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
+msgid "Ticket"
+msgstr ""
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
 msgid "Ticket #"
 msgstr ""
@@ -685,6 +922,20 @@ msgstr "Análisis de tickets"
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Ticket Type"
 msgstr "Tipo de ticket"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Ticket closed by the customer"
+msgstr "Ticket cerrado por el Cliente"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#, python-format
+msgid "Ticket closed by the technician"
+msgstr "Ticket cerrado por el Técnico"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__date_now
@@ -705,6 +956,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__ticket_type_id
 msgid "Type"
 msgstr "Tipo"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
+#, python-format
+msgid "Unassigned"
+msgstr "Sin asignar"
 
 #. module: alda_helpdesk_pms
 #: model:ir.ui.menu,name:alda_helpdesk_pms.menu_update_blocked

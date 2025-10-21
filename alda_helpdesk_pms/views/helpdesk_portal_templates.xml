@@ -19,7 +19,7 @@
                         <th
                             class="text-end"
                             t-if="groupby != 'pms_property_id'"
-                        >Hotel</th>
+                        >Property</th>
                         <th
                             id="ticket_user_header"
                             t-if="groupby != 'user'"
@@ -149,7 +149,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-md-12 pb-2" t-if="ticket.pms_property_id">
-                    <strong>Referida al Hotel:</strong>
+                    <strong>Property:</strong>
                     <div class="d-flex ps-3 flex-nowrap mt-1">
                         <img
                             class="rounded-circle o_portal_contact_img"
@@ -169,7 +169,7 @@
                     class="col-6 col-md-12 pb-2"
                     t-if="ticket.pms_property_id and ticket.pms_room_id"
                 >
-                    <strong>Habitación:</strong>
+                    <strong>Room:</strong>
                     <div class="d-flex ps-3 flex-nowrap mt-1">
                         <div class="ms-2">
                             <div t-out="ticket.pms_room_id.name" class="mt-2" />
@@ -244,14 +244,15 @@
                     </div>
                 </div>
                 <div class="row mb-4" style="background: rgba(200, 200, 238, 0.42);">
-                    <strong class="col-lg-2 col-sm-12">Reported on</strong>
-                    <span
-                        class="col-lg-4 col-sm-6 pb-2"
-                        t-field="ticket.create_date"
-                        t-options='{"widget": "datetime", "hide_seconds": True}'
-                    />
+                    <div class="col-lg-6 col-sm-12 p-3">
+                        <strong>Reported on </strong>
+                        <span
+                            t-field="ticket.create_date"
+                            t-options='{"widget": "datetime", "hide_seconds": True}'
+                        />
+                    </div>
                     <div
-                        class="col-lg-6 text-center border rounded-lg p-2 pb-2"
+                        class="col-lg-6 text-start border rounded-lg p-3"
                         style="background: rgba(170, 22, 172, 0.15);"
                     >
                         <span
