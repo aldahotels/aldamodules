@@ -56,6 +56,35 @@ class HelpdeskFormController(http.Controller):
 
         return vals
 
+    @http.route("/helpdesk/ticket/property", type="http", auth="public", website=True)
+    def helpdesk_ticket_select_property(self, **kwargs):
+        ensure_db()
+
+        if not request.env.user.has_group("base.group_user"):
+            return request.redirect("/web/login")
+
+        user = request.env.user
+        user_properties = user.pms_property_ids.filtered(lambda p: p.active)
+
+        property_id = kwargs.get("property_id")
+        if property_id:
+            selected_property = (
+                request.env["pms.property"].sudo().browse(int(property_id))
+            )
+            if selected_property and selected_property in user_properties:
+                # 🔁 Redirige al formulario de ticket
+                return request.redirect(
+                    f"/helpdesk/ticket/new?property_id={property_id}"
+                )
+            else:
+                # Si la propiedad no está permitida
+                return request.render("alda_helpdesk_pms.property_not_allowed", {})
+
+        return request.render(
+            "alda_helpdesk_pms.select_property_form",
+            {"properties": user_properties},
+        )
+
     @http.route("/helpdesk/ticket/new", type="http", auth="public", website=True)
     def helpdesk_ticket_form(self, **kwargs):
         ensure_db()

@@ -1,318 +1,561 @@
 <odoo>
     <template id="create_ticket_form" name="Formulario de Ticket">
         <t t-call="website.layout">
-            <div id="wrap" class="oe_structure oe_empty">
-                <section
-                    class="s_text_block o_colored_level pb0 pt0 o_snippet_invisible o_conditional_hidden"
-                    style="position: relative; background-image: none;"
-                    data-name="Texto"
-                    data-visibility="conditional"
-                    data-visibility-value-utm-campaign-rule=""
-                >
-                                <div class="s_allow_columns container-fluid">
+            <section class="py-5 bg-light">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-md-10 col-lg-8">
+                            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                                <div id="wrap" class="oe_structure oe_empty">
+                                    <!-- Header -->
                                     <div
-                            class="s_text_highlight o_colored_level my-3 w-100 text-center"
-                            data-snippet="s_text_highlight"
-                            data-name="Texto resaltado"
-                        >
-                        <div class="container">
-                            <h4><strong>Hi&amp;nbsp;</strong><t
-                                        t-out="user_name or ''"
-                                    /><br /></h4>
-                            <p>
-                            <span style="font-size: 36px;">📑</span>
-                                You're submitting a support request for:
-                                <t t-esc="property_name or ''" />.&amp;nbsp;&amp;nbsp;
-                            </p>
-                        </div>
-                    </div><p />
-                    </div>
-                </section>
-                    <div class="o_container_small">
-                        <div class="s_website_form_rows row s_col_no_bgcolor">
-                            <h2><center>Form New Ticket</center></h2>
-                            <form
-                            action="/helpdesk/ticket/submit"
-                            enctype="multipart/form-data"
-                            method="POST"
-                            class="mt-4"
-                        >
-                                <input
-                                type="hidden"
-                                name="partner_id"
-                                t-att-value="partner_id"
-                            />
-                                <input
-                                type="hidden"
-                                name="property_id"
-                                t-att-value="property_id"
-                            />
-                                <input
-                                type="hidden"
-                                name="user_name"
-                                t-att-value="user_name or ''"
-                            />
-                                <input
-                                type="hidden"
-                                name="partner_name"
-                                t-att-value="partner_name or ''"
-                            />
-                                <input
-                                type="hidden"
-                                name="property_name"
-                                t-att-value="property_name or ''"
-                            />
-                                <input
-                                type="hidden"
-                                name="is_room"
-                                t-att-value="is_room or ''"
-                            />
-                            <input
-                                type="hidden"
-                                name="partner_name"
-                                t-att-value="partner_name or ''"
-                            />
-                                <div class="mb-3">
-                                    <label class="form-label">Subject</label>
-                                    <input
-                                    type="text"
-                                    name="subject"
-                                    class="form-control"
-                                    required="1"
-                                />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Department</label>
-                                    <select
-                                    name="team_id"
-                                    class="form-control"
-                                    required="1"
-                                >
-                                    <option value="">Select a department</option>
-                                        <t t-foreach="team_ids" t-as="team">
-                                            <option
-                                            t-att-value="team.id"
-                                            t-att-data-requires-location="team.is_location_required"
-                                        >
-                                                <t t-out="team.name" />
-                                            </option>
-                                        </t>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Ticket Type</label>
-                                    <select
-                                    name="ticket_type_id"
-                                    class="form-control"
-                                    required="1"
-                                >
-                                        <option value="">Select a Ticket Type</option>
-                                        <t t-foreach="ticket_type_ids" t-as="type">
-                                            <option
-                                            t-att-value="type.id"
-                                            t-att-data-team-id="type.team_id.id"
-                                        >
-                                                <t t-out="type.name" />
-                                            </option>
-                                        </t>
-                                    </select>
-                                </div>
-                                <div class="mb-3" id="location_field">
-                                    <label class="form-label">Location</label>
-                                    <select name="location_type" class="form-control">
-                                        <option value="">Select Place</option>
-                                        <t t-foreach="location_type_options" t-as="opt">
-                                            <option t-att-value="opt[0]">
-                                                <t t-out="opt[1]" />
-                                            </option>
-                                        </t>
-                                    </select>
-                                </div>
-
-                                <div
-                                class="mb-3"
-                                id="reference_data_field"
-                                style="display: none;"
-                            >
-                                    <label
-                                    class="form-label"
-                                >Reference/Reservation Number</label>
-                                    <input
-                                    type="text"
-                                    name="reference_data"
-                                    class="form-control"
-                                />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Room</label>
-                                    <select name="room_ids" class="form-control">
-                                        <option value="">Select Room</option>
-                                        <t t-foreach="room_ids" t-as="room">
-                                            <option t-att-value="room.id">
-                                                <t t-out="room.name" />
-                                                <t
-                                                t-if="is_room_blocked_ids.get(room.id, False)"
-                                            > (Blocked)<i class="fa fa-lock" /></t>
-                                            </option>
-                                        </t>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label
-                                    class="form-label"
-                                >Is property operated normally?</label>
-                                    <div class="form-check form-switch">
-                                        <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        role="switch"
-                                        name="is_property_operated_normaly"
-                                        id="is_property_operated_normaly"
-                                        t-att-checked="is_property_operated_normaly and 'checked' or ''"
-                                    />
+                                        class="card-header bg-white border-0 text-center py-4"
+                                    >
+                                        <h2
+                                            class="fw-bold text-primary mb-2"
+                                        >Form New Ticket</h2>
+                                        <div class="s_text_highlight text-center">
+                                            <h4 class="mb-2"><strong>Hi </strong><t
+                                                    t-out="user_name or ''"
+                                                /></h4>
+                                            <p class="text-muted mb-0">
+                                                <span style="font-size: 24px;">📑</span>
+                                                You're submitting a support request for:
+                                                <strong t-esc="property_name or ''" />.
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="mb-3" id="company_external_id_field">
-                                    <label
-                                    class="form-label d-block"
-                                >will this be fixed by an external company?</label>
-                                    <div class="form-check form-switch">
-                                        <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        role="switch"
-                                        name="company_external_id"
-                                        id="is_company_external_id"
-                                        t-att-value="company_external_id or 'False'"
-                                    />
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Prioridad</label>
-                                    <div class="priority-widget">
-                                        <input
-                                        type="hidden"
-                                        name="priority"
-                                        id="priority_value"
-                                        value="0"
-                                    />
-                                        <div class="star-rating" data-priority="0">
-                                            <span
-                                            class="star"
-                                            data-value="1"
-                                        >&#9734;</span>
-                                            <span
-                                            class="star"
-                                            data-value="2"
-                                        >&#9734;</span>
-                                            <span
-                                            class="star"
-                                            data-value="3"
-                                        >&#9734;</span>
+                                    <!-- Form Body -->
+                                    <div class="card-body p-4">
+                                        <div class="o_container_small">
+                                            <form
+                                                action="/helpdesk/ticket/submit"
+                                                enctype="multipart/form-data"
+                                                method="POST"
+                                                class="mt-4"
+                                            >
+                                                <input
+                                                    type="hidden"
+                                                    name="partner_id"
+                                                    t-att-value="partner_id"
+                                                />
+                                                <input
+                                                    type="hidden"
+                                                    name="property_id"
+                                                    t-att-value="property_id"
+                                                />
+                                                <input
+                                                    type="hidden"
+                                                    name="user_name"
+                                                    t-att-value="user_name or ''"
+                                                />
+                                                <input
+                                                    type="hidden"
+                                                    name="partner_name"
+                                                    t-att-value="partner_name or ''"
+                                                />
+                                                <input
+                                                    type="hidden"
+                                                    name="property_name"
+                                                    t-att-value="property_name or ''"
+                                                />
+                                                <input
+                                                    type="hidden"
+                                                    name="is_room"
+                                                    t-att-value="is_room or ''"
+                                                />
+                                            <input
+                                                    type="hidden"
+                                                    name="partner_name"
+                                                    t-att-value="partner_name or ''"
+                                                />
+                                                <div class="mb-3">
+                                                    <label
+                                                        class="form-label"
+                                                    >Subject</label>
+                                                    <input
+                                                        type="text"
+                                                        name="subject"
+                                                        class="form-control"
+                                                        required="1"
+                                                    />
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label
+                                                        class="form-label"
+                                                    >Department</label>
+                                                    <select
+                                                        name="team_id"
+                                                        class="form-control"
+                                                        required="1"
+                                                    >
+                                                    <option
+                                                            value=""
+                                                        >Select a department</option>
+                                                        <t
+                                                            t-foreach="team_ids"
+                                                            t-as="team"
+                                                        >
+                                                            <option
+                                                                t-att-value="team.id"
+                                                                t-att-data-requires-location="team.is_location_required"
+                                                            >
+                                                                <t t-out="team.name" />
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label
+                                                        class="form-label"
+                                                    >Ticket Type</label>
+                                                    <select
+                                                        name="ticket_type_id"
+                                                        class="form-control"
+                                                        required="1"
+                                                    >
+                                                        <option
+                                                            value=""
+                                                        >Select a Ticket Type</option>
+                                                        <t
+                                                            t-foreach="ticket_type_ids"
+                                                            t-as="type"
+                                                        >
+                                                            <option
+                                                                t-att-value="type.id"
+                                                                t-att-data-team-id="type.team_id.id"
+                                                            >
+                                                                <t t-out="type.name" />
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3" id="location_field">
+                                                    <label
+                                                        class="form-label"
+                                                    >Location</label>
+                                                    <select
+                                                        name="location_type"
+                                                        class="form-control"
+                                                    >
+                                                        <option
+                                                            value=""
+                                                        >Select Place</option>
+                                                        <t
+                                                            t-foreach="location_type_options"
+                                                            t-as="opt"
+                                                        >
+                                                            <option
+                                                                t-att-value="opt[0]"
+                                                            >
+                                                                <t t-out="opt[1]" />
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                                <div
+                                                    class="mb-3"
+                                                    id="reference_data_field"
+                                                    style="display: none;"
+                                                >
+                                                    <label
+                                                        class="form-label"
+                                                    >Reference/Reservation Number</label>
+                                                    <input
+                                                        type="text"
+                                                        name="reference_data"
+                                                        class="form-control"
+                                                    />
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label
+                                                        class="form-label"
+                                                    >Room</label>
+                                                    <select
+                                                        name="room_ids"
+                                                        class="form-control"
+                                                    >
+                                                        <option
+                                                            value=""
+                                                        >Select Room</option>
+                                                        <t
+                                                            t-foreach="room_ids"
+                                                            t-as="room"
+                                                        >
+                                                            <option
+                                                                t-att-value="room.id"
+                                                            >
+                                                                <t t-out="room.name" />
+                                                                <t
+                                                                    t-if="is_room_blocked_ids.get(room.id, False)"
+                                                                > (Blocked)<i
+                                                                        class="fa fa-lock"
+                                                                    /></t>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label
+                                                        class="form-label"
+                                                    >Is property operated normally?</label>
+                                                    <div class="form-check form-switch">
+                                                        <input
+                                                            class="form-check-input"
+                                                            type="checkbox"
+                                                            role="switch"
+                                                            name="is_property_operated_normaly"
+                                                            id="is_property_operated_normaly"
+                                                            t-att-checked="is_property_operated_normaly and 'checked' or ''"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="mb-3"
+                                                    id="company_external_id_field"
+                                                >
+                                                    <label
+                                                        class="form-label d-block"
+                                                    >will this be fixed by an external company?</label>
+                                                    <div class="form-check form-switch">
+                                                        <input
+                                                            class="form-check-input"
+                                                            type="checkbox"
+                                                            role="switch"
+                                                            name="company_external_id"
+                                                            id="is_company_external_id"
+                                                            t-att-value="company_external_id or 'False'"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label
+                                                        class="form-label"
+                                                    >Priority</label>
+                                                    <div class="priority-widget">
+                                                        <input
+                                                            type="hidden"
+                                                            name="priority"
+                                                            id="priority_value"
+                                                            value="0"
+                                                        />
+                                                        <div
+                                                            class="star-rating"
+                                                            data-priority="0"
+                                                        >
+                                                            <span
+                                                                class="star"
+                                                                data-value="1"
+                                                            >&#9734;</span>
+                                                            <span
+                                                                class="star"
+                                                                data-value="2"
+                                                            >&#9734;</span>
+                                                            <span
+                                                                class="star"
+                                                                data-value="3"
+                                                            >&#9734;</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label
+                                                        class="form-label"
+                                                    >Description</label>
+                                                    <textarea
+                                                        name="description"
+                                                        class="form-control"
+                                                        rows="4"
+                                                        required="1"
+                                                    />
+                                                    <small
+                                                        class="form-text text-muted mt-1"
+                                                    >
+                                                        What are you seeing? If is to error, What are you trying to do?
+                                                    </small>
+                                                </div>
+                                                <div
+                                                    class="form-group row s_website_form_field mb-3"
+                                                >
+                                                    <label
+                                                        class="col-sm-3 col-form-label s_website_form_label"
+                                                        for="attachment"
+                                                    >
+                                                        <span
+                                                            class="s_website_form_label_content"
+                                                        >Attachment File</span>
+                                                    </label>
+                                                    <div class="col-sm">
+                                                        <input
+                                                            type="file"
+                                                            class="form-control s_website_form_input"
+                                                            name="attachment"
+                                                            id="attachment"
+                                                            multiple="true"
+                                                        />
+                                                        <small
+                                                            class="form-text text-muted mt-1"
+                                                        >
+                                                            Please send us a photo, screenshot, digital document, or any other resource
+                                                            that provides relevant information to help us address your request.
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                                <div class="text-center mt-3">
+                                                    <button
+                                                        type="submit"
+                                                        class="btn btn-primary"
+                                                    >Send ticket
+                                                    </button>
+                                                    <br />
+                                                </div>
+                                                <div class="mt-3">
+                                                    <small class="form-text text-muted">
+                                                    </small>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <!-- Footer -->
+                                        <div class="border-top mx-4" />
+                                        <div
+                                            class="card-footer bg-white border-0 text-center py-3"
+                                        >
+                                            <small class="text-muted">
+                                                Alda Hotels • IT Department 2025 • <t
+                                                    t-esc="request.website.name"
+                                                />
+                                            </small>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Description</label>
-                                    <textarea
-                                    name="description"
-                                    class="form-control"
-                                    rows="4"
-                                    required="1"
-                                />
-                                    <small class="form-text text-muted mt-1">
-                                        What are you seeing? If is to error, What are you trying to do?
-                                    </small>
-                                </div>
-                                <div class="form-group row s_website_form_field mb-3">
-                                    <label
-                                    class="col-sm-3 col-form-label s_website_form_label"
-                                    for="attachment"
-                                >
-                                        <span
-                                        class="s_website_form_label_content"
-                                    >Attachment File</span>
-                                    </label>
-                                    <div class="col-sm">
-                                        <input
-                                        type="file"
-                                        class="form-control s_website_form_input"
-                                        name="attachment"
-                                        id="attachment"
-                                        multiple="true"
-                                    />
-                                        <small class="form-text text-muted mt-1">
-                                            Please send us a photo, screenshot, digital document, or any other resource
-                                            that provides relevant information to help us address your request.
-                                        </small>
-                                    </div>
-                                </div>
-                                <div class="text-center mt-3">
-                                    <button
-                                    type="submit"
-                                    class="btn btn-primary"
-                                >Send ticket
-                                    </button>
-                                    <br />
-                                </div>
-                                <div class="mt-3">
-                                    <small class="form-text text-muted">
-
-                                    </small>
-                                </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
-
-            </div>
+                </div>
+            </section>
         </t>
 
     </template>
 
-    <template id="confirmation_ticket" name="Confirmation Ticket">
+    <template id="select_property_form" name="Select Property">
         <t t-call="website.layout">
-            <div class="container mt-5 mb-5">
-                        <div class="text-center mb-4">
-                <img
-                        t-att-src="image_data_uri(request.env.company.logo)"
-                        alt="Company Logo"
-                        style="max-height: 80px; width: auto;"
-                    />
-            </div>
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h4><t
-                                t-translate="True"
-                            >Your ticket has been successfully submitted to
-                        </t>
-                        <br />
-                        <t t-esc="ticket.team_id.name" />
-                        </h4>
-                        <p class="lead">
-                        <t
-                                t-translate="True"
-                            >Thank you for contacting us. We'll get back to you soon.</t>
-                        </p>
+            <section class="py-5 bg-light">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8 col-lg-6">
+                            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                                <div
+                                    class="card-header bg-white border-0 text-center py-4"
+                                >
+                                    <h2
+                                        class="fw-bold text-primary mb-0"
+                                    >Select Property</h2>
+                                    <p
+                                        class="text-muted mt-2 mb-0"
+                                    >Choose the property to create your support ticket</p>
+                                </div>
 
-                        <t t-if="ticket and ticket_url">
-                            <div class="alert alert-info mt-3">
-                                <p>
-                                    <strong>Ticket #<t
-                                            t-esc="ticket.ticket_ref"
-                                        />:</strong>
-                                    <t t-esc="ticket.name" />
-                                    <br />
-                                    <strong>Property:</strong>
-                                    <t t-esc="ticket.pms_property_id.name" />
-                                </p>
-                                <a t-att-href="ticket_url" class="btn btn-primary">
-                                    View your ticket
-                                </a>
+                                <div class="card-body p-4">
+                                    <!-- Form -->
+                                    <form
+                                        action="/helpdesk/ticket/property"
+                                        method="get"
+                                        class="mb-4"
+                                    >
+                                        <div class="mb-3">
+                                            <label
+                                                for="property_id"
+                                                class="form-label fw-semibold"
+                                            >
+                                                Property
+                                            </label>
+                                            <select
+                                                name="property_id"
+                                                id="property_id"
+                                                class="form-select form-select-lg rounded-3 shadow-sm border-0"
+                                                required="required"
+                                            >
+                                                <option
+                                                    value=""
+                                                >-- Select a property --</option>
+                                                <t
+                                                    t-foreach="properties"
+                                                    t-as="property"
+                                                >
+                                                    <option t-att-value="property.id">
+                                                        <t t-esc="property.name" />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+
+                                        <div class="d-grid">
+                                            <button
+                                                type="submit"
+                                                class="btn btn-primary btn-lg rounded-3 shadow-sm fw-semibold transition-all"
+                                                style="letter-spacing:0.3px;"
+                                            >
+                                                Continue and Create Ticket
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    <div>
+                                        <p
+                                            class="fw-semibold text-muted mb-2"
+                                        >Recent properties</p>
+                                        <div
+                                            class="list-group list-group-flush rounded-3 shadow-sm"
+                                        >
+                                            <t
+                                                t-foreach="properties[:5]"
+                                                t-as="property"
+                                            >
+                                                <a
+                                                    t-att-href="'/helpdesk/ticket/new?property_id=' + str(property.id)"
+                                                    class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center"
+                                                >
+                                                    <span class="fw-medium"><t
+                                                            t-esc="property.name"
+                                                        /></span>
+                                                    <i
+                                                        class="fa fa-chevron-right text-muted small"
+                                                    />
+                                                </a>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Footer -->
+                                <div class="border-top mx-4" />
+                                <div
+                                    class="card-footer bg-white border-0 text-center py-3"
+                                >
+                                    <small class="text-muted">
+                                        Alda Hotels • IT Department 2025 • <t
+                                            t-esc="request.website.name"
+                                        />
+                                    </small>
+                                </div>
                             </div>
-                        </t>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
+        </t>
+    </template>
+
+    <template id="confirmation_ticket" name="Confirmation Ticket">
+        <t t-call="website.layout">
+            <section class="py-5 bg-light">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8 col-lg-6">
+                            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                                <!-- Header -->
+                                <div
+                                    class="card-header bg-white border-0 text-center py-4"
+                                >
+                                    <div class="text-center mb-3">
+                                        <img
+                                            t-att-src="image_data_uri(request.env.company.logo)"
+                                            alt="Company Logo"
+                                            style="max-height: 80px; width: auto;"
+                                        />
+                                    </div>
+                                    <h2
+                                        class="fw-bold text-primary mb-0"
+                                    >Ticket Submitted Successfully</h2>
+                                </div>
+
+                                <!-- Content -->
+                                <div class="card-body p-4 text-center">
+                                    <div class="mb-4">
+                                        <h4 class="text-dark mb-3">
+                                            <i class="fa fa-check-circle me-2" />
+                                            Your ticket has been successfully submitted to
+                                            <br />
+                                            <strong
+                                                t-esc="ticket.team_id.name"
+                                                class="text-secundary"
+                                            />
+                                        </h4>
+                                        <p class="lead text-muted">
+                                            Thank you for contacting us. We'll get back to you soon.
+                                        </p>
+                                    </div>
+
+                                    <t t-if="ticket and ticket_url">
+                                        <div
+                                            class="alert alert-info border-0 rounded-3 shadow-sm mt-3"
+                                        >
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i
+                                                    class="fa fa-ticket me-2 text-info"
+                                                    aria-hidden="true"
+                                                />
+                                                <h5
+                                                    class="mb-0 fw-semibold"
+                                                >Ticket Details</h5>
+                                            </div>
+                                            <div class="text-start">
+                                                <p class="mb-1">
+                                                    <strong>Ticket #:</strong>
+                                                    <span
+                                                        class="ms-1"
+                                                        t-esc="ticket.ticket_ref"
+                                                    />
+                                                </p>
+                                                <p class="mb-1">
+                                                    <strong>Subject:</strong>
+                                                    <span
+                                                        class="ms-1"
+                                                        t-esc="ticket.name"
+                                                    />
+                                                </p>
+                                                <p class="mb-3">
+                                                    <strong>Property:</strong>
+                                                    <span
+                                                        class="ms-1"
+                                                        t-esc="ticket.pms_property_id.name"
+                                                    />
+                                                </p>
+                                                <p class="mb-3">
+                                                    <strong>Ticket Type:</strong>
+                                                    <span
+                                                        class="ms-1"
+                                                        t-esc="ticket.ticket_type_id.name"
+                                                    />
+                                                </p>
+                                            </div>
+                                            <div class="d-grid">
+                                                <a
+                                                    t-att-href="ticket_url"
+                                                    class="btn btn-info rounded-3 shadow-sm fw-semibold text-white"
+                                                >
+                                                    <i class="fa fa-eye me-2" />
+                                                    View your ticket
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                                <div class="border-top mx-4" />
+                                <!-- Footer -->
+                                <div
+                                    class="card-footer bg-white border-0 text-center py-3"
+                                >
+                                    <small class="text-muted">
+                                        Alda Hotels • IT Department 2025 • <t
+                                            t-esc="request.website.name"
+                                        />
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </t>
     </template>
 
