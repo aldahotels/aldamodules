@@ -19,7 +19,6 @@ odoo.define("alda_helpdesk_pms.ticket_form", function () {
                 });
             };
 
-            // Estado inicial → 0 = todas vacías
             updateStars(parseInt(priorityInput.value, 10) || 0);
 
             stars.forEach((star) => {
@@ -136,6 +135,13 @@ odoo.define("alda_helpdesk_pms.ticket_form", function () {
 
                 if (referenceFieldContainer) {
                     if (requiresLocation) {
+                        referenceFieldContainer.style.display = "none";
+                    } else {
+                        referenceFieldContainer.style.display = "block";
+                    }
+                }
+                if (referenceFieldContainer) {
+                    if (!teamSelect.value || requiresLocation) {
                         referenceFieldContainer.style.display = "none";
                     } else {
                         referenceFieldContainer.style.display = "block";
