@@ -7,6 +7,22 @@
         <field name="model">helpdesk.team</field>
         <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form" />
         <field name="arch" type="xml">
+            <xpath expr="//div[@id='productivity']" position="after">
+                <h2>Purchase</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="is_purchases_form" />
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="is_purchases_form" />
+                            <div class="text-muted">
+                                Enable purchase ticket form for this team. When selected, users will see a specialized purchase form instead of the standard ticket form.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
             <xpath expr="//div[@id='alias_channels']" position="inside">
                 <div class="col-lg-6 o_setting_box">
                     <div class="o_setting_left_pane">

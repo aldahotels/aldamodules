@@ -47,6 +47,28 @@ odoo.define("alda_helpdesk_pms.ticket_form", function () {
             });
         }
 
+        const select = document.getElementById("property_id");
+        const incidentLink = document.getElementById("incident_link");
+        const purchaseLink = document.getElementById("purchase_link");
+
+        if (select && incidentLink && purchaseLink) {
+            select.addEventListener("change", function () {
+                const propertyId = this.value;
+
+                if (propertyId) {
+                    incidentLink.href = `/helpdesk/ticket/new?property_id=${propertyId}`;
+                    purchaseLink.href = `/helpdesk/ticket/new/purchase?property_id=${propertyId}`;
+                    incidentLink.classList.remove("disabled");
+                    purchaseLink.classList.remove("disabled");
+                } else {
+                    incidentLink.href = "#";
+                    purchaseLink.href = "#";
+                    incidentLink.classList.add("disabled");
+                    purchaseLink.classList.add("disabled");
+                }
+            });
+        }
+
         const locationSelect = document.querySelector("[name='location_type']");
         const roomField = document.querySelector("[name='room_ids']");
 

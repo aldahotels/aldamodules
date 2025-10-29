@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-22 11:13+0000\n"
-"PO-Revision-Date: 2025-10-22 11:13+0000\n"
+"POT-Creation-Date: 2025-10-29 11:06+0000\n"
+"PO-Revision-Date: 2025-10-29 11:06+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -40,6 +40,15 @@ msgid "+70% Occupation"
 msgstr "+70% Ocupación"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid ""
+"<br/>\n"
+"                    <strong>📦 Number of Products:</strong>"
+msgstr ""
+"<br/>\n"
+"                    <strong>📦 Número de Productos:</strong>"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
 msgid ""
 "<i class=\"fa fa-check-circle me-2\"/>\n"
@@ -70,9 +79,18 @@ msgid "<i class=\"fa fa-lock me-1\"/>Out of service"
 msgstr "<i class=\"fa fa-lock me-1\"/>Bloqueada"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid ""
+"<i class=\"fa fa-shopping-cart me-2\"/>\n"
+"                                            Send Purchase ticket"
+msgstr ""
+"<i class=\"fa fa-shopping-cart me-2\"/>\n"
+"                                            Enviar ticket de Compra"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
-msgid "<option value=\"\">-- Select a property --</option>"
-msgstr "<option value=\"\">-- Selecciona un Hotel --</option>"
+msgid "<option value=\"\" class=\"text-muted\">-- Select a property --</option>"
+msgstr "<option value=\"\" class=\"text-muted\">-- Selecciona un Hotel --</option>"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -91,6 +109,7 @@ msgstr "<option value=\"\">Seleccionar el tipo de Ticket</option>"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
 msgid "<option value=\"\">Select a department</option>"
 msgstr "<option value=\"\">Seleccionar el departamento</option>"
 
@@ -117,6 +136,35 @@ msgstr ""
 "<small class=\"form-text text-muted mt-1\">\n"
 "                                        ¿Qué estás viendo? Si es un error, ¿qué estabas intentando hacer?\n"
 "                                    </small>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid ""
+"<small class=\"form-text text-muted\">Enter how many products you want to "
+"submit (max 10).</small>"
+msgstr ""
+"<small class=\"form-text text-muted\">Número de tipos de productos que va "
+"asolicitar (max 10).</small>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
+msgid ""
+"<small class=\"text-muted\">\n"
+"                                                    Submit one ticket per class at a time\n"
+"                                                </small>"
+msgstr ""
+"<small class=\"text-muted\">\n"
+"                                                    Puede enviar de una clase a la vez\n"
+"                                                </small>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid ""
+"<small class=\"text-muted\"><span class=\"s_website_form_mark text-danger\">"
+" *</span> Required fields.</small>"
+msgstr ""
+"<small class=\"text-muted\"><span class=\"s_website_form_mark text-danger\">"
+" *</span> Compos requeridos.</small>"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
@@ -154,6 +202,15 @@ msgstr ""
 "                                Estás enviando una solicitud de soporte para:"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid ""
+"<span style=\"font-size: 24px;\">🛒</span>\n"
+"                                            You're submitting a purchase request for:"
+msgstr ""
+"<span style=\"font-size: 24px;\">🛒</span>\n"
+"                                            Enviar la solicitud de Compras a:"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
 msgid "<span><strong>Description </strong></span>"
 msgstr "<span><strong>Descripción </strong></span>"
@@ -180,8 +237,14 @@ msgstr "<strong>Cliente</strong>"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
 msgid "<strong>Hi </strong>"
 msgstr "<strong>Hola </strong>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "<strong>Measurements:</strong>"
+msgstr "<strong>Medidas:</strong>"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
@@ -210,6 +273,11 @@ msgid "<strong>Subject:</strong>"
 msgstr "<strong>Asunto:</strong>"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "<strong>Supplier:</strong>"
+msgstr "<strong>Proveedor:</strong>"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
 msgid "<strong>Ticket #:</strong>"
 msgstr ""
@@ -218,6 +286,21 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
 msgid "<strong>Ticket Type:</strong>"
 msgstr "<strong>Tipo de Ticket:</strong>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "<strong>URL:</strong>"
+msgstr ""
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "<strong>Units:</strong>"
+msgstr "<strong>Unidades:</strong>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "<strong>🏨 Property:</strong>"
+msgstr "<strong>🏨 Hotel:</strong>"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__ticket_blocked_room_adr_accumulated
@@ -230,8 +313,14 @@ msgid "Accumulated Days (Blocked Room)"
 msgstr "Total días (bloqueo)"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Additional comments or general description..."
+msgstr "Información adicional o descripción general..."
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
 msgid "Alda Hotels • IT Department 2025 •"
 msgstr "Alda Hotels • Departamento de Informática 2025 •"
@@ -247,6 +336,11 @@ msgstr "Todos"
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_team_pms_view_form
 msgid "Allow your technician to close their own tickets"
 msgstr "Permitir al técnico cerrar sus tickets"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_team__is_purchases_form
+msgid "Allows add products details to tickets"
+msgstr "Agregar Productos en un Ticket de Compra"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_team__allow_portal_ticket_closing_technician
@@ -310,6 +404,11 @@ msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
+msgid "Choose a class to create"
+msgstr "Selecciona la clase de ticket a crear"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
 msgid "Choose the property to create your support ticket"
 msgstr "Escoja el Hotel para crear el ticket de soporte"
 
@@ -348,11 +447,6 @@ msgid "Contact"
 msgstr "Contacto"
 
 #. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
-msgid "Continue and Create Ticket"
-msgstr "Continuar y Crear el Ticket"
-
-#. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_report_analysis__blocked_room_count
 msgid "Count Rooms Blocked"
 msgstr "Total de Habitaciones Bloqueadas"
@@ -367,6 +461,11 @@ msgstr ""
 "durante el período de informe."
 
 #. module: alda_helpdesk_pms
+#: model:website.menu,name:alda_helpdesk_pms.website_menu_create_ticket
+msgid "Create Ticket"
+msgstr "Crear Ticket"
+
+#. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/controllers/main.py:0
 #, python-format
@@ -375,6 +474,7 @@ msgstr "Referencia/Nº de Reserva: "
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
 msgid "Department"
 msgstr "Departamento"
 
@@ -382,6 +482,11 @@ msgstr "Departamento"
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Description"
 msgstr "Descripción"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Description and Comments"
+msgstr "Descripción y comentarios"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__display_name
@@ -402,6 +507,15 @@ msgid ""
 msgstr "Número total de tickets de helpdesk asociados con esta propiedad."
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_team_pms_view_form
+msgid ""
+"Enable purchase ticket form for this team. When selected, users will see a "
+"specialized purchase form instead of the standard ticket form."
+msgstr ""
+"Habilitar el formulario para crear tickets de Compra. Habilitado, usuarios "
+"internos pueden crear tickets para compras."
+
+#. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
@@ -412,6 +526,11 @@ msgstr "Empresa externa"
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Form New Ticket"
 msgstr "Formulario nuevo ticket"
+
+#. module: alda_helpdesk_pms
+#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_team__is_purchases_form
+msgid "Has Purchases Form"
+msgstr "Formulario de Tickets de Compras"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model,name:alda_helpdesk_pms.model_helpdesk_ticket_detail_tag
@@ -570,6 +689,16 @@ msgid "Low occupation -40%"
 msgstr "Baja ocupación -40%"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "Measurements"
+msgstr "Medidas"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Measurements/Details"
+msgstr "Medidas/Detalles"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
 msgid "Medium-high occupation -70%"
 msgstr "Media-alta ocupación -70%"
@@ -609,6 +738,11 @@ msgid "None"
 msgstr ""
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Number of Products *"
+msgstr "Cantidad de Productos *"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__occupancy_rate
 msgid "Occupancy Rate (%)"
 msgstr "Ocupación %"
@@ -636,9 +770,34 @@ msgid "PMS"
 msgstr ""
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Photo"
+msgstr "Foto"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Priority"
 msgstr "Prioridad"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "Product"
+msgstr "Producto"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "Product #"
+msgstr "Producto #"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Product <span class=\"s_website_form_mark text-danger\"> *</span>"
+msgstr "Productos <span class=\"s_website_form_mark text-danger\"> *</span>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Products <small class=\"text-muted\"/>"
+msgstr "Productos <small class=\"text-muted\"/>"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -681,9 +840,19 @@ msgstr ""
 "habitaciones o tendencias de ocupación."
 
 #. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
-msgid "Recent properties"
-msgstr "Últimos Hoteles"
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_team_pms_view_form
+msgid "Purchase"
+msgstr "Compras"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "Purchase URL"
+msgstr "URL Producto"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Purchase URL <span class=\"s_website_form_mark text-danger\"> *</span>"
+msgstr "URL Producto <span class=\"s_website_form_mark text-danger\"> *</span>"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -856,6 +1025,11 @@ msgid "Select where this issue is located"
 msgstr "Seleccione dónde se encuentra este problema"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Send New Purchase Ticket"
+msgstr "Enviar nuevo Ticket de Compra"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Send ticket"
 msgstr "Enviar ticket"
@@ -896,6 +1070,16 @@ msgstr "Estado"
 #, python-format
 msgid "Subject"
 msgstr "Asunto"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "Supplier"
+msgstr "Proveedor"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Supplier <span class=\"s_website_form_mark text-danger\"> *</span>"
+msgstr "Proveedor <span class=\"s_website_form_mark text-danger\"> *</span>"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__tag_detail
@@ -1026,6 +1210,16 @@ msgid "Unassigned"
 msgstr "Sin asignar"
 
 #. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "Units"
+msgstr "Unidades"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+msgid "Units <span class=\"s_website_form_mark text-danger\"> *</span>"
+msgstr "Unidades <span class=\"s_website_form_mark text-danger\"> *</span>"
+
+#. module: alda_helpdesk_pms
 #: model:ir.ui.menu,name:alda_helpdesk_pms.menu_update_blocked
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
 msgid "Update Blocked"
@@ -1046,3 +1240,23 @@ msgstr "Marcar habitaciones bloqueadas"
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "will this be fixed by an external company?"
 msgstr "¿Será atendido por una empresa externa?"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
+msgid "📋 INCIDENT"
+msgstr "📋 ASISTENCIA"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "📝 Additional Comments"
+msgstr "📝 Información adicional"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
+msgid "🛒 PURCHASE"
+msgstr "🛒 COMPRAS"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
+msgid "🛒 Purchase Request"
+msgstr "🛒 Ticket de Compra"

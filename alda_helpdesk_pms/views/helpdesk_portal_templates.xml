@@ -82,7 +82,7 @@
                             <td t-if="groupby != 'stage'" class="text-end">
                                 <span
                                     t-attf-class="badge rounded-pill #{'text-bg-info' if ticket.stage_id.fold else 'text-bg-light'}"
-                                    t-esc="ticket.stage_id.name"
+                                    t-out="ticket.stage_id.name"
                                 />
                             </td>
                         </tr>

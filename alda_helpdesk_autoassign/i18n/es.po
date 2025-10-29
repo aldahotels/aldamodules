@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-21 07:17+0000\n"
-"PO-Revision-Date: 2025-10-21 07:17+0000\n"
+"POT-Creation-Date: 2025-10-03 08:27+0000\n"
+"PO-Revision-Date: 2025-10-03 08:27+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -31,11 +31,6 @@ msgid "Associated Jobs"
 msgstr "Puestos asociados"
 
 #. module: alda_helpdesk_autoassign
-#: model:ir.model,name:alda_helpdesk_autoassign.model_hr_employee
-msgid "Employee"
-msgstr "Empleado"
-
-#. module: alda_helpdesk_autoassign
 #: model:ir.model,name:alda_helpdesk_autoassign.model_helpdesk_team
 msgid "Helpdesk Team"
 msgstr "Equipo de servicio de asistencia"
@@ -51,8 +46,8 @@ msgid ""
 "If selected, tickets will be assigned to employees based, on the property "
 "associated with the ticket."
 msgstr ""
-"Si se selecciona, los tickets se asignarán a los empleados según la "
-"propiedad asociada al ticket."
+"Si se selecciona, los tickets se asignarán a los empleados según la propiedad "
+"asociada al ticket."
 
 #. module: alda_helpdesk_autoassign
 #: model:ir.model.fields,help:alda_helpdesk_autoassign.field_helpdesk_team__team_job_ids
@@ -67,17 +62,6 @@ msgid "Missing Jobs"
 msgstr "Faltan puestos"
 
 #. module: alda_helpdesk_autoassign
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_autoassign.helpdesk_team_view_form_inherit_hotel_assign
-msgid ""
-"Team members are automatically managed\n"
-"                        based on the associated jobs. To modify the members, change the jobs,\n"
-"                        associated jobs, or disable assignment by ownership."
-msgstr ""
-"Esta lista de miembros del equipo se gestionan automáticamente\n"
-"                        según los trabajos asociados. Para modificar la lista, se debe cambiar el puesto,\n"
-"                        o desactivar la asignación por hotel."
-
-#. module: alda_helpdesk_autoassign
 #. odoo-python
 #: code:addons/alda_helpdesk_autoassign/models/helpdesk.py:0
 #, python-format
@@ -85,19 +69,8 @@ msgid ""
 "To use 'Assign based on Hotel and Ticket Type', at least one job position "
 "must be associated with the team."
 msgstr ""
-"Para usar 'Asignar según el hotel y el tipo de ticket', debe haber al menos "
-"un puesto asociado al equipo."
-
-#. module: alda_helpdesk_autoassign
-#. odoo-python
-#: code:addons/alda_helpdesk_autoassign/models/helpdesk.py:0
-#, python-format
-msgid ""
-"You cannot manually modify team members when 'Assign by Property' is active."
-" Members are automatically assigned based on jobs and properties. "
-msgstr ""
-"Si la opción asignar por hotel está activam no se puede cambiar la lista."
-" Los miembros se asignan automáticamente según el puesto de trabajo y otros datos. "
+"Para usar 'Asignar según el hotel y el tipo de ticket', debe haber al menos un puesto "
+"asociado al equipo."
 
 #. module: alda_helpdesk_autoassign
 #. odoo-python
@@ -107,5 +80,5 @@ msgid ""
 "You must associate at least one job with the team before enabling assignment"
 " by property."
 msgstr ""
-"Debe asociar al menos un puesto al equipo antes de habilitar la asignación "
-"por propiedad."
+"Debe asociar al menos un puesto al equipo antes de habilitar la asignación"
+" por propiedad."
