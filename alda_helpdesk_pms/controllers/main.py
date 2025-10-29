@@ -56,6 +56,57 @@ class HelpdeskFormController(http.Controller):
 
         return vals
 
+    def _prepare_ticket_purchse_vals(self, post):
+        ensure_db()
+        try:
+            property_id = int(post.get("property_id", 0))
+            team_id = int(post.get("team_id", 0))
+            partner_id = request.env.user.partner_id.id
+            num_products = int(post.get("num_products", 1))
+
+            products = []
+            attachment_files = []
+            for i in range(num_products):
+                products.append(
+                    {
+                        "index": i + 1,
+                        "name": post.get(f"product_names{i}", "").strip(),
+                        "supplier": post.get(f"suppliers{i}", "").strip(),
+                        "url": post.get(f"purchase_urls{i}", "").strip(),
+                        "quantity": post.get(f"quantities{i}", "").strip(),
+                        "measurements": post.get(f"measurements{i}", "").strip(),
+                    }
+                )
+                attachment_files.extend(
+                    request.httprequest.files.getlist(f"attachment{i}")
+                )
+
+            description = request.env["ir.qweb"]._render(
+                "alda_helpdesk_pms.helpdesk_purchase_description",
+                {
+                    "property_name": post.get("property_name", "N/A"),
+                    "num_products": num_products,
+                    "products": products,
+                    "additional_description": post.get("description", "").strip(),
+                },
+            )
+
+            vals = {
+                "name": f"Purchase Request - {post.get('property_name', '')}",
+                "description": description.decode("utf-8")
+                if isinstance(description, bytes)
+                else description,
+                "partner_id": partner_id,
+                "team_id": team_id,
+                "pms_property_id": property_id,
+            }
+
+            return vals, attachment_files
+
+        except Exception as e:
+            _logger.exception("Error creando ticket de compra: %s", e)
+            return request.redirect("/helpdesk/ticket/error")
+
     @http.route("/helpdesk/ticket/property", type="http", auth="public", website=True)
     def helpdesk_ticket_select_property(self, **kwargs):
         ensure_db()
@@ -66,23 +117,38 @@ class HelpdeskFormController(http.Controller):
         user = request.env.user
         user_properties = user.pms_property_ids.filtered(lambda p: p.active)
 
+        visibility_filter = ["internal"]
+        team_ids = (
+            request.env["helpdesk.team"]
+            .sudo()
+            .search(
+                [
+                    ("privacy_visibility", "in", visibility_filter),
+                    ("is_pms_form", "=", True),
+                    ("is_purchases_form", "=", True),
+                ]
+            )
+        )
+        have_purchase_team = True if team_ids else False
+
         property_id = kwargs.get("property_id")
         if property_id:
             selected_property = (
                 request.env["pms.property"].sudo().browse(int(property_id))
             )
             if selected_property and selected_property in user_properties:
-                # 🔁 Redirige al formulario de ticket
                 return request.redirect(
                     f"/helpdesk/ticket/new?property_id={property_id}"
                 )
             else:
-                # Si la propiedad no está permitida
                 return request.render("alda_helpdesk_pms.property_not_allowed", {})
 
         return request.render(
             "alda_helpdesk_pms.select_property_form",
-            {"properties": user_properties},
+            {
+                "properties": user_properties,
+                "have_purchase_team": have_purchase_team,
+            },
         )
 
     @http.route("/helpdesk/ticket/new", type="http", auth="public", website=True)
@@ -177,6 +243,42 @@ class HelpdeskFormController(http.Controller):
         )
 
     @http.route(
+        "/helpdesk/ticket/new/purchase", type="http", auth="public", website=True
+    )
+    def helpdesk_ticket_purchase_form(self, **kwargs):
+        ensure_db()
+
+        if not (request.env.user.has_group("base.group_user")):
+            return request.redirect("/web/login")
+
+        user_id = request.env.user
+        property_id = int(kwargs.get("property_id", 0))
+        pms_property_ids = request.env["pms.property"].sudo().browse(property_id)
+        visibility_filter = ["internal"]
+        team_ids = (
+            request.env["helpdesk.team"]
+            .sudo()
+            .search(
+                [
+                    ("privacy_visibility", "in", visibility_filter),
+                    ("is_pms_form", "=", True),
+                    ("is_purchases_form", "=", True),
+                ]
+            )
+        )
+
+        return request.render(
+            "alda_helpdesk_pms.create_ticket_purchase_form",
+            {
+                "portal_user_id": user_id.id,
+                "user_name": user_id.name,
+                "property_id": pms_property_ids.id,
+                "property_name": pms_property_ids.name,
+                "team_ids": team_ids,
+            },
+        )
+
+    @http.route(
         "/helpdesk/ticket/submit",
         type="http",
         auth="public",
@@ -186,8 +288,13 @@ class HelpdeskFormController(http.Controller):
     )
     def helpdesk_ticket_submit(self, **post):
         ensure_db()
-
-        ticket_vals = self._prepare_ticket_vals(post)
+        team = request.env["helpdesk.team"].sudo().browse(int(post.get("team_id")))
+        attachments = []
+        if team.is_purchases_form:
+            ticket_vals, attachments = self._prepare_ticket_purchse_vals(post)
+        else:
+            ticket_vals = self._prepare_ticket_vals(post)
+            attachments = request.httprequest.files.getlist("attachment")
 
         ticket = (
             request.env["helpdesk.ticket"]
@@ -196,10 +303,15 @@ class HelpdeskFormController(http.Controller):
             .create(ticket_vals)
         )
 
-        attachment = request.httprequest.files.get("attachment")
-        if post.get("attachment", False):
-            attachments = request.httprequest.files.getlist("attachment")
-            attachment_ids = []
+        if team.is_purchases_form:
+            ticket.sudo().write(
+                {
+                    "name": f"Purchase Request - #{ticket.id}",
+                }
+            )
+
+        attachment_ids = []
+        if post.get("attachment", False) or attachments:
             for attachment in attachments:
                 if attachment and attachment.filename:
                     try:
@@ -224,15 +336,12 @@ class HelpdeskFormController(http.Controller):
                         attachment_ids.append(att.id)
                     except Exception as e:
                         _logger.error("Upload file failed %s: %s", ticket.id, str(e))
-
-            if attachment_ids:
-                message_body = post.get("description", "")
-                ticket.message_post(
-                    body=message_body,
-                    attachment_ids=attachment_ids,
-                    message_type="comment",
-                    subtype_xmlid="mail.mt_comment",
-                )
+        if attachment_ids:
+            ticket.message_post(
+                attachment_ids=attachment_ids,
+                message_type="comment",
+                subtype_xmlid="mail.mt_comment",
+            )
 
         return request.redirect(f"/helpdesk/ticket/confirmation/{ticket.id}")
 

@@ -24,6 +24,10 @@ class HelpdeskTeam(models.Model):
         help="Allows the assigned technician to close tickets via the portal interface.",
     )
 
+    is_purchases_form = fields.Boolean(
+        string="Has Purchases Form", help="Allows add products details to tickets"
+    )
+
     @api.onchange("is_pms_form")
     def _onchange_is_pms_form(self):
         if not self.is_pms_form:

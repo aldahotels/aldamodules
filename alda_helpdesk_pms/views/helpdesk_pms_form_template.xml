@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="create_ticket_form" name="Formulario de Ticket">
         <t t-call="website.layout">
@@ -21,7 +22,7 @@
                                             <p class="text-muted mb-0">
                                                 <span style="font-size: 24px;">📑</span>
                                                 You're submitting a support request for:
-                                                <strong t-esc="property_name or ''" />.
+                                                <strong t-out="property_name or ''" />.
                                             </p>
                                         </div>
                                     </div>
@@ -322,7 +323,7 @@
                                         >
                                             <small class="text-muted">
                                                 Alda Hotels • IT Department 2025 • <t
-                                                    t-esc="request.website.name"
+                                                    t-out="request.website.name"
                                                 />
                                             </small>
                                         </div>
@@ -334,8 +335,189 @@
                 </div>
             </section>
         </t>
-
     </template>
+
+    <template id="create_ticket_purchase_form" name="Formulario de Ticket de Compra">
+        <t t-call="website.layout">
+            <section class="py-2 bg-light">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                                <!-- Header -->
+                                <div
+                                    class="card-header bg-white border-0 text-center py-4"
+                                >
+                                    <h2
+                                        class="fw-bold text-primary mb-2"
+                                    >Send New Purchase Ticket</h2>
+                                    <div class="s_text_highlight text-center">
+                                        <h4 class="mb-2"><strong>Hi </strong><t
+                                                t-out="user_name or ''"
+                                            /></h4>
+                                        <p class="text-muted mb-0">
+                                            <span style="font-size: 24px;">🛒</span>
+                                            You're submitting a purchase request for:
+                                            <strong t-out="property_name or ''" />.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Form Body -->
+                                <div class="card-body p-4">
+                                    <form
+                                        action="/helpdesk/ticket/submit"
+                                        enctype="multipart/form-data"
+                                        method="POST"
+                                        class="alda_purchase_ticket_form"
+                                        data-oe-no-validation="true"
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="property_id"
+                                            t-att-value="property_id"
+                                        />
+                                        <input
+                                            type="hidden"
+                                            name="user_name"
+                                            t-att-value="user_name or ''"
+                                        />
+                                        <input
+                                            type="hidden"
+                                            name="property_name"
+                                            t-att-value="property_name or ''"
+                                        />
+                                        <div class="mb-3">
+                                            <label class="form-label">Department</label>
+                                            <select
+                                                name="team_id"
+                                                class="form-control"
+                                                required="1"
+                                            >
+                                            <option
+                                                    value=""
+                                                >Select a department</option>
+                                                <t t-foreach="team_ids" t-as="team">
+                                                    <option
+                                                        t-att-value="team.id"
+                                                        t-att-data-requires-location="team.is_location_required"
+                                                    >
+                                                        <t t-out="team.name" />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label
+                                                class="form-label fw-semibold"
+                                            >Number of Products *</label>
+                                            <t t-set="num_rows" t-value="1" />
+                                            <input
+                                                type="number"
+                                                name="num_products"
+                                                id="num_products"
+                                                class="form-control"
+                                                min="1"
+                                                max="10"
+                                                value="1"
+                                                required="1"
+                                            />
+                                            <small
+                                                class="form-text text-muted"
+                                            >Enter how many products you want to submit (max 10).</small>
+                                        </div>
+                                        <!-- Products Section -->
+                                        <div class="mb-4">
+                                            <label
+                                                class="form-label fw-semibold"
+                                            >Products <small
+                                                    class="text-muted"
+                                                /></label>
+
+                                            <div
+                                                class="table-responsive d-none d-md-block"
+                                            >
+                                                <table
+                                                    class="table table-bordered table-hover"
+                                                >
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Product <span
+                                                                    class="s_website_form_mark text-danger"
+                                                                > *</span></th>
+                                                            <th>Supplier <span
+                                                                    class="s_website_form_mark text-danger"
+                                                                > *</span></th>
+                                                            <th>Purchase URL <span
+                                                                    class="s_website_form_mark text-danger"
+                                                                > *</span></th>
+                                                            <th>Units <span
+                                                                    class="s_website_form_mark text-danger"
+                                                                > *</span></th>
+                                                            <th
+                                                            >Measurements/Details</th>
+                                                            <th>Photo</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="products_container">
+                                                    </tbody>
+                                                </table>
+                                                <small class="text-muted"><span
+                                                        class="s_website_form_mark text-danger"
+                                                    > *</span> Required fields.</small>
+                                            </div>
+
+                                            <div
+                                                class="d-md-none"
+                                                id="mobile_products_container"
+                                            />
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label
+                                                class="form-label fw-semibold"
+                                            >Description and Comments</label>
+                                            <textarea
+                                                name="description"
+                                                class="form-control rounded-3 shadow-sm border-0"
+                                                rows="4"
+                                                placeholder="Additional comments or general description..."
+                                            />
+                                        </div>
+
+                                        <div class="text-center mt-3">
+                                            <button
+                                                type="submit"
+                                                class="btn btn-info btn-lg rounded-3 shadow-sm fw-semibold transition-all"
+                                            >
+                                            <i class="fa fa-shopping-cart me-2" />
+                                            Send Purchase ticket
+                                            </button>
+                                            <br />
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="border-top mx-4" />
+                                        <div class="border-top mx-4" />
+                                        <div
+                                    class="card-footer bg-white border-0 text-center py-3"
+                                >
+                                    <small class="text-muted">
+                                        Alda Hotels • IT Department 2025 •
+                                        <t t-out="request.website.name" />
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </t>
+    </template>
+
 
     <template id="select_property_form" name="Select Property">
         <t t-call="website.layout">
@@ -362,6 +544,10 @@
                                         method="get"
                                         class="mb-4"
                                     >
+                                        <field
+                                            name="have_purchase_team"
+                                            invisible="1"
+                                        />
                                         <div class="mb-3">
                                             <label
                                                 for="property_id"
@@ -377,54 +563,49 @@
                                             >
                                                 <option
                                                     value=""
+                                                    class="text-muted"
                                                 >-- Select a property --</option>
                                                 <t
                                                     t-foreach="properties"
                                                     t-as="property"
                                                 >
                                                     <option t-att-value="property.id">
-                                                        <t t-esc="property.name" />
+                                                        <t t-out="property.name" />
                                                     </option>
                                                 </t>
                                             </select>
                                         </div>
 
-                                        <div class="d-grid">
-                                            <button
-                                                type="submit"
-                                                class="btn btn-primary btn-lg rounded-3 shadow-sm fw-semibold transition-all"
-                                                style="letter-spacing:0.3px;"
-                                            >
-                                                Continue and Create Ticket
-                                            </button>
-                                        </div>
-                                    </form>
-
-                                    <div>
-                                        <p
-                                            class="fw-semibold text-muted mb-2"
-                                        >Recent properties</p>
-                                        <div
-                                            class="list-group list-group-flush rounded-3 shadow-sm"
-                                        >
-                                            <t
-                                                t-foreach="properties[:5]"
-                                                t-as="property"
+                                        <div class="mb-3 text-center pt-4">
+                                            <label
+                                                class="form-label fw-semibold"
+                                            >Choose a class to create</label>
+                                            <p><small class="text-muted">
+                                                    Submit one ticket per class at a time
+                                                </small>
+                                            </p>
+                                            <div
+                                                class="d-grid gap-2 d-md-block mt-2 pt-2"
                                             >
                                                 <a
-                                                    t-att-href="'/helpdesk/ticket/new?property_id=' + str(property.id)"
-                                                    class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center"
+                                                    id="incident_link"
+                                                    href="#"
+                                                    class="btn btn-outline-info me-2 px-4 py-2 rounded-pill shadow-sm disabled"
                                                 >
-                                                    <span class="fw-medium"><t
-                                                            t-esc="property.name"
-                                                        /></span>
-                                                    <i
-                                                        class="fa fa-chevron-right text-muted small"
-                                                    />
+                                                    📋 INCIDENT
                                                 </a>
-                                            </t>
+                                                <t t-if="have_purchase_team">
+                                                    <a
+                                                        id="purchase_link"
+                                                        href="#"
+                                                        class="btn btn-outline-success px-4 py-2 rounded-pill shadow-sm disabled"
+                                                    >
+                                                        🛒 PURCHASE
+                                                    </a>
+                                                </t>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </form>
                                 </div>
                                 <!-- Footer -->
                                 <div class="border-top mx-4" />
@@ -433,7 +614,7 @@
                                 >
                                     <small class="text-muted">
                                         Alda Hotels • IT Department 2025 • <t
-                                            t-esc="request.website.name"
+                                            t-out="request.website.name"
                                         />
                                     </small>
                                 </div>
@@ -476,7 +657,7 @@
                                             Your ticket has been successfully submitted to
                                             <br />
                                             <strong
-                                                t-esc="ticket.team_id.name"
+                                                t-out="ticket.team_id.name"
                                                 class="text-secundary"
                                             />
                                         </h4>
@@ -503,28 +684,28 @@
                                                     <strong>Ticket #:</strong>
                                                     <span
                                                         class="ms-1"
-                                                        t-esc="ticket.ticket_ref"
+                                                        t-out="ticket.ticket_ref"
                                                     />
                                                 </p>
                                                 <p class="mb-1">
                                                     <strong>Subject:</strong>
                                                     <span
                                                         class="ms-1"
-                                                        t-esc="ticket.name"
+                                                        t-out="ticket.name"
                                                     />
                                                 </p>
                                                 <p class="mb-3">
                                                     <strong>Property:</strong>
                                                     <span
                                                         class="ms-1"
-                                                        t-esc="ticket.pms_property_id.name"
+                                                        t-out="ticket.pms_property_id.name"
                                                     />
                                                 </p>
                                                 <p class="mb-3">
                                                     <strong>Ticket Type:</strong>
                                                     <span
                                                         class="ms-1"
-                                                        t-esc="ticket.ticket_type_id.name"
+                                                        t-out="ticket.ticket_type_id.name"
                                                     />
                                                 </p>
                                             </div>
@@ -547,7 +728,7 @@
                                 >
                                     <small class="text-muted">
                                         Alda Hotels • IT Department 2025 • <t
-                                            t-esc="request.website.name"
+                                            t-out="request.website.name"
                                         />
                                     </small>
                                 </div>
