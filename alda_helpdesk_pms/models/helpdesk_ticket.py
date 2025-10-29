@@ -254,7 +254,7 @@ class HelpdeskTicket(models.Model):
             selection = []
             for category in location_data.values():
                 for key, value in category.items():
-                    selection.append((key, value))
+                    selection.append((key, _(value)))
 
             return selection
         except Exception:
@@ -617,3 +617,26 @@ class HelpdeskTicket(models.Model):
                 ticket.is_room_blocked = False
                 ticket.ticket_blocked_room_adr_accumulated = 0.0
                 ticket.location_type = False
+
+    def _force_json_translation(self):
+        _("Elevator")
+        _("Common Bathrooms")
+        _("Main Entrance")
+        _("Reception")
+        _("Restaurant/Cafeteria")
+        _("Living Room")
+
+        _("Electrical Panel")
+        _("Machine Room")
+        _("Perimeter Network")
+
+        _("Room")
+        _("Bathroom")
+
+        _("Outdoor/Terrace")
+        _("Pool")
+        _("Parking")
+
+        _("Kitchen")
+        _("Hallways")
+        _("Accounting")
