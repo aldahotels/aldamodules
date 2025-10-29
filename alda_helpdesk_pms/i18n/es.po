@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-29 11:06+0000\n"
-"PO-Revision-Date: 2025-10-29 11:06+0000\n"
+"POT-Creation-Date: 2025-10-29 15:09+0000\n"
+"PO-Revision-Date: 2025-10-29 15:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -303,6 +303,13 @@ msgid "<strong>🏨 Property:</strong>"
 msgstr "<strong>🏨 Hotel:</strong>"
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Accounting"
+msgstr "Oficinas"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__ticket_blocked_room_adr_accumulated
 msgid "Accumulated ADR (Blocked Room)"
 msgstr "ADR Acumulado (Bloqueo)"
@@ -366,6 +373,7 @@ msgstr "Asignado a"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
@@ -434,6 +442,13 @@ msgstr ""
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket_type__color
 msgid "Color associated with the ticket type."
 msgstr ""
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Common Bathrooms"
+msgstr "Aseos comunes"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
@@ -507,6 +522,20 @@ msgid ""
 msgstr "Número total de tickets de helpdesk asociados con esta propiedad."
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Electrical Panel"
+msgstr "Cuadro eléctrico"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Elevator"
+msgstr "Elevador"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_team_pms_view_form
 msgid ""
 "Enable purchase ticket form for this team. When selected, users will see a "
@@ -526,6 +555,13 @@ msgstr "Empresa externa"
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Form New Ticket"
 msgstr "Formulario nuevo ticket"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Hallways"
+msgstr "Pasillos"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_team__is_purchases_form
@@ -636,6 +672,13 @@ msgid "Is property operated normally?"
 msgstr "¿Opera con normalidad el Hotel?"
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Kitchen"
+msgstr "Cocina"
+
+#. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag____last_update
 msgid "Last Modified on"
 msgstr "Última actualización en"
@@ -646,6 +689,13 @@ msgstr "Última actualización en"
 #, python-format
 msgid "Last Stage Update"
 msgstr "Actualización de la etapa"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Living Room"
+msgstr "Salón / Sala de estar"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -687,6 +737,20 @@ msgstr "Temporada Baja"
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
 msgid "Low occupation -40%"
 msgstr "Baja ocupación -40%"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Machine Room"
+msgstr "Sala de máquinas"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Main Entrance"
+msgstr "Entrada principal"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
@@ -765,14 +829,42 @@ msgid "Out Rate Info"
 msgstr "Bloqueo información"
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Outdoor/Terrace"
+msgstr "Terraza / Exterior"
+
+#. module: alda_helpdesk_pms
 #: model:ir.ui.menu,name:alda_helpdesk_pms.menu_pms_root
 msgid "PMS"
 msgstr ""
 
 #. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Parking"
+msgstr "Aparcamiento"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Perimeter Network"
+msgstr "Red perimetral"
+
+#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
 msgid "Photo"
 msgstr "Foto"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Pool"
+msgstr "Piscina"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -857,6 +949,7 @@ msgstr "URL Producto <span class=\"s_website_form_mark text-danger\"> *</span>"
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
 #, python-format
 msgid "Reception"
@@ -903,6 +996,14 @@ msgstr ""
 
 #. module: alda_helpdesk_pms
 #. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid "Restaurant/Cafeteria"
+msgstr "Restaurante / Cafetería"
+
+#. module: alda_helpdesk_pms
+#. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_report_analysis__pms_room_id
