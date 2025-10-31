@@ -1,6 +1,8 @@
 # Copyright 2025 Alexandra Suarez Graterol (Alda hotels) <saya.alex20@gmail.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from datetime import datetime
+
 from odoo import fields, models
 
 
@@ -8,15 +10,17 @@ class BudgetLoadWizard(models.TransientModel):
     _name = "budget.load.wizard"
     _description = "Load Budget Data by Year"
 
+    def _get_year_selection(self):
+        current_year = datetime.now().year
+        start_year = 2020
+        end_year = current_year + 10
+
+        return [(str(year), str(year)) for year in range(start_year, end_year + 1)]
+
     year = fields.Selection(
-        [
-            ("2024", "2024"),
-            ("2025", "2025"),
-            ("2026", "2026"),
-            ("2027", "2027"),
-        ],
+        selection="_get_year_selection",
         required=True,
-        default="2025",
+        default=lambda self: str(datetime.now().year),
     )
 
     property_ids = fields.Many2many(
