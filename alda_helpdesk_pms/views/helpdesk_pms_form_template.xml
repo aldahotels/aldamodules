@@ -485,20 +485,64 @@
                                                 placeholder="Additional comments or general description..."
                                             />
                                         </div>
-
                                         <div class="text-center mt-3">
+                                            <div id="alert-container" />
                                             <button
-                                                type="submit"
-                                                class="btn btn-info btn-lg rounded-3 shadow-sm fw-semibold transition-all"
+                                                type="button"
+                                                class="btn btn-primary rounded-3 shadow-sm fw-semibold transition-all"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#staticBackdrop"
                                             >
-                                            <i class="fa fa-shopping-cart me-2" />
-                                            Send Purchase ticket
+                                                Send Purchase ticket
                                             </button>
-                                            <br />
+                                            <div
+                                                class="modal fade"
+                                                id="staticBackdrop"
+                                                data-bs-backdrop="static"
+                                                data-bs-keyboard="false"
+                                                tabindex="-1"
+                                                aria-labelledby="staticBackdropLabel"
+                                                aria-hidden="true"
+                                            >
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5
+                                                                class="modal-title"
+                                                                id="staticBackdropLabel"
+                                                            >Confirmation</h5>
+                                                        <button
+                                                                type="button"
+                                                                class="btn-close"
+                                                                data-bs-dismiss="modal"
+                                                                aria-label="Close"
+                                                            />
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        You will send a purchase ticket, are you sure?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button
+                                                                type="button"
+                                                                class="btn btn-secondary"
+                                                                data-bs-dismiss="modal"
+                                                            >Return</button>
+                                                        <button
+                                                                type="submit"
+                                                                class="btn btn-primary rounded-3 shadow-sm fw-semibold transition-all"
+                                                            >
+                                                            <i
+                                                                    class="fa fa-shopping-cart me-2"
+                                                                />
+                                                            Send Purchase ticket
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
-
                                 <!-- Footer -->
                                 <div class="border-top mx-4" />
                                         <div class="border-top mx-4" />
