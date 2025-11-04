@@ -550,8 +550,7 @@
                                     class="card-footer bg-white border-0 text-center py-3"
                                 >
                                     <small class="text-muted">
-                                        Alda Hotels • IT Department 2025 •
-                                        <t t-out="request.website.name" />
+                                        Alda Hotels • IT Department 2025
                                     </small>
                                 </div>
                             </div>
@@ -657,9 +656,7 @@
                                     class="card-footer bg-white border-0 text-center py-3"
                                 >
                                     <small class="text-muted">
-                                        Alda Hotels • IT Department 2025 • <t
-                                            t-out="request.website.name"
-                                        />
+                                        Alda Hotels • IT Department 2025
                                     </small>
                                 </div>
                             </div>
@@ -771,9 +768,7 @@
                                     class="card-footer bg-white border-0 text-center py-3"
                                 >
                                     <small class="text-muted">
-                                        Alda Hotels • IT Department 2025 • <t
-                                            t-out="request.website.name"
-                                        />
+                                        Alda Hotels • IT Department 2025
                                     </small>
                                 </div>
                             </div>
