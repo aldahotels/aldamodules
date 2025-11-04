@@ -115,8 +115,7 @@ class HelpdeskFormController(http.Controller):
             return request.redirect("/web/login")
 
         user = request.env.user
-        user_properties = user.pms_property_ids.filtered(lambda p: p.active)
-
+        user_properties = user.pms_property_ids
         visibility_filter = ["internal"]
         team_ids = (
             request.env["helpdesk.team"]
@@ -124,13 +123,11 @@ class HelpdeskFormController(http.Controller):
             .search(
                 [
                     ("privacy_visibility", "in", visibility_filter),
-                    ("is_pms_form", "=", True),
                     ("is_purchases_form", "=", True),
                 ]
             )
         )
         have_purchase_team = True if team_ids else False
-
         property_id = kwargs.get("property_id")
         if property_id:
             selected_property = (
@@ -261,7 +258,6 @@ class HelpdeskFormController(http.Controller):
             .search(
                 [
                     ("privacy_visibility", "in", visibility_filter),
-                    ("is_pms_form", "=", True),
                     ("is_purchases_form", "=", True),
                 ]
             )
