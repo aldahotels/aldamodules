@@ -115,7 +115,10 @@ class HelpdeskFormController(http.Controller):
             return request.redirect("/web/login")
 
         user = request.env.user
-        user_properties = user.pms_property_ids
+        user_properties = user.pms_property_ids.sorted(
+            lambda p: p.pms_property_code or ""
+        )
+
         visibility_filter = ["internal"]
         team_ids = (
             request.env["helpdesk.team"]

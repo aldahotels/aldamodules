@@ -601,21 +601,29 @@
                                             <select
                                                 name="property_id"
                                                 id="property_id"
-                                                class="form-select form-select-lg rounded-3 shadow-sm border-0"
+                                                class="form-select form-select-lg rounded-3 shadow-sm border-0 o_select2"
                                                 required="required"
                                             >
                                                 <option
                                                     value=""
                                                     class="text-muted"
                                                 >-- Select a property --</option>
-                                                <t
+                                                    <t
                                                     t-foreach="properties"
                                                     t-as="property"
                                                 >
-                                                    <option t-att-value="property.id">
-                                                        <t t-out="property.name" />
-                                                    </option>
-                                                </t>
+                                                        <option
+                                                        t-att-value="property.id"
+                                                        t-att-data-search="(property.pms_property_code or '') + ' ' + property.name"
+                                                    >
+                                                            <t
+                                                            t-if="property.pms_property_code"
+                                                        >[<t
+                                                                t-out="property.pms_property_code"
+                                                            />] </t>
+                                                            <t t-out="property.name" />
+                                                        </option>
+                                                    </t>
                                             </select>
                                         </div>
 
