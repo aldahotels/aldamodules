@@ -1,9 +1,10 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
 
 
 class HelpdeskTeam(models.Model):
     _inherit = "helpdesk.team"
+
+    member_ids = fields.Many2many("res.users", string="Team Members", required=True)
 
     assign_by_property = fields.Boolean(
         string="Assign based on Property and Ticket Type",
@@ -19,6 +20,28 @@ class HelpdeskTeam(models.Model):
         string="Associated Jobs",
         help="Job positions associated with this helpdesk team.",
     )
+
+    def _sync_team_members_for_employee(self, employee):
+        """Actualiza automáticamente los equipos en los que el empleado participa."""
+        if not employee.user_id:
+            return
+
+        teams = self.search([("team_job_ids", "in", employee.job_id.id)])
+        for team in teams:
+            valid_user_ids = team._get_filtered_member_ids()
+            if set(team.member_ids.ids) != set(valid_user_ids):
+                team.member_ids = [(6, 0, valid_user_ids)]
+
+    def _remove_employee_from_teams(self, employee):
+        if not employee.user_id:
+            return
+
+        teams = self.search([("team_job_ids", "in", employee.job_id.id)])
+        if not teams:
+            teams.member_ids = [(3, employee.user_id.id)]
+        for team in teams:
+            if employee.user_id in team.member_ids:
+                team.member_ids = [(3, employee.user_id.id)]
 
     def _get_filtered_member_ids(self):
         self.ensure_one()
@@ -42,18 +65,28 @@ class HelpdeskTeam(models.Model):
         return list(set(employees.mapped("user_id.id")))
 
     def _update_team_members_from_employee(self, employee):
-        if not employee.user_id or not employee.active:
+        """Actualiza la membresía del empleado en todos los equipos válidos."""
+        if not employee.user_id:
             return
 
-        teams_to_update = self.search(
-            [
-                ("assign_by_property", "=", True),
-                ("team_job_ids", "in", employee.job_id.ids),
-            ]
-        )
+        HelpdeskTeam = self.env["helpdesk.team"]
+        all_teams = HelpdeskTeam.search([("assign_by_property", "=", True)])
 
-        for team in teams_to_update:
-            team.member_ids = team._get_filtered_member_ids()
+        for team in all_teams:
+            valid_user_ids = team._get_filtered_member_ids()
+            current_user_ids = team.member_ids.ids
+
+            if (
+                employee.user_id.id in valid_user_ids
+                and employee.user_id.id not in current_user_ids
+            ):
+                team.member_ids = [(4, employee.user_id.id)]
+
+            elif (
+                employee.user_id.id not in valid_user_ids
+                and employee.user_id.id in current_user_ids
+            ):
+                team.member_ids = [(3, employee.user_id.id)]
 
     def _get_members_without_assigned_by_property(self):
         self.ensure_one()
@@ -61,14 +94,7 @@ class HelpdeskTeam(models.Model):
             return self.member_ids
         return self.env["res.users"]
 
-    def get_members_jobs_without_ticket_type(self):
-        self.ensure_one()
-        if all(not job.ticket_type_ids for job in self.team_job_ids):
-            return self.member_ids
-        else:
-            return self.env["res.users"]
-
-    def _get_members_from_jobs(self, ticket=None, vals=None):
+    def _get_members_from_jobs(self, ticket=None, vals=None, valid_members=None):
         self.ensure_one()
         context = self.env.context or {}
 
@@ -95,29 +121,18 @@ class HelpdeskTeam(models.Model):
         )
         ticket_type_id = default_ticket.get("ticket_type_id") or ticket_type_id
         team_id = default_ticket.get("team_id") or vals.get("team_id")
-        team = self.env["helpdesk.team"].browse(team_id) if team_id else self
+        self.env["helpdesk.team"].browse(team_id) if team_id else self
 
-        users = team.member_ids
+        if valid_members is not None and valid_members:
+            users = valid_members
+        else:
+            return self.env["res.users"]
         if not users:
             return self.env["res.users"]
 
         users_filtered = self.env["res.users"]
 
-        candidates = self.get_members_jobs_without_ticket_type()
-        if candidates:
-            for user in candidates:
-                qualifying_employees = user.employee_ids.filtered(
-                    lambda e: (
-                        e.job_id
-                        in self.team_job_ids.filtered(lambda j: not j.ticket_type_ids)
-                        and property_id in e.property_ids.ids
-                    )
-                )
-
-                if qualifying_employees:
-                    users_filtered |= user
-
-        if not candidates and ticket_type_id and property_id:
+        if property_id and ticket_type_id:
             for user in users:
                 employees = user.employee_ids.filtered(
                     lambda e: e.job_id.id in self.team_job_ids.ids
@@ -130,11 +145,6 @@ class HelpdeskTeam(models.Model):
                             if property_id and property_id in emp.property_ids.ids:
                                 users_filtered |= user
                                 break
-                    elif not job.ticket_type_ids:
-                        if property_id and property_id in emp.property_ids.ids:
-                            users_filtered |= user
-                            break
-
         return users_filtered
 
     @api.onchange("assign_by_property", "team_job_ids", "member_ids")
@@ -153,33 +163,31 @@ class HelpdeskTeam(models.Model):
                 }
             if team.assign_by_property:
                 filtered_member_ids = team._get_filtered_member_ids()
+                if team.member_ids not in filtered_member_ids:
+                    for user in team.member_ids:
+                        if user.id not in filtered_member_ids:
+                            team.member_ids = [(3, user.id)]
                 team.member_ids = [(6, 0, filtered_member_ids)]
 
-    @api.constrains("assign_by_property", "team_job_ids")
-    def _check_assign_by_property(self):
-        for team in self:
-            if team.assign_by_property and not team.team_job_ids:
-                raise ValidationError(
-                    _(
-                        "To use 'Assign based on Hotel and Ticket Type', "
-                        "at least one job position must be associated with the team."
-                    )
-                )
-
-    @api.constrains("assign_by_property", "member_ids")
+    @api.constrains("assign_by_property")
     def _check_member_ids_modification(self):
         for team in self:
             if team.assign_by_property:
                 expected_members = set(team._get_filtered_member_ids())
                 current_members = set(team.member_ids.ids)
+
                 if current_members != expected_members:
-                    raise ValidationError(
-                        _(
-                            "You cannot manually modify team members when "
-                            "'Assign by Property' is active. "
-                            "Members are automatically assigned based on jobs and properties. "
-                        )
-                    )
+                    members_to_remove = current_members - expected_members
+                    if members_to_remove:
+                        team.member_ids = [
+                            (3, member_id) for member_id in members_to_remove
+                        ]
+
+                    members_to_add = expected_members - current_members
+                    if members_to_add:
+                        team.member_ids = [
+                            (4, member_id) for member_id in members_to_add
+                        ]
 
     def _determine_user_to_assign(self, ticket=None, vals=None):
         result = dict.fromkeys(self.ids, self.env["res.users"])
@@ -187,12 +195,19 @@ class HelpdeskTeam(models.Model):
         context = self.env.context
         no_property_assignment = context.get("no_property_assignment", False)
         no_property_vals = vals.get("pms_property_id", False) if vals else False
+        is_user_assigned = (
+            vals.get("user_id")
+            if vals
+            else (ticket.user_id.id if ticket and ticket.user_id else False)
+        )
         default_tickets_with_property = context.get(
             "default_tickets_with_property", False
         )
 
-        if no_property_assignment and (
-            no_property_vals or not default_tickets_with_property
+        if (
+            no_property_assignment
+            and (no_property_vals or not default_tickets_with_property)
+            and not is_user_assigned
         ):
             result = super()._determine_user_to_assign()
             return result
@@ -200,8 +215,14 @@ class HelpdeskTeam(models.Model):
         if default_tickets_with_property:
             if ticket:
                 team_id = ticket.team_id.id
+                property_id = (
+                    ticket.pms_property_id.id if ticket.pms_property_id else None
+                )
             elif vals:
                 team_id = vals.get("team_id")
+                property_id = (
+                    vals.get("pms_property_id") if vals.get("pms_property_id") else None
+                )
             elif hasattr(self, "team_id") and self.team_id:
                 team_id = self.team_id.id
             else:
@@ -220,7 +241,23 @@ class HelpdeskTeam(models.Model):
                     if not team.member_ids:
                         continue
 
-                    members = team._get_members_from_jobs(ticket=ticket, vals=vals)
+                    if property_id:
+                        valid_members = team.member_ids.filtered(
+                            lambda u: any(
+                                emp.property_ids and property_id in emp.property_ids.ids
+                                for emp in u.employee_ids
+                            )
+                        )
+                    else:
+                        valid_members = False
+
+                    if not valid_members:
+                        result[team.id] = self.env["res.users"]
+                        continue
+
+                    members = team._get_members_from_jobs(
+                        ticket=ticket, vals=vals, valid_members=valid_members
+                    )
                     member_ids = members.ids
 
                     if not member_ids:
@@ -268,8 +305,5 @@ class HelpdeskTeam(models.Model):
                         selected_user_id = min(open_ticket_map, key=open_ticket_map.get)
                         assigned_user = self.env["res.users"].browse(selected_user_id)
                         result[team.id] = assigned_user
-
-        else:
-            result = super()._determine_user_to_assign()
 
         return result
