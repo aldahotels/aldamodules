@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-31 11:35+0000\n"
-"PO-Revision-Date: 2025-10-31 11:35+0000\n"
+"POT-Creation-Date: 2025-11-07 13:25+0000\n"
+"PO-Revision-Date: 2025-11-07 13:25+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -156,6 +156,19 @@ msgstr ""
 "<small class=\"text-muted\">\n"
 "                                                    Puede enviar de una clase a la vez\n"
 "                                                </small>"
+
+#. module: alda_helpdesk_pms
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
+#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
+msgid ""
+"<small class=\"text-muted\">\n"
+"                                        Alda Hotels • IT Department 2025\n"
+"                                    </small>"
+msgstr ""
+"<small class=\"text-muted\">\n"
+"                                        Alda Hotels • IT Department 2025 \n"
+"                                    </small>"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
@@ -325,10 +338,7 @@ msgid "Additional comments or general description..."
 msgstr "Información adicional o descripción general..."
 
 #. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
 msgid "Alda Hotels • IT Department 2025 •"
 msgstr "Alda Hotels • Departamento de Informática 2025 •"
 
@@ -1057,7 +1067,7 @@ msgstr "Restaurante / Cafetería"
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
 msgid "Return"
-msgstr ""
+msgstr "Volver"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -1183,7 +1193,7 @@ msgstr "Seleccionar Hotel"
 #: code:addons/alda_helpdesk_pms/static/src/js/purchase_ticket_form.js:0
 #, python-format
 msgid "Select a department."
-msgstr ""
+msgstr "Selecciona el departamento"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__location_type
