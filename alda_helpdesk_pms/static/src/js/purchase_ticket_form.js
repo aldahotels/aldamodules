@@ -40,29 +40,15 @@ odoo.define("alda_helpdesk_pms.purchase_ticket_form", function (require) {
 
         _updateFileFeedback(fileInput, file) {
             let feedbackContainer = null;
-            const isMobile = window.innerWidth < 768;
 
-            if (isMobile) {
-                const parentP = fileInput.closest("p");
-                if (parentP) {
-                    feedbackContainer = parentP.querySelector(".file-feedback");
-                    if (!feedbackContainer) {
-                        feedbackContainer = document.createElement("small");
-                        feedbackContainer.className =
-                            "file-feedback text-success mt-1 d-block";
-                        parentP.appendChild(feedbackContainer);
-                    }
-                }
-            } else {
-                const parentTd = fileInput.parentElement;
-                if (parentTd) {
-                    feedbackContainer = parentTd.querySelector(".file-feedback");
-                    if (!feedbackContainer) {
-                        feedbackContainer = document.createElement("small");
-                        feedbackContainer.className =
-                            "file-feedback text-success mt-1 d-block";
-                        parentTd.appendChild(feedbackContainer);
-                    }
+            const wrapper = fileInput.closest(".file-input-wrapper");
+            if (wrapper) {
+                feedbackContainer = wrapper.querySelector(".file-feedback");
+                if (!feedbackContainer) {
+                    feedbackContainer = document.createElement("small");
+                    feedbackContainer.className =
+                        "file-feedback text-success mt-1 d-block";
+                    wrapper.appendChild(feedbackContainer);
                 }
             }
 
@@ -250,9 +236,7 @@ odoo.define("alda_helpdesk_pms.purchase_ticket_form", function (require) {
                 });
                 try {
                     firstError.focus();
-                } catch (e) {
-                    // Ignore
-                }
+                } catch (e) {}
             }
         },
 
@@ -370,8 +354,18 @@ odoo.define("alda_helpdesk_pms.purchase_ticket_form", function (require) {
                 measurement
             )}" class="form-control mb-2" placeholder="${measurementsPlaceholder}">
                 </p>
-                <p><strong>Photo:</strong>
-                    <input type="file" name="attachment${index}" accept="image/*" class="form-control attachment-input">
+                <p><strong>Photo:</strong></p>
+                <div class="file-input-wrapper mb-2" style="position: relative;">
+                    <label class="btn btn-primary btn-md" style="cursor: pointer; padding: 4px 8px; font-size: 1.4rem;" for="attachment${index}">
+                        <i class="fa fa-camera" aria-label="Take Photo or Choose File"></i>
+                    </label>
+                    <!-- Input completamente oculto -->
+                    <input type="file"
+                        id="attachment${index}"
+                        name="attachment${index}"
+                        accept="image/*"
+                        capture="environment"
+                        style="position: absolute; left: -9999px; opacity: 0; width: 0; height: 0;">
                     ${
                         file
                             ? `<small class="file-feedback text-success mt-1 d-block">📎 ${this._escapeHtml(
@@ -379,7 +373,7 @@ odoo.define("alda_helpdesk_pms.purchase_ticket_form", function (require) {
                               )}</small>`
                             : '<small class="file-feedback" style="display: none;"></small>'
                     }
-                </p>
+                </div>
             `;
             container.appendChild(card);
         },
@@ -416,14 +410,26 @@ odoo.define("alda_helpdesk_pms.purchase_ticket_form", function (require) {
                 measurement
             )}" class="form-control" placeholder="${measurementsPlaceholder}"></td>
                 <td>
-                    <input type="file" name="attachment${index}" accept="image/*" class="form-control">
-                    ${
-                        file
-                            ? `<small class="file-feedback text-success mt-1 d-block">📎 ${this._escapeHtml(
-                                  file.name
-                              )}</small>`
-                            : '<small class="file-feedback" style="display: none;"></small>'
-                    }
+                    <div class="file-input-wrapper" style="position: relative; text-align: center;">
+                        <!-- Botón personalizado -->
+                        <label class="btn btn-primary btn-md" style="cursor: pointer; padding: 4px 8px; font-size: 1.4rem;" for="attachment_d${index}">
+                            <i class="fa fa-camera" aria-label="Take Photo or Choose File"></i>
+                        </label>
+                        <!-- Input completamente oculto -->
+                        <input type="file"
+                            id="attachment_d${index}"
+                            name="attachment${index}"
+                            accept="image/*"
+                            capture="environment"
+                            style="position: absolute; left: -9999px; opacity: 0; width: 0; height: 0;">
+                        ${
+                            file
+                                ? `<small class="file-feedback text-success mt-1 d-block">📎 ${this._escapeHtml(
+                                      file.name
+                                  )}</small>`
+                                : '<small class="file-feedback" style="display: none;"></small>'
+                        }
+                    </div>
                 </td>
             `;
             container.appendChild(row);
