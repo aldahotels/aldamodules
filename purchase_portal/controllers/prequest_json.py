@@ -133,17 +133,28 @@ class PurchaseRequestJsonMethods(http.Controller):
                 }
             )
         try:
+            # Buscamos la combinación exacta y permitida para este hotel y compañía.
             product_info = request.env['product.supplierinfo'].search([
                 '|',
                 ('partner_id', 'in', purchase_request.property_id.seller_ids.ids),
                 ('partner_id', 'in', purchase_request.property_id.seller_commercial_ids.ids),
-                '|',
                 ('product_id', '=', int(product_id)),
-                ('product_tmpl_id.product_variant_ids', '=', int(product_id)),
-                '|',
-                ('company_id', '=', purchase_request.company_id.id),
-                ('company_id', '=', False)
+                ('company_id', '=', purchase_request.company_id.id)
             ], order='price asc', limit=1)
+
+            # Si no la encuentra buscamos en el resto.
+            if not product_info:
+                product_info = request.env['product.supplierinfo'].search([
+                    '|',
+                    ('partner_id', 'in', purchase_request.property_id.seller_ids.ids),
+                    ('partner_id', 'in', purchase_request.property_id.seller_commercial_ids.ids),
+                    '|',
+                    ('product_id', '=', int(product_id)),
+                    ('product_tmpl_id.product_variant_ids', '=', int(product_id)),
+                    '|',
+                    ('company_id', '=', purchase_request.company_id.id),
+                    ('company_id', '=', False)
+                ], order='price asc', limit=1)
 
             request_line = request.env['purchase.request.line'].with_context(portal=True).create({
                 'request_id': purchase_request.id,
