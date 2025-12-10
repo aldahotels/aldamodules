@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-08 10:02+0000\n"
-"PO-Revision-Date: 2025-07-08 10:02+0000\n"
+"POT-Creation-Date: 2025-12-10 18:18+0000\n"
+"PO-Revision-Date: 2025-12-10 18:18+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -858,6 +858,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
 msgid ""
 "<strong class=\"text-muted\">\n"
+"                                    Hotel\n"
+"                                </strong>"
+msgstr ""
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
+msgid ""
+"<strong class=\"text-muted\">\n"
 "                                    Receive from\n"
 "                                </strong>"
 msgstr ""
@@ -877,9 +885,20 @@ msgstr ""
 "                                </strong>"
 
 #. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_purchase_request_page
+#: model_terms:ir.ui.view,arch_db:purchase_portal.purchase_portal_my_purchase_order
+msgid "<strong class=\"text-muted\">Hotel</strong>"
+msgstr ""
+
+#. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_saved_cart_page
 msgid "<strong>Customer:</strong>"
 msgstr "<strong>Cliente:</strong>"
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_saved_cart_page
+msgid "<strong>Hotel:</strong>"
+msgstr ""
 
 #. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_saved_cart_page
@@ -910,6 +929,11 @@ msgstr "Activo"
 #: model_terms:ir.ui.view,arch_db:purchase_portal.purchase_request_product_table
 msgid "Add"
 msgstr "Añadir"
+
+#. module: purchase_portal
+#: model:ir.actions.act_window,name:purchase_portal.action_supplier_products_wizard
+msgid "Add Supplier Products"
+msgstr "Añadir productos del proveedor"
 
 #. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.pms_property_views_form
@@ -1211,8 +1235,17 @@ msgstr "Historial"
 #. module: purchase_portal
 #: model:ir.model.fields,field_description:purchase_portal.field_stock_picking__property_id
 #: model:ir.model.fields,field_description:purchase_portal.field_supplier_products_wizard__hotel_id
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_purchase_request_page
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_saved_cart_page
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
+#: model_terms:ir.ui.view,arch_db:purchase_portal.purchase_portal_my_purchase_order
 msgid "Hotel"
-msgstr "Holtel"
+msgstr "Hotel"
+
+#. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_supplier_products_wizard__hotel_ids
+msgid "Hotels"
+msgstr ""
 
 #. module: purchase_portal
 #: model:ir.model.fields,field_description:purchase_portal.field_import_supplier_data_wizard__id
@@ -1438,6 +1471,13 @@ msgstr "Cliente"
 #, python-format
 msgid "Picking not found"
 msgstr "Albarán no encontrado"
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/wizard/supplier_products_wizard.py:0
+#, python-format
+msgid "Please select at least one hotel."
+msgstr "Por favor, selecciona al menos un hotel."
 
 #. module: purchase_portal
 #: model:ir.model,name:purchase_portal.model_pos_config

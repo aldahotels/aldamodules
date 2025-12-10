@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-08 10:02+0000\n"
-"PO-Revision-Date: 2025-07-08 10:02+0000\n"
+"POT-Creation-Date: 2025-12-10 18:18+0000\n"
+"PO-Revision-Date: 2025-12-10 18:18+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -811,6 +811,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
 msgid ""
 "<strong class=\"text-muted\">\n"
+"                                    Hotel\n"
+"                                </strong>"
+msgstr ""
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
+msgid ""
+"<strong class=\"text-muted\">\n"
 "                                    Receive from\n"
 "                                </strong>"
 msgstr ""
@@ -824,8 +832,19 @@ msgid ""
 msgstr ""
 
 #. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_purchase_request_page
+#: model_terms:ir.ui.view,arch_db:purchase_portal.purchase_portal_my_purchase_order
+msgid "<strong class=\"text-muted\">Hotel</strong>"
+msgstr ""
+
+#. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.portal_saved_cart_page
 msgid "<strong>Customer:</strong>"
+msgstr ""
+
+#. module: purchase_portal
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_saved_cart_page
+msgid "<strong>Hotel:</strong>"
 msgstr ""
 
 #. module: purchase_portal
@@ -856,6 +875,11 @@ msgstr ""
 #. module: purchase_portal
 #: model_terms:ir.ui.view,arch_db:purchase_portal.purchase_request_product_table
 msgid "Add"
+msgstr ""
+
+#. module: purchase_portal
+#: model:ir.actions.act_window,name:purchase_portal.action_supplier_products_wizard
+msgid "Add Supplier Products"
 msgstr ""
 
 #. module: purchase_portal
@@ -921,12 +945,15 @@ msgid "All supplier {} products have been updated successfully"
 msgstr ""
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_room_type__purchase_property_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_room_type__purchase_property_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_product_product__purchase_property_ids
 msgid "Allowed in properties"
 msgstr ""
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__product_ids
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__product_seller_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__product_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__product_seller_ids
 msgid "Allowed products"
@@ -1155,7 +1182,16 @@ msgstr ""
 #. module: purchase_portal
 #: model:ir.model.fields,field_description:purchase_portal.field_stock_picking__property_id
 #: model:ir.model.fields,field_description:purchase_portal.field_supplier_products_wizard__hotel_id
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_purchase_request_page
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_saved_cart_page
+#: model_terms:ir.ui.view,arch_db:purchase_portal.portal_stock_picking_page
+#: model_terms:ir.ui.view,arch_db:purchase_portal.purchase_portal_my_purchase_order
 msgid "Hotel"
+msgstr ""
+
+#. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_supplier_products_wizard__hotel_ids
+msgid "Hotels"
 msgstr ""
 
 #. module: purchase_portal
@@ -1271,6 +1307,7 @@ msgid "Mail to seller content"
 msgstr ""
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__min_purchase_amount
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__min_purchase_amount
 #: model:ir.model.fields,field_description:purchase_portal.field_res_partner__min_purchase_amount
 #: model:ir.model.fields,field_description:purchase_portal.field_res_users__min_purchase_amount
@@ -1378,6 +1415,13 @@ msgstr ""
 #: code:addons/purchase_portal/controllers/stock_picking_json.py:0
 #, python-format
 msgid "Picking not found"
+msgstr ""
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/wizard/supplier_products_wizard.py:0
+#, python-format
+msgid "Please select at least one hotel."
 msgstr ""
 
 #. module: purchase_portal
@@ -1601,6 +1645,7 @@ msgid "Saved Cart -"
 msgstr ""
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__saved_cart_count
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__saved_cart_count
 #: model:ir.model.fields,field_description:purchase_portal.field_res_partner__saved_cart_count
 #: model:ir.model.fields,field_description:purchase_portal.field_res_users__saved_cart_count
@@ -1622,13 +1667,13 @@ msgstr ""
 
 #. module: purchase_portal
 #: model:ir.actions.act_window,name:purchase_portal.action_purchase_request_saved_cart_group
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__saved_cart_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__saved_cart_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_res_partner__saved_cart_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_res_users__saved_cart_ids
 #: model:ir.ui.menu,name:purchase_portal.menu_purchase_request_saved_cart
 #: model_terms:ir.ui.view,arch_db:purchase_portal.view_partner_form
 #: model_terms:ir.ui.view,arch_db:purchase_portal.view_purchase_request_saved_cart_search
-#: model_terms:ir.ui.view,arch_db:purchase_portal.view_purchase_request_saved_cart_tree
 msgid "Saved carts"
 msgstr ""
 
@@ -1886,6 +1931,8 @@ msgid "Vendor"
 msgstr ""
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__seller_commercial_ids
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__seller_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__seller_commercial_ids
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__seller_ids
 msgid "Vendors allowed in this property"
@@ -1904,6 +1951,7 @@ msgid "Waiting for other operation"
 msgstr ""
 
 #. module: purchase_portal
+#: model:ir.model.fields,field_description:purchase_portal.field_channel_wubook_pms_property_availability__wharehouse_id
 #: model:ir.model.fields,field_description:purchase_portal.field_pms_property__wharehouse_id
 msgid "Warehouse"
 msgstr ""
