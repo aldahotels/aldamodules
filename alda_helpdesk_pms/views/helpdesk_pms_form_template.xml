@@ -273,33 +273,76 @@
                                                         class="form-text text-muted mt-1"
                                                     >
                                                         What are you seeing? If is to error, What are you trying to do?
+                                                        You can also add url videos.
                                                     </small>
                                                 </div>
                                                 <div
                                                     class="form-group row s_website_form_field mb-3"
                                                 >
-                                                    <label
-                                                        class="col-sm-3 col-form-label s_website_form_label"
-                                                        for="attachment"
+                                                    <div
+                                                        class="form-group row s_website_form_field mb-3"
                                                     >
-                                                        <span
-                                                            class="s_website_form_label_content"
-                                                        >Attachment File</span>
-                                                    </label>
-                                                    <div class="col-sm">
-                                                        <input
-                                                            type="file"
-                                                            class="form-control s_website_form_input"
-                                                            name="attachment"
-                                                            id="attachment"
-                                                            multiple="true"
-                                                        />
-                                                        <small
-                                                            class="form-text text-muted mt-1"
+                                                        <label
+                                                            class="col-sm-3 col-form-label s_website_form_label"
+                                                            for="attachment"
                                                         >
-                                                            Please send us a photo, screenshot, digital document, or any other resource
-                                                            that provides relevant information to help us address your request.
-                                                        </small>
+                                                            <span
+                                                                class="s_website_form_label_content"
+                                                            >Attachment File</span>
+                                                        </label>
+                                                        <div class="col-sm">
+                                                            <div class="input-group">
+                                                                <input
+                                                                    type="file"
+                                                                    class="form-control s_website_form_input"
+                                                                    name="attachment"
+                                                                    id="attachment"
+                                                                    multiple="true"
+                                                                    style="appearance: none;"
+                                                                    accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.mp4,.avi,.mov,.mkv,.doc,.docx,.xls,.xlsx,.txt"
+                                                                />
+                                                                <button
+                                                                    class="btn btn-outline-secondary"
+                                                                    type="button"
+                                                                    id="clearAllFilesBtn"
+                                                                >
+                                                                    <i
+                                                                        class="fa fa-trash"
+                                                                    /> Clear All
+                                                                </button>
+                                                            </div>
+
+                                                            <div
+                                                                id="file-list-container"
+                                                            >
+                                                                <div id="file-list" />
+                                                            </div>
+
+                                                            <small
+                                                                class="form-text text-muted mt-1"
+                                                            >
+                                                                <i
+                                                                    class="fa fa-info-circle me-1"
+                                                                />
+                                                                Max 5 file per upload. Supported formats: PDF, images, videos (only one), Office documents<br
+                                                                />
+                                                                <i
+                                                                    class="fa fa-exclamation-triangle me-1 text-warning"
+                                                                />
+                                                                <strong
+                                                                >Limits:</strong> 10 MB per file, 15 MB total<br
+                                                                />
+                                                                <i
+                                                                    class="fa fa-envelope me-1 text-info"
+                                                                />
+                                                                Videos over 5 MB will not be sent by email
+                                                            </small>
+
+                                                            <div
+                                                                id="selected-files-list"
+                                                            />
+                                                            <div id="file-warnings" />
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="text-center mt-3">
@@ -786,5 +829,31 @@
             </section>
         </t>
     </template>
+
+
+    <template id="error_template" name="Helpdesk Ticket File Size Error">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-md-8 col-lg-6">
+                            <div class="alert alert-danger text-center" role="alert">
+                                <h4 class="alert-heading">Warning!</h4>
+                                <p t-esc="error_message" />
+                                <hr />
+                                <a
+                                    t-att-href="'/helpdesk/ticket/new?property_id=%s' % property_id"
+                                    class="btn btn-primary"
+                                >
+                                    Back to Ticket Form
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
 
 </odoo>
