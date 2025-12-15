@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-12 13:06+0000\n"
-"PO-Revision-Date: 2025-12-12 13:06+0000\n"
+"POT-Creation-Date: 2025-11-07 13:25+0000\n"
+"PO-Revision-Date: 2025-11-07 13:25+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,14 +20,14 @@ msgstr ""
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "%(count)s Room Out of Service"
-msgstr "%(count)s Habitación Fuera de Servicio"
+msgstr "%(count)s Bloqueos en habitación"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "%(rate)s%% Occupancy Rate"
-msgstr "%(rate)s%% Tasa de Ocupación"
+msgstr "%(rate)s%% Ocupación"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -88,11 +88,6 @@ msgstr ""
 "                                            Enviar ticket de Compra"
 
 #. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
-msgid "<i class=\"fa fa-trash\"/> Clear All"
-msgstr "<i class=\"fa fa-trash\"/> Borrar todo"
-
-#. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
 msgid "<option value=\"\" class=\"text-muted\">-- Select a property --</option>"
 msgstr "<option value=\"\" class=\"text-muted\">-- Selecciona un Hotel --</option>"
@@ -122,35 +117,25 @@ msgstr "<option value=\"\">Seleccionar el departamento</option>"
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid ""
 "<small class=\"form-text text-muted mt-1\">\n"
-"                                                                <i class=\"fa fa-info-circle me-1\"/>\n"
-"                                                                Max 5 file per upload. Supported formats: PDF, images, videos (only one), Office documents<br/>\n"
-"                                                                <i class=\"fa fa-exclamation-triangle me-1 text-warning\"/>\n"
-"                                                                <strong>Limits:</strong> 10 MB per file, 15 MB total<br/>\n"
-"                                                                <i class=\"fa fa-envelope me-1 text-info\"/>\n"
-"                                                                Videos over 5 MB will not be sent by email\n"
-"                                                            </small>"
+"                                                            Please send us a photo, screenshot, digital document, or any other resource\n"
+"                                                            that provides relevant information to help us address your request.\n"
+"                                                        </small>"
 msgstr ""
 "<small class=\"form-text text-muted mt-1\">\n"
-"                                                                <i class=\"fa fa-info-circle me-1\"/>\n"
-"                                                                Máximo 5 archivos por carga. Formatos admitidos: PDF, imágenes, videos (solo uno), documentos de Office<br/>\n"
-"                                                                <i class=\"fa fa-exclamation-triangle me-1 text-warning\"/>\n"
-"                                                                <strong>Límites:</strong> 10 MB por archivo, 15 MB en total<br/>\n"
-"                                                                <i class=\"fa fa-envelope me-1 text-info\"/>\n"
-"                                                                Los videos de más de 5 MB no se enviarán por correo electrónico\n"
-"                                                            </small>"
+"                                            Por favor, envíanos una foto, captura de pantalla, documento relacionado u otro recurso \n"
+"                                            que nos indique información relevante para atender correctamente el problema.\n"
+"                                        </small>"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid ""
 "<small class=\"form-text text-muted mt-1\">\n"
 "                                                        What are you seeing? If is to error, What are you trying to do?\n"
-"                                                        You can also add url videos.\n"
 "                                                    </small>"
 msgstr ""
 "<small class=\"form-text text-muted mt-1\">\n"
-"                                                        ¿Qué estás viendo? Si es un error, ¿qué estás intentando hacer?\n"
-"                                                        También puedes agregar URL de videos.\n"
-"                                                    </small>"
+"                                        ¿Qué estás viendo? Si es un error, ¿qué estabas intentando hacer?\n"
+"                                    </small>"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
@@ -197,12 +182,12 @@ msgstr ""
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
 msgid "<small>#</small>"
-msgstr "<small>#</small>"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_ticket_type_view_form
 msgid "<span class=\"o_stat_text\"> Tickets</span>"
-msgstr "<span class=\"o_stat_text\"> Tickets</span>"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -308,7 +293,7 @@ msgstr "<strong>Proveedor:</strong>"
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
 msgid "<strong>Ticket #:</strong>"
-msgstr "<strong>Ticket #:</strong>"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
@@ -318,7 +303,7 @@ msgstr "<strong>Tipo de Ticket:</strong>"
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
 msgid "<strong>URL:</strong>"
-msgstr "<strong>URL:</strong>"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
@@ -335,7 +320,7 @@ msgstr "<strong>🏨 Hotel:</strong>"
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Accounting"
-msgstr "Contabilidad"
+msgstr "Oficinas"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__ticket_blocked_room_adr_accumulated
@@ -397,11 +382,6 @@ msgid "Assigned to"
 msgstr "Asignado a"
 
 #. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.error_template
-msgid "Back to Ticket Form"
-msgstr "Volver al Formulario de Ticket"
-
-#. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
@@ -429,7 +409,7 @@ msgstr "Habitación del PMS bloqueada"
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Blocked Room"
-msgstr "Habitación Bloqueada"
+msgstr "Habitación bloqueada"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__ticket_blocked_room_adr_accumulated
@@ -471,19 +451,12 @@ msgstr "Cerrado por el Técnico"
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__color
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_type__color
 msgid "Color"
-msgstr "Color"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket_type__color
 msgid "Color associated with the ticket type."
-msgstr "Color asociado con el tipo de ticket."
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
-#, python-format
-msgid "Common Bathrooms"
-msgstr "Baños Comunes"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -495,18 +468,7 @@ msgstr "Aseos comunes"
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.confirmation_ticket
 msgid "Company Logo"
-msgstr "Logotipo de la Empresa"
-
-#. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
-msgid "Confirmation"
-msgstr "¿Quieres enviar el ticket ya?"
-
-#. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
-msgid "Contact"
-msgstr "Contacto"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
@@ -543,7 +505,7 @@ msgstr "Crear Ticket"
 #: code:addons/alda_helpdesk_pms/controllers/main.py:0
 #, python-format
 msgid "Data reference/reservation number: "
-msgstr "Número de referencia/reserva de datos: "
+msgstr "Referencia/Nº de Reserva: "
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
@@ -564,7 +526,7 @@ msgstr "Descripción y comentarios"
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__display_name
 msgid "Display Name"
-msgstr "Nombre para Mostrar"
+msgstr "Monstrar el nombre"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__date_now
@@ -584,14 +546,14 @@ msgstr "Número total de tickets de helpdesk asociados con esta propiedad."
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Electrical Panel"
-msgstr "Panel Eléctrico"
+msgstr "Cuadro eléctrico"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Elevator"
-msgstr "Ascensor"
+msgstr "Elevador"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_team_pms_view_form
@@ -607,38 +569,19 @@ msgstr ""
 #: code:addons/alda_helpdesk_pms/static/src/js/purchase_ticket_form.js:0
 #, python-format
 msgid "Enter a valid URL (https://...)."
-msgstr "Ingrese una URL válida (https://...)."
+msgstr "Introduzca un URL válido (https://...)."
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "External Company"
-msgstr "Empresa Externa"
-
-#. module: alda_helpdesk_pms
-#. odoo-javascript
-#: code:addons/alda_helpdesk_pms/static/src/js/ticket_form_attachment.js:0
-#, python-format
-msgid "Files List to send:"
-msgstr "Lista de Archivos a enviar:"
+msgstr "Empresa externa"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "Form New Ticket"
-msgstr "Formulario Nuevo Ticket"
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
-#, python-format
-msgid "Hallways"
-msgstr "Pasillos"
-
-#. module: alda_helpdesk_pms
-#: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_team__is_purchases_form
-msgid "Has Purchases Form"
-msgstr "Formulario de Tickets de Compras"
+msgstr "Formulario nuevo ticket"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -695,12 +638,12 @@ msgstr "Temporada Alta - Ocupación Media"
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_tickets_followup
 msgid "Hotel"
-msgstr "Hotel"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_team__is_location_required
@@ -765,21 +708,7 @@ msgstr "Cocina"
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag____last_update
 msgid "Last Modified on"
-msgstr "Última Modificación el"
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
-#, python-format
-msgid "Last Stage Update"
-msgstr "Última Actualización de Etapa"
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
-#, python-format
-msgid "Living Room"
-msgstr "Sala de Estar"
+msgstr "Última actualización en"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -805,7 +734,9 @@ msgstr "Lugar"
 #: code:addons/alda_helpdesk_pms/models/helpdesk.py:0
 #, python-format
 msgid "Location Required can only be enabled if PMS Form is also enabled."
-msgstr "La Ubicación Requerida solo puede habilitarse si el Formulario PMS también está habilitado."
+msgstr ""
+"El lugar dentro del hotel es requerido para este equipo en el formulario de "
+"ticket."
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_team__is_location_required
@@ -839,14 +770,14 @@ msgstr "Baja ocupación -40%"
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Machine Room"
-msgstr "Sala de Máquinas"
+msgstr "Sala de máquinas"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Main Entrance"
-msgstr "Entrada Principal"
+msgstr "Entrada principal"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
@@ -869,7 +800,7 @@ msgstr "Media-alta ocupación -70%"
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "N/A"
-msgstr "N/A"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__name
@@ -881,26 +812,14 @@ msgstr "Nombre"
 #: code:addons/alda_helpdesk_pms/controllers/portal.py:0
 #, python-format
 msgid "Newest"
-msgstr "Más Reciente"
+msgstr "Recientes"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "No longer related to Room"
-msgstr "Ya no relacionado con la Habitación"
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
-#, python-format
-msgid "None"
-msgstr "Ninguno"
-
-#. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
-msgid "Number of Products *"
-msgstr "Cantidad de Productos *"
+msgstr "No relacionado con una habitación"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -941,45 +860,12 @@ msgstr "Bloqueo información"
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Outdoor/Terrace"
-msgstr "Exterior/Terraza"
+msgstr "Terraza / Exterior"
 
 #. module: alda_helpdesk_pms
 #: model:ir.ui.menu,name:alda_helpdesk_pms.menu_pms_root
 msgid "PMS"
-msgstr "PMS"
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
-#, python-format
-msgid "Parking"
-msgstr "Estacionamiento"
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
-#, python-format
-msgid "Perimeter Network"
-msgstr "Red Perimetral"
-
-#. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
-msgid "Photo"
-msgstr "Foto"
-
-#. module: alda_helpdesk_pms
-#. odoo-javascript
-#: code:addons/alda_helpdesk_pms/static/src/js/purchase_ticket_form.js:0
-#, python-format
-msgid "Please review the fields marked in red and correct the errors."
-msgstr "Por favor, revise los campos marcados en rojo y corrija los errores."
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
-#, python-format
-msgid "Pool"
-msgstr "Piscina"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -1039,7 +925,7 @@ msgstr "Productos <span class=\"s_website_form_mark text-danger\"> *</span>"
 #: code:addons/alda_helpdesk_pms/static/src/js/purchase_ticket_form.js:0
 #, python-format
 msgid "Product is required."
-msgstr "El producto es requerido."
+msgstr "El producto es obligatorio."
 
 #. module: alda_helpdesk_pms
 #. odoo-javascript
@@ -1047,7 +933,7 @@ msgstr "El producto es requerido."
 #: code:addons/alda_helpdesk_pms/static/src/js/purchase_ticket_form.js:0
 #, python-format
 msgid "Product name"
-msgstr "Nombre del producto"
+msgstr "TV LG, Secador Cecotec..."
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
@@ -1102,7 +988,7 @@ msgstr "Compras"
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.helpdesk_purchase_description
 msgid "Purchase URL"
-msgstr "URL de Compra"
+msgstr "URL Producto"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
@@ -1114,7 +1000,7 @@ msgstr "URL Producto <span class=\"s_website_form_mark text-danger\"> *</span>"
 #: code:addons/alda_helpdesk_pms/static/src/js/purchase_ticket_form.js:0
 #, python-format
 msgid "Purchase URL is required."
-msgstr "La URL de Compra es requerida."
+msgstr "La URL de compra es obligatoria."
 
 #. module: alda_helpdesk_pms
 #. odoo-javascript
@@ -1149,7 +1035,7 @@ msgstr "Referencia/Número de Reserva"
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Related to Room"
-msgstr "Relacionado con la Habitación"
+msgstr "Relacionado con una habitación"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__company_external_id
@@ -1176,7 +1062,7 @@ msgstr ""
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Restaurant/Cafeteria"
-msgstr "Restaurante/Cafetería"
+msgstr "Restaurante / Cafetería"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
@@ -1216,14 +1102,16 @@ msgstr "Habitación PMS"
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Room is required when location type is 'Bathroom'"
-msgstr "La habitación es requerida cuando el tipo de ubicación es 'Baño'"
+msgstr "Si el problema es en el baño se requiere especificar la habitación."
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Room is required when location type is 'Room'"
-msgstr "La habitación es requerida cuando el tipo de ubicación es 'Habitación'"
+msgstr ""
+"Seleccione la habitación de la avería siempre que el lugar sea en la "
+"habitación."
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_report_analysis__blocked_room_status_label
@@ -1235,7 +1123,7 @@ msgstr "Estado de la habitación"
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Room status changed"
-msgstr "Estado de la habitación cambiado"
+msgstr "Estado de la habitación actualizada"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__is_room
@@ -1253,7 +1141,7 @@ msgstr "Habitaciones Bloqueadas"
 #: code:addons/alda_helpdesk_pms/controllers/portal.py:0
 #, python-format
 msgid "Search <span class=\"nolabel\"> (in Content)</span>"
-msgstr "Buscar <span class=\"nolabel\"> (en Contenido)</span>"
+msgstr "Buscar <span class=\"nolabel\"> (por)</span>"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -1274,21 +1162,21 @@ msgstr "Buscar en Mensajes"
 #: code:addons/alda_helpdesk_pms/controllers/portal.py:0
 #, python-format
 msgid "Search in Property"
-msgstr "Buscar en Propiedad"
+msgstr "Buscar por Hotel"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/controllers/portal.py:0
 #, python-format
 msgid "Search in Reference"
-msgstr "Buscar en Referencia"
+msgstr "Buscar por Referencia"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/controllers/portal.py:0
 #, python-format
 msgid "Search in Stage"
-msgstr "Buscar en Etapa"
+msgstr "Buscar por Estado del ticket"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__season_type
@@ -1305,7 +1193,7 @@ msgstr "Seleccionar Hotel"
 #: code:addons/alda_helpdesk_pms/static/src/js/purchase_ticket_form.js:0
 #, python-format
 msgid "Select a department."
-msgstr "Seleccione un departamento."
+msgstr "Selecciona el departamento"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__location_type
@@ -1353,7 +1241,7 @@ msgstr ""
 #: code:addons/alda_helpdesk_pms/static/src/js/purchase_ticket_form.js:0
 #, python-format
 msgid "Size, color, etc."
-msgstr "Tamaño, color, etc."
+msgstr "Medidas, color, etc."
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -1362,7 +1250,7 @@ msgstr "Tamaño, color, etc."
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
 #, python-format
 msgid "Stage"
-msgstr "Etapa"
+msgstr "Estado"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -1391,12 +1279,12 @@ msgstr "Proveedor <span class=\"s_website_form_mark text-danger\"> *</span>"
 #: code:addons/alda_helpdesk_pms/static/src/js/purchase_ticket_form.js:0
 #, python-format
 msgid "Supplier is required."
-msgstr "El proveedor es requerido."
+msgstr "El proveedor es obligatorio."
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__tag_detail
 msgid "Tag Details"
-msgstr "Detalles de Etiqueta"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket_detail_tag__tag_key
@@ -1416,27 +1304,14 @@ msgstr ""
 
 #. module: alda_helpdesk_pms
 #. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/main.py:0
-#, python-format
-msgid ""
-"The file %(filename)s is too large. Maximum allowed size: %(max_size)s MB"
-msgstr "El archivo %(filename)s es demasiado grande. Tamaño máximo permitido: %(max_size)s MB"
-
-#. module: alda_helpdesk_pms
-#. odoo-python
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid ""
 "The selected ticket type doesn't belong to the current team. Please select a"
 " type that corresponds to the selected team."
-msgstr "El tipo de ticket seleccionado no pertenece al equipo actual. Por favor, seleccione un tipo que corresponda al equipo seleccionado."
-
-#. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/portal.py:0
-#, python-format
-msgid "The team does not allow ticket closing through portal"
-msgstr "El equipo no permite el cierre de tickets a través del portal"
+msgstr ""
+"El tipo de ticket seleccionado no pertenece al equipo actual. Por favor,  "
+"seleccione un tipo que corresponda al equipo elegido."
 
 #. module: alda_helpdesk_pms
 #. odoo-python
@@ -1452,15 +1327,6 @@ msgid "The team to which this ticket type belongs."
 msgstr "El equipo al que pertenece este tipo de ticket."
 
 #. module: alda_helpdesk_pms
-#. odoo-python
-#: code:addons/alda_helpdesk_pms/controllers/main.py:0
-#, python-format
-msgid ""
-"The total size of the files (%(total)s MB) exceeds the allowed limit "
-"(%(limit)s MB)"
-msgstr "El tamaño total de los archivos (%(total)s MB) excede el límite permitido (%(limit)s MB)"
-
-#. module: alda_helpdesk_pms
 #: model:ir.model.fields,help:alda_helpdesk_pms.field_helpdesk_ticket__ticket_type_id
 msgid ""
 "The type of ticket, which determines its specific characteristics and "
@@ -1474,12 +1340,12 @@ msgstr ""
 #: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
 #, python-format
 msgid "This ticket is not associated with any property."
-msgstr "Este ticket no está asociado con ninguna propiedad."
+msgstr "Este ticket no está asociado a ningún hotel"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.pms_portal_helpdesk_ticket
 msgid "Ticket"
-msgstr "Ticket"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model,name:alda_helpdesk_pms.model_helpdesk_ticket_report_analysis
@@ -1506,14 +1372,14 @@ msgstr "Tipo de ticket"
 #: code:addons/alda_helpdesk_pms/controllers/portal.py:0
 #, python-format
 msgid "Ticket closed by the customer"
-msgstr "Ticket cerrado por el cliente"
+msgstr "Ticket cerrado por el Cliente"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
 #: code:addons/alda_helpdesk_pms/controllers/portal.py:0
 #, python-format
 msgid "Ticket closed by the technician"
-msgstr "Ticket cerrado por el técnico"
+msgstr "Ticket cerrado por el Técnico"
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__date_now
@@ -1528,7 +1394,7 @@ msgstr "Total de habitaciones bloqueadas"
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__property_count_tickets
 msgid "Total Tickets"
-msgstr "Total Tickets"
+msgstr ""
 
 #. module: alda_helpdesk_pms
 #: model:ir.model.fields,field_description:alda_helpdesk_pms.field_helpdesk_ticket__ticket_type_id
@@ -1579,12 +1445,7 @@ msgstr "Marcar habitaciones bloqueadas"
 #: code:addons/alda_helpdesk_pms/static/src/js/purchase_ticket_form.js:0
 #, python-format
 msgid "Validation Error"
-msgstr "Error de Validación"
-
-#. module: alda_helpdesk_pms
-#: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.error_template
-msgid "Warning!"
-msgstr "¡Advertencia!"
+msgstr "Error de validación"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_purchase_form
@@ -1594,7 +1455,7 @@ msgstr "Vas a enviar un ticket de compra, ¿estás seguro?"
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.create_ticket_form
 msgid "will this be fixed by an external company?"
-msgstr "¿Será reparado por una empresa externa?"
+msgstr "¿Será atendido por una empresa externa?"
 
 #. module: alda_helpdesk_pms
 #: model_terms:ir.ui.view,arch_db:alda_helpdesk_pms.select_property_form
