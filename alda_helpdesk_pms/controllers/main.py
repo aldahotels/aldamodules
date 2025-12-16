@@ -348,61 +348,119 @@ class HelpdeskFormController(http.Controller):
     )
     def helpdesk_ticket_submit(self, **post):
         ensure_db()
-        team = request.env["helpdesk.team"].sudo().browse(int(post.get("team_id")))
-        attachments = []
-        if team.is_purchases_form:
-            ticket_vals, attachments = self._prepare_ticket_purchse_vals(post)
-        else:
-            ticket_vals = self._prepare_ticket_vals(post)
-            attachments = request.httprequest.files.getlist("attachment")
+        try:
+            MAX_FILE_SIZE = 10 * 1024 * 1024
+            MAX_TOTAL_SIZE = 15 * 1024 * 1024
+            team = request.env["helpdesk.team"].sudo().browse(int(post.get("team_id")))
+            attachments = []
+            if team.is_purchases_form:
+                ticket_vals, attachments = self._prepare_ticket_purchse_vals(post)
+            else:
+                ticket_vals = self._prepare_ticket_vals(post)
+                attachments = request.httprequest.files.getlist("attachment")
 
-        ticket = (
-            request.env["helpdesk.ticket"]
-            .with_context(from_web_create=True)
-            .sudo()
-            .create(ticket_vals)
-        )
-
-        if team.is_purchases_form:
-            # Only set a generated name when the ticket has no name at all.
-            # Do NOT overwrite a user-provided Subject.
-            if not ticket.name:
-                ticket.sudo().write({"name": f"Purchase Request - #{ticket.id}"})
-
-        attachment_ids = []
-        if post.get("attachment", False) or attachments:
+            total_size = 0
             for attachment in attachments:
                 if attachment and attachment.filename:
-                    try:
-                        attachment_data = base64.b64encode(attachment.read()).decode(
-                            "utf-8"
+                    current_pos = attachment.tell()
+                    attachment.seek(0, 2)
+                    file_size = attachment.tell()
+                    attachment.seek(current_pos)
+
+                    if file_size > MAX_FILE_SIZE:
+                        return request.render(
+                            "alda_helpdesk_pms.error_template",
+                            {
+                                "error_message": _(
+                                    "The file %(filename)s is too large. "
+                                    "Maximum allowed size: %(max_size)s MB"
+                                )
+                                % {
+                                    "filename": attachment.filename,
+                                    "max_size": MAX_FILE_SIZE // (1024 * 1024),
+                                },
+                                "property_id": post.get("property_id"),
+                                "form_data": post,
+                            },
                         )
-                        att = (
-                            request.env["ir.attachment"]
-                            .sudo()
-                            .create(
-                                {
-                                    "name": attachment.filename,
-                                    "type": "binary",
-                                    "datas": attachment_data,
-                                    "res_model": "helpdesk.ticket",
-                                    "res_id": ticket.id,
-                                    "public": True,
-                                    "mimetype": attachment.content_type,
-                                }
-                            )
+
+                    total_size += file_size
+
+            if total_size > MAX_TOTAL_SIZE:
+                return request.render(
+                    "alda_helpdesk_pms.error_template",
+                    {
+                        "error_message": _(
+                            "The total size of the files (%(total)s MB) "
+                            "exceeds the allowed limit (%(limit)s MB)"
                         )
-                        attachment_ids.append(att.id)
-                    except Exception as e:
-                        _logger.error("Upload file failed %s: %s", ticket.id, str(e))
-        if attachment_ids:
-            ticket.message_post(
-                attachment_ids=attachment_ids,
-                message_type="comment",
-                subtype_xmlid="mail.mt_comment",
+                        % {
+                            "total": total_size // (1024 * 1024),
+                            "limit": MAX_TOTAL_SIZE // (1024 * 1024),
+                        },
+                        "property_id": post.get("property_id"),
+                        "form_data": post,
+                    },
+                )
+
+            ticket = (
+                request.env["helpdesk.ticket"]
+                .with_context(
+                    from_web_create=True,
+                    mail_notrack=True,
+                    mail_create_nosubscribe=True,
+                )
+                .sudo()
+                .create(ticket_vals)
             )
 
-        return request.redirect(f"/helpdesk/ticket/confirmation/{ticket.id}")
+            if team.is_purchases_form:
+                # Only set a generated name when the ticket has no name at all.
+                # Do NOT overwrite a user-provided Subject.
+                if not ticket.name:
+                    ticket.sudo().write({"name": f"Purchase Request - #{ticket.id}"})
+
+            attachment_ids = []
+            if post.get("attachment", False) or attachments:
+                for attachment in attachments:
+                    if attachment and attachment.filename:
+                        try:
+                            attachment_data = base64.b64encode(
+                                attachment.read()
+                            ).decode("utf-8")
+                            att = (
+                                request.env["ir.attachment"]
+                                .sudo()
+                                .create(
+                                    {
+                                        "name": attachment.filename,
+                                        "type": "binary",
+                                        "datas": attachment_data,
+                                        "res_model": "helpdesk.ticket",
+                                        "res_id": ticket.id,
+                                        "public": True,
+                                        "mimetype": attachment.content_type,
+                                    }
+                                )
+                            )
+                            attachment_ids.append(att.id)
+                        except Exception as e:
+                            _logger.error(
+                                "Upload file failed %s: %s", ticket.id, str(e)
+                            )
+
+            if attachment_ids:
+                ticket.with_context(mail_notrack=True).message_post(
+                    attachment_ids=attachment_ids,
+                    message_type="comment",
+                    subtype_xmlid="mail.mt_comment",
+                )
+
+            return request.redirect(f"/helpdesk/ticket/confirmation/{ticket.id}")
+
+        except Exception as e:
+            _logger.exception("Error creating helpdesk ticket: %s", str(e))
+            return request.redirect("/helpdesk/ticket/error")
 
     @http.route(
         "/helpdesk/ticket/confirmation/<int:ticket_id>",
