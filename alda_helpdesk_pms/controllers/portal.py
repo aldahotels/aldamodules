@@ -1,5 +1,3 @@
-from operator import itemgetter
-
 from markupsafe import Markup
 
 from odoo import http
@@ -15,7 +13,143 @@ from odoo.addons.helpdesk.controllers.portal import (
 from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
-class PmsHelpdeskTicketClose(HelpdeskCustomerPortal):  # noqa: C901
+class PmsHelpdeskTicketClose(HelpdeskCustomerPortal):
+    def _get_searchbar_sortings(self):
+        return {
+            "date": {"label": _("Newest"), "order": "create_date desc"},
+            "reference": {"label": _("Reference"), "order": "id"},
+            "name": {"label": _("Subject"), "order": "name"},
+            "user": {"label": _("Assigned to"), "order": "user_id"},
+            "stage": {"label": _("Stage"), "order": "stage_id"},
+            "pms_property_id": {"label": _("Property"), "order": "name"},
+            "team": {"label": _("Team"), "order": "team_id"},
+            "room_blocked": {
+                "label": _("Room Blocked"),
+                "order": "is_room_blocked desc",
+            },
+            "update": {
+                "label": _("Last Stage Update"),
+                "order": "date_last_stage_update desc",
+            },
+        }
+
+    def _get_searchbar_filters(self):
+        return {
+            "all": {"label": _("All"), "domain": []},
+            "assigned": {"label": _("Assigned"), "domain": [("user_id", "!=", False)]},
+            "unassigned": {
+                "label": _("Unassigned"),
+                "domain": [("user_id", "=", False)],
+            },
+            "open": {"label": _("Open"), "domain": [("close_date", "=", False)]},
+            "closed": {"label": _("Closed"), "domain": [("close_date", "!=", False)]},
+            "pms_property_id": {
+                "label": _("Property"),
+                "domain": [("pms_property_id", "!=", False)],
+            },
+            "team": {"label": _("Team"), "domain": [("team_id", "!=", False)]},
+            "room_blocked": {
+                "label": _("Room Blocked"),
+                "domain": [("is_room_blocked", "=", True)],
+            },
+        }
+
+    def _get_searchbar_inputs(self):
+        return {
+            "content": {
+                "input": "content",
+                "label": Markup(_('Search <span class="nolabel"> (in Content)</span>')),
+            },
+            "ticket_ref": {"input": "ticket_ref", "label": _("Search in Reference")},
+            "message": {"input": "message", "label": _("Search in Messages")},
+            "user": {"input": "user", "label": _("Search in Assigned to")},
+            "status": {"input": "status", "label": _("Search in Stage")},
+            "pms_property_id": {
+                "input": "pms_property_id",
+                "label": _("Search in Property"),
+            },
+            "team": {"input": "team_id", "label": _("Search in Team")},
+        }
+
+    def _get_searchbar_groupby(self):
+        return {
+            "none": {"input": "none", "label": _("None")},
+            "stage": {"input": "stage_id", "label": _("Stage")},
+            "user": {"input": "user_id", "label": _("Assigned to")},
+            "pms_property_id": {"input": "pms_property_id", "label": _("Property")},
+            "team_id": {"input": "team_id", "label": _("Team")},
+            "is_room_blocked": {"input": "is_room_blocked", "label": _("Room Blocked")},
+        }
+
+    def _apply_text_search_filter(self, domain, search, search_in):
+        if not search or not search_in:
+            return domain
+
+        search_domain = []
+        if search_in == "ticket_ref":
+            search_domain = OR([search_domain, [("ticket_ref", "ilike", search)]])
+        if search_in == "content":
+            search_domain = OR(
+                [
+                    search_domain,
+                    ["|", ("name", "ilike", search), ("description", "ilike", search)],
+                ]
+            )
+        if search_in == "user":
+            assignees = (
+                request.env["res.users"].sudo()._search([("name", "ilike", search)])
+            )
+            search_domain = OR([search_domain, [("user_id", "in", assignees)]])
+        if search_in == "pms_property_id":
+            props = (
+                request.env["pms.property"].sudo()._search([("name", "ilike", search)])
+            )
+            search_domain = OR([search_domain, [("pms_property_id", "in", props)]])
+        if search_in == "team_id":
+            teams = (
+                request.env["helpdesk.team"].sudo()._search([("name", "ilike", search)])
+            )
+            search_domain = OR([search_domain, [("team_id", "in", teams)]])
+        if search_in == "message":
+            discussion_subtype_id = request.env.ref("mail.mt_comment").id
+            search_domain = OR(
+                [
+                    search_domain,
+                    [
+                        ("message_ids.body", "ilike", search),
+                        ("message_ids.subtype_id", "=", discussion_subtype_id),
+                    ],
+                ]
+            )
+        if search_in == "status":
+            search_domain = OR([search_domain, [("stage_id", "ilike", search)]])
+
+        return AND([domain, search_domain])
+
+    def _perform_grouping(self, tickets, groupby, searchbar_groupby):
+        if groupby == "none":
+            return [tickets]
+
+        group_key = searchbar_groupby[groupby]["input"]
+
+        def get_group_value(ticket):
+            if group_key == "is_room_blocked":
+                if ticket.is_room_blocked:
+                    return "Blocked"
+                elif ticket.pms_room_id:
+                    return "Available"
+                else:
+                    return "No room related"
+            val = getattr(ticket, group_key)
+            if hasattr(val, "id"):
+                return val.id
+            return val or "Undefined"
+
+        return [
+            request.env["helpdesk.ticket"].concat(*g)
+            for key, g in groupbyelem(tickets, key=get_group_value)
+        ]
+
     def _prepare_my_tickets_values(
         self,
         page=1,
@@ -30,53 +164,10 @@ class PmsHelpdeskTicketClose(HelpdeskCustomerPortal):  # noqa: C901
         values = self._prepare_portal_layout_values()
         domain = self._prepare_helpdesk_tickets_domain()
 
-        searchbar_sortings = {
-            "date": {"label": _("Newest"), "order": "create_date desc"},
-            "reference": {"label": _("Reference"), "order": "id"},
-            "name": {"label": _("Subject"), "order": "name"},
-            "user": {"label": _("Assigned to"), "order": "user_id"},
-            "stage": {"label": _("Stage"), "order": "stage_id"},
-            "pms_property_id": {"label": _("Property"), "order": "name"},
-            "update": {
-                "label": _("Last Stage Update"),
-                "order": "date_last_stage_update desc",
-            },
-        }
-        searchbar_filters = {
-            "all": {"label": _("All"), "domain": []},
-            "assigned": {"label": _("Assigned"), "domain": [("user_id", "!=", False)]},
-            "unassigned": {
-                "label": _("Unassigned"),
-                "domain": [("user_id", "=", False)],
-            },
-            "open": {"label": _("Open"), "domain": [("close_date", "=", False)]},
-            "pms_property_id": {
-                "label": _("Property"),
-                "domain": [("pms_property_id", "!=", False)],
-            },
-            "closed": {"label": _("Closed"), "domain": [("close_date", "!=", False)]},
-        }
-        searchbar_inputs = {
-            "content": {
-                "input": "content",
-                "label": Markup(_('Search <span class="nolabel"> (in Content)</span>')),
-            },
-            "ticket_ref": {"input": "ticket_ref", "label": _("Search in Reference")},
-            "message": {"input": "message", "label": _("Search in Messages")},
-            "user": {"input": "user", "label": _("Search in Assigned to")},
-            "status": {"input": "status", "label": _("Search in Stage")},
-            "pms_property_id": {
-                "input": "pms_property_id",
-                "label": _("Search in Property"),
-            },
-        }
-
-        searchbar_groupby = {
-            "none": {"input": "none", "label": _("None")},
-            "stage": {"input": "stage_id", "label": _("Stage")},
-            "user": {"input": "user_id", "label": _("Assigned to")},
-            "pms_property_id": {"input": "pms_property_id", "label": _("Property")},
-        }
+        searchbar_sortings = self._get_searchbar_sortings()
+        searchbar_filters = self._get_searchbar_filters()
+        searchbar_inputs = self._get_searchbar_inputs()
+        searchbar_groupby = self._get_searchbar_groupby()
 
         if not sortby:
             sortby = "date"
@@ -84,47 +175,7 @@ class PmsHelpdeskTicketClose(HelpdeskCustomerPortal):  # noqa: C901
         if groupby in searchbar_groupby and groupby != "none":
             order = f'{searchbar_groupby[groupby]["input"]}, {order}'
 
-        if filterby in ["last_message_sup", "last_message_cust"]:
-            discussion_subtype_id = request.env.ref("mail.mt_comment").id
-            messages = request.env["mail.message"].search_read(
-                [
-                    ("model", "=", "helpdesk.ticket"),
-                    ("subtype_id", "=", discussion_subtype_id),
-                ],
-                fields=["res_id", "author_id"],
-                order="date desc",
-            )
-            last_author_dict = {}
-            for message in messages:
-                if message["res_id"] not in last_author_dict:
-                    last_author_dict[message["res_id"]] = message["author_id"][0]
-
-            ticket_author_list = request.env["helpdesk.ticket"].search_read(
-                fields=["id", "partner_id"]
-            )
-            ticket_author_dict = {
-                ticket_author["id"]: ticket_author["partner_id"][0]
-                if ticket_author["partner_id"]
-                else False
-                for ticket_author in ticket_author_list
-            }
-
-            last_message_cust = []
-            last_message_sup = []
-            ticket_ids = set(last_author_dict.keys()) & set(ticket_author_dict.keys())
-            for ticket_id in ticket_ids:
-                if last_author_dict[ticket_id] == ticket_author_dict[ticket_id]:
-                    last_message_cust.append(ticket_id)
-                else:
-                    last_message_sup.append(ticket_id)
-
-            if filterby == "last_message_cust":
-                domain = AND([domain, [("id", "in", last_message_cust)]])
-            else:
-                domain = AND([domain, [("id", "in", last_message_sup)]])
-
-        else:
-            domain = AND([domain, searchbar_filters[filterby]["domain"]])
+        domain = AND([domain, searchbar_filters.get(filterby, {}).get("domain", [])])
 
         if date_begin and date_end:
             domain = AND(
@@ -134,49 +185,7 @@ class PmsHelpdeskTicketClose(HelpdeskCustomerPortal):  # noqa: C901
                 ]
             )
 
-        if search and search_in:
-            search_domain = []
-            if search_in == "ticket_ref":
-                search_domain = OR([search_domain, [("ticket_ref", "ilike", search)]])
-            if search_in == "content":
-                search_domain = OR(
-                    [
-                        search_domain,
-                        [
-                            "|",
-                            ("name", "ilike", search),
-                            ("description", "ilike", search),
-                        ],
-                    ]
-                )
-            if search_in == "user":
-                assignees = (
-                    request.env["res.users"].sudo()._search([("name", "ilike", search)])
-                )
-                search_domain = OR([search_domain, [("user_id", "in", assignees)]])
-            if search_in == "pms_property_id":
-                assignees = (
-                    request.env["pms.property"]
-                    .sudo()
-                    ._search([("name", "ilike", search)])
-                )
-                search_domain = OR(
-                    [search_domain, [("pms_property_id", "in", assignees)]]
-                )
-            if search_in == "message":
-                discussion_subtype_id = request.env.ref("mail.mt_comment").id
-                search_domain = OR(
-                    [
-                        search_domain,
-                        [
-                            ("message_ids.body", "ilike", search),
-                            ("message_ids.subtype_id", "=", discussion_subtype_id),
-                        ],
-                    ]
-                )
-            if search_in == "status":
-                search_domain = OR([search_domain, [("stage_id", "ilike", search)]])
-            domain = AND([domain, search_domain])
+        domain = self._apply_text_search_filter(domain, search, search_in)
 
         tickets_count = request.env["helpdesk.ticket"].search_count(domain)
         pager = portal_pager(
@@ -194,21 +203,12 @@ class PmsHelpdeskTicketClose(HelpdeskCustomerPortal):  # noqa: C901
             page=page,
             step=self._items_per_page,
         )
-
         tickets = request.env["helpdesk.ticket"].search(
             domain, order=order, limit=self._items_per_page, offset=pager["offset"]
         )
         request.session["my_tickets_history"] = tickets.ids[:100]
 
-        if groupby != "none":
-            grouped_tickets = [
-                request.env["helpdesk.ticket"].concat(*g)
-                for k, g in groupbyelem(
-                    tickets, itemgetter(searchbar_groupby[groupby]["input"])
-                )
-            ]
-        else:
-            grouped_tickets = [tickets]
+        grouped_tickets = self._perform_grouping(tickets, groupby, searchbar_groupby)
 
         values.update(
             {
@@ -226,6 +226,7 @@ class PmsHelpdeskTicketClose(HelpdeskCustomerPortal):  # noqa: C901
                 "search_in": search_in,
                 "search": search,
                 "filterby": filterby,
+                "current_user_id": request.env.user.id,
             }
         )
         return values
