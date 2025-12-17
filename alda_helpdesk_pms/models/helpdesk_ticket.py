@@ -678,3 +678,9 @@ class HelpdeskTicket(models.Model):
         _("Kitchen")
         _("Hallways")
         _("Accounting")
+
+    def _message_auto_subscribe_notify(self, partner_ids, template):
+        if self._name == "helpdesk.ticket":
+            template = "alda_helpdesk_pms.mail_template_ticket_assignment_with_property"
+
+        return super()._message_auto_subscribe_notify(partner_ids, template)

@@ -188,7 +188,16 @@ class HelpdeskFormController(http.Controller):
         user_id = request.env.user
         partner_id = request.env.user.partner_id
         property_id = int(kwargs.get("property_id", 0))
-
+        if not property_id or property_id in ("None", None):
+            return request.render(
+                "alda_helpdesk_pms.error_template_back",
+                {
+                    "error_message": _(
+                        "No property selected. Please choose a property."
+                    ),
+                    "redirect_url": "/helpdesk/property",
+                },
+            )
         pms_property_ids = request.env["pms.property"].sudo().browse(property_id)
 
         visibility_filter = []
@@ -488,3 +497,12 @@ class HelpdeskFormController(http.Controller):
                 _logger.error("Error processing ticket confirmation: %s", str(e))
 
         return request.render("alda_helpdesk_pms.confirmation_ticket", values)
+
+    @http.route("/helpdesk/ticket/error", type="http", auth="public", website=True)
+    def helpdesk_ticket_error(self, **kwargs):
+        return request.render(
+            "alda_helpdesk_pms.error_template_back",
+            {
+                "error_message": _("An unexpected error occurred."),
+            },
+        )
