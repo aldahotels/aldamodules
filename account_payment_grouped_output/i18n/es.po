@@ -1,0 +1,63 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_payment_grouped_output
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-23 17:46+0000\n"
+"PO-Revision-Date: 2025-12-23 17:46+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_payment_grouped_output
+#. odoo-python
+#: code:addons/account_payment_grouped_output/models/account_journal.py:0
+#, python-format
+msgid "Auto grouped payments %s - %s"
+msgstr "Pagos agrupados automáticamente %s - %s"
+
+#. module: account_payment_grouped_output
+#: model:ir.model.fields,field_description:account_payment_grouped_output.field_account_journal__automatic_group_payments_to_reconcile
+msgid "Automatic Group Payments to Reconcile"
+msgstr "Pagos automáticos agrupados para conciliar"
+
+#. module: account_payment_grouped_output
+#: model:ir.model.fields,field_description:account_payment_grouped_output.field_account_journal__grace_days_to_group_payments
+msgid "Grace Days to Group Payments"
+msgstr "Días de gracia para agrupar pagos"
+
+#. module: account_payment_grouped_output
+#: model:ir.actions.server,name:account_payment_grouped_output.ir_cron_group_outstanding_payments_ir_actions_server
+#: model:ir.cron,cron_name:account_payment_grouped_output.ir_cron_group_outstanding_payments
+msgid "Group Outstanding Payments"
+msgstr "Agrupar pagos pendientes"
+
+#. module: account_payment_grouped_output
+#. odoo-python
+#: code:addons/account_payment_grouped_output/models/account_journal.py:0
+#, python-format
+msgid "Grouped pending %s"
+msgstr "Pendientes agrupados %s"
+
+#. module: account_payment_grouped_output
+#: model:ir.model.fields,help:account_payment_grouped_output.field_account_journal__automatic_group_payments_to_reconcile
+msgid ""
+"If enabled, payments made through this journal will be automatically grouped"
+" for reconciliation days after of creation."
+msgstr "Si está habilitado, los pagos realizados a través de este diario se agruparán automáticamente para la conciliación días después de su creación."
+
+#. module: account_payment_grouped_output
+#: model:ir.model,name:account_payment_grouped_output.model_account_journal
+msgid "Journal"
+msgstr "Diario"
+
+#. module: account_payment_grouped_output
+#: model:ir.model.fields,help:account_payment_grouped_output.field_account_journal__grace_days_to_group_payments
+msgid "Number of days to wait before grouping payments for reconciliation."
+msgstr "Número de días a esperar antes de agrupar los pagos para la conciliación."
