@@ -169,8 +169,10 @@ class PmsHelpdeskTicketClose(HelpdeskCustomerPortal):
         searchbar_inputs = self._get_searchbar_inputs()
         searchbar_groupby = self._get_searchbar_groupby()
 
-        if not sortby:
-            sortby = "date"
+        default_sort = next(iter(searchbar_sortings))
+
+        if not sortby or sortby not in searchbar_sortings:
+            sortby = default_sort
         order = searchbar_sortings[sortby]["order"]
         if groupby in searchbar_groupby and groupby != "none":
             order = f'{searchbar_groupby[groupby]["input"]}, {order}'
