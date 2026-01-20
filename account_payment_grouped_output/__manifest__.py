@@ -7,7 +7,7 @@
     "author": "Comunitea",
     "website": "https://www.comunitea.com",
     "category": "Banking addons",
-    "depends": ["account"],
+    "depends": ["account", "pms"],
     "data": ["data/ir_cron.xml",
              "views/account_journal_view.xml"],
     "installable": True,

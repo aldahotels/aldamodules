@@ -80,6 +80,7 @@ class AccountJournal(models.Model):
             "journal_id": self.id,
             "ref": _("Auto grouped payments %s - %s") % (self.name, fields.Date.to_string(gdate)),
             "line_ids": [],
+            "pms_property_id": self.pms_property_ids and self.pms_property_ids[0].id or False,
         }
 
         total_debit = 0.0
