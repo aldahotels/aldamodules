@@ -22,10 +22,12 @@ class AccountJournal(models.Model):
         journals = self.search([("automatic_group_payments_to_reconcile", "=", True)])
         for journal in journals:
             try:
-                journal._group_outstanding_payments_for_journal()
+                # Aislar cada diario en un savepoint para no deshacer
+                # el trabajo previo si uno falla
+                with self.env.cr.savepoint():
+                    journal._group_outstanding_payments_for_journal()
             except Exception as e:
                 # No aborta el cron por un diario con error
-                self.env.cr.rollback()
                 self.env["ir.logging"].create({
                     "name": "group_outstanding_payments",
                     "type": "server",
@@ -70,6 +72,9 @@ class AccountJournal(models.Model):
             groups[key] += aml
 
         for (gdate, gacc_id), lines in groups.items():
+            # Si sólo hay un apunte, no tiene sentido agrupar
+            if len(lines) <= 1:
+                continue
             self._create_grouping_move_for_lines(gdate, lines)
 
     def _create_grouping_move_for_lines(self, gdate, amls):
