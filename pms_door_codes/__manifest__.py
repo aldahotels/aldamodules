@@ -21,7 +21,7 @@
 
 {
     "name": "PMS Hotel Door Codes",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "author": "Jose Luis Algara Toledo <osotranquilo@gmail.com>,"
     "Odoo Community Association (OCA)",
     "license": "AGPL-3",
