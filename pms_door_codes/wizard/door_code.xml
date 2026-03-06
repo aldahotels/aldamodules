@@ -31,24 +31,24 @@
             <group>
               <field name="door_code" readonly="1" />
             </group>
-            <footer>
+            <group>
               <button
                             name="check_code"
                             string="Generate Code"
                             type="object"
                             class="oe_highlight"
                         />
-            </footer>
+            </group>
           </sheet>
         </form>
       </field>
     </record>
-    <act_window
-        id="action_door_code_act"
-        name="Door Code Generator"
-        res_model="door_code"
-        view_mode="form"
-    />
+    <record id="action_door_code_act" model="ir.actions.act_window">
+        <field name="name">Door Code Generator</field>
+        <field name="res_model">door_code</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
     <menuitem
         id="menu_hotel_door_code"
         name="Door Codes"
