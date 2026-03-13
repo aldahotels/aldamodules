@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="agora_backend_demo" model="agora.backend">
+        <field name="name">Agora Demo Backend</field>
+        <field name="active" eval="True" />
+        <field name="connection_type">api</field>
+        <field name="api_url">http://localhost:8984</field>
+        <field name="api_token">token</field>
+        <field name="import_invoices" eval="True" />
+        <field name="import_pos_closeouts" eval="False" />
+        <field name="import_system_closeouts" eval="False" />
+        <field name="auto_process_files" eval="False" />
+    </record>
+
+    <!--
+    NOTA: En produccion se debe configurar:
+    - IP del servidor Agora
+    - Token de producción de Agora
+    -->
+
+</odoo>

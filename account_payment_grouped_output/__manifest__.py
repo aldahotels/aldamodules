@@ -5,7 +5,7 @@
     "version": "16.0.1.0.0",
     "license": "AGPL-3",
     "author": "Comunitea",
-    "website": "https://www.comunitea.com",
+    "website": "https://github.com/OCA/pms",
     "category": "Banking addons",
     "depends": ["account", "pms"],
     "data": ["data/ir_cron.xml",

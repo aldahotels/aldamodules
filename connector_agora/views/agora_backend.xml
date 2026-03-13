@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Action: open all account.move imported from a backend -->
+    <record id="action_agora_backend_invoices" model="ir.actions.act_window">
+        <field name="name">Agora Invoices</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{
+            'default_move_type': 'out_invoice',
+            'search_default_sale_journal': 1,
+        }</field>
+    </record>
+
+    <!-- Form view: agora.backend -->
+    <record id="view_agora_backend_form" model="ir.ui.view">
+        <field name="name">agora.backend.form</field>
+        <field name="model">agora.backend</field>
+        <field name="arch" type="xml">
+            <form string="Agora POS Backend">
+                <header>
+                    <button
+                        name="action_test_connection"
+                        string="Test Connection"
+                        type="object"
+                        class="btn-secondary"
+                    />
+                    <button
+                        name="action_import_invoices"
+                        string="Import Invoices Now"
+                        type="object"
+                        class="btn-primary"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_view_invoices"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        >
+                            <field
+                                name="invoice_count"
+                                widget="statinfo"
+                                string="Invoices"
+                            />
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field name="name" placeholder="Backend name..." />
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Connection">
+                            <field name="connection_type" />
+                            <field
+                                name="export_folder_path"
+                                attrs="{'invisible': [('connection_type','!=','file')],
+                                           'required': [('connection_type','=','file')]}"
+                            />
+                            <field
+                                name="file_format"
+                                attrs="{'invisible': [('connection_type','!=','file')]}"
+                            />
+                            <field
+                                name="auto_process_files"
+                                attrs="{'invisible': [('connection_type','!=','file')]}"
+                            />
+                            <field
+                                name="api_url"
+                                attrs="{'invisible': [('connection_type','!=','api')],
+                                           'required': [('connection_type','=','api')]}"
+                            />
+                            <field
+                                name="api_token"
+                                attrs="{'invisible': [('connection_type','!=','api')]}"
+                                password="True"
+                            />
+                        </group>
+                        <group string="Import Options">
+                            <field name="import_invoices" />
+                            <field name="import_pos_closeouts" />
+                            <field name="import_system_closeouts" />
+                            <field name="execute_user_id" />
+                            <field name="last_import_date" />
+                            <field name="active" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Property Mapping" name="properties">
+                            <field name="agora_property_ids">
+                                <tree editable="bottom">
+                                    <field name="workplace_name" />
+                                    <field name="workplace_id" />
+                                    <field name="property_id" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Payment Mode Mapping" name="payment_modes">
+                            <field name="agora_payment_mode_ids">
+                                <tree editable="bottom">
+                                    <field name="agora_name" />
+                                    <field name="agora_id" />
+                                    <field name="payment_mode_id" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- List view: agora.backend -->
+    <record id="view_agora_backend_tree" model="ir.ui.view">
+        <field name="name">agora.backend.list</field>
+        <field name="model">agora.backend</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="connection_type" />
+                <field name="active" />
+                <field name="last_import_date" />
+                <field name="invoice_count" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action: agora.backend list -->
+    <record id="action_agora_backend" model="ir.actions.act_window">
+        <field name="name">Agora Backends</field>
+        <field name="res_model">agora.backend</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>
