@@ -7,3 +7,5 @@ access_agora_payment_mode_user,agora.payment.mode.user,model_agora_payment_mode,
 access_agora_payment_mode_manager,agora.payment.mode.manager,model_agora_payment_mode,base.group_system,1,1,1,1
 access_agora_account_move_user,agora.account.move.user,model_agora_account_move,base.group_user,1,0,0,0
 access_agora_account_move_manager,agora.account.move.manager,model_agora_account_move,base.group_system,1,1,1,1
+access_agora_journal_mapping_user,agora.journal.mapping.user,model_agora_journal_mapping,base.group_user,1,0,0,0
+access_agora_journal_mapping_manager,agora.journal.mapping.manager,model_agora_journal_mapping,base.group_system,1,1,1,1

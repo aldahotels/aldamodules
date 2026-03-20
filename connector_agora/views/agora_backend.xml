@@ -27,9 +27,10 @@
                     />
                     <button
                         name="action_import_invoices"
-                        string="Import Invoices Now"
+                        string="Import Invoices"
                         type="object"
                         class="btn-primary"
+                        attrs="{'invisible': [('connection_type','=',False)]}"
                     />
                 </header>
                 <sheet>
@@ -86,11 +87,30 @@
                             <field name="import_system_closeouts" />
                             <field name="execute_user_id" />
                             <field name="last_import_date" />
+                            <field name="last_imported_business_day" />
                             <field name="active" />
+                        </group>
+                        <group string="Invoice Configuration">
+                            <field name="anonymous_partner_id" />
+                            <field name="income_account_id" />
                         </group>
                     </group>
                     <notebook>
-                        <page string="Property Mapping" name="properties">
+                        <page string="Journals by Venue" name="journal_mappings">
+                            <p class="text-muted">
+                                Assign an Odoo journal to each combination of
+                                Agora venue + invoice type.
+                            </p>
+                            <field name="agora_journal_ids">
+                                <tree editable="bottom">
+                                    <field name="workplace_id" />
+                                    <field name="workplace_name" />
+                                    <field name="invoice_type" />
+                                    <field name="journal_id" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="PMS Properties" name="properties">
                             <field name="agora_property_ids">
                                 <tree editable="bottom">
                                     <field name="workplace_name" />
@@ -99,7 +119,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Payment Mode Mapping" name="payment_modes">
+                        <page string="Payment Modes" name="payment_modes">
                             <field name="agora_payment_mode_ids">
                                 <tree editable="bottom">
                                     <field name="agora_name" />

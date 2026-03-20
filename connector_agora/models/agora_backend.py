@@ -9,6 +9,8 @@ import logging
 import os
 import xml.etree.ElementTree as ET
 
+import requests
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -19,7 +21,7 @@ class AgoraBackend(models.Model):
     """Backend configuration for Agora POS integration"""
 
     _name = "agora.backend"
-    _inherit = ["mail.thread", "connector.backend"]
+    _inherit = ["mail.thread", "connector.backend", "agora.importer"]
     _description = "Agora POS Backend"
 
     name = fields.Char(required=True, tracking=True)
@@ -32,6 +34,7 @@ class AgoraBackend(models.Model):
             ("api", "HTTP API"),
         ],
         required=True,
+        default="api",
         tracking=True,
         help="File-based: Monitor export folder for XML/JSON files.\n"
         "HTTP API: Poll Agora HTTP API for data.",
@@ -54,12 +57,38 @@ class AgoraBackend(models.Model):
 
     # HTTP API settings
     api_url = fields.Char(
-        help="Agora HTTP API base URL (e.g., http://localhost:8984)",
+        help="Agora HTTP API base URL (e.g., https://acms.gestionalda.com)",
         tracking=True,
     )
     api_token = fields.Char(
         help="Authentication token for Agora HTTP API",
         tracking=True,
+    )
+
+    # Invoice import configuration
+    anonymous_partner_id = fields.Many2one(
+        "res.partner",
+        string="Anonymous Customer",
+        help="Partner used for simplified invoices (Facturas Simplificadas)",
+        tracking=True,
+    )
+    income_account_id = fields.Many2one(
+        "account.account",
+        string="Income Account",
+        help="Fixed income account for all invoice lines (e.g. 70500000021 Restauración)",
+        tracking=True,
+    )
+    last_imported_business_day = fields.Date(
+        readonly=True,
+        tracking=True,
+        help="Last Agora business day successfully imported. "
+        "Next import will fetch the following day.",
+    )
+    agora_journal_ids = fields.One2many(
+        "agora.journal.mapping",
+        "backend_id",
+        string="Journal Mappings",
+        help="Map each Agora workplace + invoice type to the correct Odoo journal",
     )
 
     # Import configuration
@@ -169,10 +198,45 @@ class AgoraBackend(models.Model):
             ) from e
 
     def _test_api_connection(self):
-        """Test HTTP API connection"""
+        """Test HTTP API connection by calling /api/export-master/?filter=Series"""
         self.ensure_one()
-        # TODO: Implement API connection
-        raise ValidationError(_("HTTP API connection test not yet implemented"))
+        try:
+            url = "{}/api/export-master/".format(self.api_url.rstrip("/"))
+            resp = requests.get(
+                url,
+                headers={
+                    "Api-Token": self.api_token,
+                    "Accept": "application/json",
+                },
+                params={"filter": "Series"},
+                timeout=15,
+            )
+            resp.raise_for_status()
+            api_version = resp.headers.get("Api-Version", "unknown")
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": _("Connection Test Successful"),
+                    "message": _("Connected to Agora API version %s") % api_version,
+                    "type": "success",
+                    "sticky": False,
+                },
+            }
+        except requests.exceptions.ConnectionError as e:
+            raise ValidationError(
+                _("Cannot connect to Agora API at %(url)s: %(error)s")
+                % {"url": self.api_url, "error": str(e)}
+            ) from e
+        except requests.exceptions.Timeout as e:
+            raise ValidationError(
+                _("Connection to Agora API timed out (15s): %s") % self.api_url
+            ) from e
+        except requests.exceptions.HTTPError as e:
+            raise ValidationError(
+                _("Agora API returned error %(status)s: %(error)s")
+                % {"status": e.response.status_code, "error": str(e)}
+            ) from e
 
     def action_import_invoices(self):
         """Manual trigger to import invoices from Agora"""
@@ -484,6 +548,44 @@ class AgoraBackend(models.Model):
             )
             return False
         return mapping.payment_mode_id
+
+
+class AgoraJournalMapping(models.Model):
+    """Map Agora workplace + invoice type to an Odoo journal"""
+
+    _name = "agora.journal.mapping"
+    _description = "Agora Journal Mapping"
+
+    backend_id = fields.Many2one("agora.backend", required=True, ondelete="cascade")
+    workplace_id = fields.Integer(
+        required=True,
+        help="Numeric ID of the Agora workplace (e.g. 2 for RESTAURANTE PUNTA DEL ESTE)",
+    )
+    workplace_name = fields.Char(
+        help="Optional label for reference",
+    )
+    invoice_type = fields.Selection(
+        [
+            ("simplified", "Simplified Invoice (Factura Simplificada)"),
+            ("normal", "Normal Invoice (Factura con Cliente)"),
+            ("rectification", "Credit Note (Factura Rectificativa)"),
+        ],
+        required=True,
+    )
+    journal_id = fields.Many2one(
+        "account.journal",
+        required=True,
+        string="Odoo Journal",
+        domain=[("type", "=", "sale")],
+    )
+
+    _sql_constraints = [
+        (
+            "unique_workplace_type_backend",
+            "unique(backend_id, workplace_id, invoice_type)",
+            "Only one journal mapping per workplace + invoice type per backend",
+        )
+    ]
 
 
 class AgoraProperty(models.Model):

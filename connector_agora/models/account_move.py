@@ -79,6 +79,7 @@ class AgoraAccountMove(models.Model):
 
     # Agora fields
     agora_invoice_id = fields.Char(
+        string="Agora Invoice ID",
         readonly=True,
         help="Unique invoice identifier from Agora (Id attribute)",
     )
@@ -247,7 +248,7 @@ class AgoraAccountMove(models.Model):
             [("company_id", "in", [self.env.company.id, False])], limit=1
         )
         move_vals = {
-            "move_type": "out_invoice",
+            "move_type": invoice_data.get("move_type", "out_invoice"),
             "partner_id": partner_id,
             "journal_id": journal_id,
             "invoice_date": invoice_date,
