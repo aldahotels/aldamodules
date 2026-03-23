@@ -133,7 +133,6 @@ class AgoraBackend(models.Model):
         compute="_compute_invoice_count",
     )
 
-    @api.depends("name")
     def _compute_invoice_count(self):
         """Compute number of invoices imported from this backend"""
         for backend in self:
