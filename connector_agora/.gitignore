@@ -1,0 +1,4 @@
+# Archivos de carga y documentación interna - no forman parte del módulo
+scripts/
+data/demo_invoices.xml
+

@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_agora_backend_user,agora.backend.user,model_agora_backend,connector_agora.group_connector_agora_user,1,0,0,0
+access_agora_backend_manager,agora.backend.manager,model_agora_backend,connector_agora.group_connector_agora_manager,1,1,1,1
+access_agora_property_user,agora.property.user,model_agora_property,connector_agora.group_connector_agora_user,1,0,0,0
+access_agora_property_manager,agora.property.manager,model_agora_property,connector_agora.group_connector_agora_manager,1,1,1,1
+access_agora_payment_mode_user,agora.payment.mode.user,model_agora_payment_mode,connector_agora.group_connector_agora_user,1,0,0,0
+access_agora_payment_mode_manager,agora.payment.mode.manager,model_agora_payment_mode,connector_agora.group_connector_agora_manager,1,1,1,1
+access_agora_account_move_user,agora.account.move.user,model_agora_account_move,connector_agora.group_connector_agora_user,1,0,0,0
+access_agora_account_move_manager,agora.account.move.manager,model_agora_account_move,connector_agora.group_connector_agora_manager,1,1,1,1
+access_agora_journal_mapping_user,agora.journal.mapping.user,model_agora_journal_mapping,connector_agora.group_connector_agora_user,1,0,0,0
+access_agora_journal_mapping_manager,agora.journal.mapping.manager,model_agora_journal_mapping,connector_agora.group_connector_agora_manager,1,1,1,1
