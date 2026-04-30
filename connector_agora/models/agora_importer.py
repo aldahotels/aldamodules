@@ -8,7 +8,6 @@ from datetime import date, datetime, timedelta
 import requests
 
 from odoo import _, fields, models
-from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -23,101 +22,216 @@ class AgoraImporter(models.AbstractModel):
     _name = "agora.importer"
     _description = "Agora HTTP API Importer"
 
+    def _import_day_from_api(self, target_day):
+        """Fetch and import all invoices for a single business day from the API.
+
+        :param target_day: date object for the business day to import.
+        :returns: dict with keys ``imported``, ``skipped``, ``errors``,
+                  ``invoice_list_count``.
+        :raises requests.exceptions.RequestException: on network/API failure.
+        """
+        self.ensure_one()
+        url = "{}/api/export/".format(self.api_url.rstrip("/"))
+
+        _logger.info("Importing business day %s (backend: %s)", target_day, self.name)
+        resp = requests.get(
+            url,
+            headers={
+                "Api-Token": self.api_token,
+                "Accept": "application/json",
+            },
+            params={
+                "filter": "Invoices",
+                "business-day": target_day.strftime("%Y-%m-%d"),
+            },
+            timeout=60,
+        )
+        resp.raise_for_status()
+
+        invoice_list = resp.json().get("Invoices", [])
+        _logger.info(
+            "Agora API returned %d invoices for %s", len(invoice_list), target_day
+        )
+
+        day_imported = 0
+        day_skipped = 0
+        day_errors = 0
+
+        for raw_invoice in invoice_list:
+            try:
+                invoice_data = self._parse_agora_api_invoice(raw_invoice)
+                if not invoice_data:
+                    day_skipped += 1
+                    continue
+                self.env["agora.account.move"].import_invoice_data(self, invoice_data)
+                day_imported += 1
+            except Exception as e:
+                serie = raw_invoice.get("Serie", "?")
+                number = raw_invoice.get("Number", "?")
+                _logger.error(
+                    "Error importing invoice %s-%s (day %s): %s",
+                    serie,
+                    number,
+                    target_day,
+                    str(e),
+                )
+                day_errors += 1
+
+        if day_imported == 0 and day_skipped > 0 and day_errors == 0:
+            _logger.warning(
+                "Day %s: 0 invoices imported, %d skipped — "
+                "likely missing journal mappings for this backend.",
+                target_day,
+                day_skipped,
+            )
+
+        return {
+            "imported": day_imported,
+            "skipped": day_skipped,
+            "errors": day_errors,
+            "invoice_list_count": len(invoice_list),
+        }
+
     def _import_from_api(self):
-        """Import invoices from Agora HTTP API for the next pending business day.
+        """Import invoices from Agora HTTP API for ALL pending business days.
 
         Agora closes each business day the following morning.
-        We import day by day starting from (last_imported_business_day + 1)
-        up to yesterday (today's close is not done yet).
+        We loop from (last_imported_business_day + 1) up to yesterday,
+        importing every missing day in a single execution.
         """
         self.ensure_one()
 
-        # Determine which business day to fetch
+        today = date.today()
+        yesterday = today - timedelta(days=1)
+
+        # Determine first pending business day
         if self.last_imported_business_day:
-            target_day = self.last_imported_business_day + timedelta(days=1)
+            first_pending = self.last_imported_business_day + timedelta(days=1)
         else:
             # First run: start from yesterday
-            target_day = date.today() - timedelta(days=1)
+            first_pending = yesterday
 
-        today = date.today()
-        if target_day >= today:
+        # Build list of all days to import (up to and including yesterday)
+        pending_days = []
+        current = first_pending
+        while current <= yesterday:
+            pending_days.append(current)
+            current += timedelta(days=1)
+
+        # Nothing pending
+        if not pending_days:
             return {
                 "type": "ir.actions.client",
                 "tag": "display_notification",
                 "params": {
                     "title": _("Nothing to Import"),
                     "message": _(
-                        "No closed business days pending import. "
-                        "Agora closes each day the following morning."
-                    ),
+                        "All business days are up to date. " "Last imported: %(day)s."
+                    )
+                    % {
+                        "day": (
+                            self.last_imported_business_day.strftime("%d/%m/%Y")
+                            if self.last_imported_business_day
+                            else _("never")
+                        )
+                    },
                     "type": "info",
                     "sticky": False,
                 },
             }
 
         _logger.info(
-            "Importing Agora invoices for business day %s (backend: %s)",
-            target_day,
+            "Backend %s: %d pending business day(s) to import: %s → %s",
             self.name,
+            len(pending_days),
+            pending_days[0],
+            pending_days[-1],
         )
 
-        # Call the API
-        url = "{}/api/export/".format(self.api_url.rstrip("/"))
-        try:
-            resp = requests.get(
-                url,
-                headers={
-                    "Api-Token": self.api_token,
-                    "Accept": "application/json",
-                },
-                params={
-                    "filter": "Invoices",
-                    "business-day": target_day.strftime("%Y-%m-%d"),
-                },
-                timeout=60,
-            )
-            resp.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise ValidationError(_("Error calling Agora API: %s") % str(e)) from e
+        # Accumulators for the final summary
+        total_imported = 0
+        total_skipped = 0
+        total_errors = 0
+        days_ok = 0
+        days_with_errors = 0
+        last_successful_day = self.last_imported_business_day
 
-        data = resp.json()
-        invoice_list = data.get("Invoices", [])
-        _logger.info(
-            "Agora API returned %d invoices for %s", len(invoice_list), target_day
-        )
-
-        imported = 0
-        skipped = 0
-        errors = 0
-
-        for raw_invoice in invoice_list:
+        for target_day in pending_days:
             try:
-                invoice_data = self._parse_agora_api_invoice(raw_invoice)
-                if not invoice_data:
-                    skipped += 1
-                    continue
-                self.env["agora.account.move"].import_invoice_data(self, invoice_data)
-                imported += 1
-            except Exception as e:
-                serie = raw_invoice.get("Serie", "?")
-                number = raw_invoice.get("Number", "?")
-                _logger.error(
-                    "Error importing Agora invoice %s-%s: %s", serie, number, str(e)
-                )
-                errors += 1
+                stats = self._import_day_from_api(target_day)
+            except requests.exceptions.RequestException as e:
+                _logger.error("API error for business day %s: %s", target_day, str(e))
+                days_with_errors += 1
+                total_errors += 1
+                # Stop processing further days on API failure
+                break
 
-        # Advance the last imported business day only if no critical errors
-        if errors == 0 or imported > 0:
-            self.last_imported_business_day = target_day
+            total_imported += stats["imported"]
+            total_skipped += stats["skipped"]
+            total_errors += stats["errors"]
+
+            # Advance watermark only when:
+            # - No invoice-level errors AND at least one invoice was imported, OR
+            # - The API returned 0 invoices (the day was genuinely empty)
+            # If all invoices were skipped (e.g. missing journal mappings),
+            # do NOT advance — the day stays pending so it can be retried
+            # once the mappings are configured.
+            if stats["errors"] == 0 and (
+                stats["imported"] > 0 or stats["invoice_list_count"] == 0
+            ):
+                last_successful_day = target_day
+                days_ok += 1
+            else:
+                days_with_errors += 1
+
+        # Persist watermark and timestamp
+        if (
+            last_successful_day
+            and last_successful_day != self.last_imported_business_day
+        ):
+            self.last_imported_business_day = last_successful_day
             self.last_import_date = fields.Datetime.now()
 
-        msg = _("Business day %(day)s: %(imported)d imported, %(skipped)d skipped") % {
-            "day": target_day.strftime("%d/%m/%Y"),
-            "imported": imported,
-            "skipped": skipped,
-        }
-        if errors:
-            msg += _(", %d errors (check logs)") % errors
+        # Build user-facing summary message
+        if len(pending_days) == 1:
+            day_label = pending_days[0].strftime("%d/%m/%Y")
+            msg = _(
+                "Day %(day)s: %(imported)d invoices imported, %(skipped)d skipped."
+            ) % {
+                "day": day_label,
+                "imported": total_imported,
+                "skipped": total_skipped,
+            }
+        else:
+            msg = _(
+                "%(days_ok)d of %(total_days)d days processed "
+                "(%(day_from)s → %(day_to)s).\n"
+                "Total: %(imported)d invoices imported, %(skipped)d skipped."
+            ) % {
+                "days_ok": days_ok,
+                "total_days": len(pending_days),
+                "day_from": pending_days[0].strftime("%d/%m/%Y"),
+                "day_to": pending_days[-1].strftime("%d/%m/%Y"),
+                "imported": total_imported,
+                "skipped": total_skipped,
+            }
+
+        if total_errors:
+            msg += _("\n⚠️ %d errors — check the server logs.") % total_errors
+        if total_skipped > 0 and total_imported == 0:
+            msg += _(
+                "\n⚠️ All invoices were skipped. "
+                "Check that Journal mappings (Journals by venue) are configured "
+                "in this backend."
+            )
+
+        notification_type = (
+            "danger"
+            if total_errors and days_ok == 0
+            else "warning"
+            if total_errors
+            else "success"
+        )
 
         return {
             "type": "ir.actions.client",
@@ -125,8 +239,8 @@ class AgoraImporter(models.AbstractModel):
             "params": {
                 "title": _("Agora Import Finished"),
                 "message": msg,
-                "type": "success" if not errors else "warning",
-                "sticky": False,
+                "type": notification_type,
+                "sticky": total_errors > 0,
             },
         }
 
@@ -174,28 +288,70 @@ class AgoraImporter(models.AbstractModel):
         else:
             partner_id = self._resolve_invoice_partner(raw)
 
-        account_id = (
-            self.income_account_id.id
-            if self.income_account_id
-            else self._resolve_income_account()
-        )
+        # Resolve income account:
+        # 1. Use the fixed account configured on the backend (if any)
+        # 2. Otherwise use the default account of the mapped journal
+        # 3. Last resort: first income account found in the company
+        journal = self.env["account.journal"].browse(journal_id)
+        journal_company_id = journal.company_id.id
+        if self.income_account_id:
+            account_id = self.income_account_id.id
+        else:
+            account_id = (
+                journal.default_account_id.id
+                if journal.default_account_id
+                else self._resolve_income_account()
+            )
 
         # UnitPrice from Agora includes VAT → convert to net price for Odoo
         lines = []
         for item in raw.get("InvoiceItems", []):
-            for line in item.get("Lines", []):
+            # Discount applied at InvoiceItem level (not at individual line level).
+            # DiscountRate is a fraction: 1.0 = 100%, 0.5 = 50%, etc.
+            item_discount_rate = float(
+                (item.get("Discounts") or {}).get("DiscountRate", 0)
+            )
+            item_lines = item.get("Lines", [])
+
+            # Use Totals.NetAmount from the InvoiceItem when available to avoid
+            # accumulated rounding errors that arise from dividing each line's
+            # UnitPrice individually. We distribute the item-level net total
+            # proportionally across lines based on their gross TotalAmount.
+            item_totals = item.get("Totals") or {}
+            item_net_total = float(item_totals.get("NetAmount") or 0)
+            item_gross_total = float(item_totals.get("GrossAmount") or 0)
+
+            # Compute total gross across all lines (for proportional distribution)
+            lines_gross_sum = sum(
+                float(ln.get("TotalAmount", 0)) * (1 - item_discount_rate)
+                for ln in item_lines
+            )
+
+            for line in item_lines:
                 vat_rate = float(line.get("VatRate", 0))
-                unit_price_with_vat = float(line.get("UnitPrice", 0))
-                price_unit = (
-                    round(unit_price_with_vat / (1 + vat_rate), 6)
-                    if vat_rate
-                    else unit_price_with_vat
+                qty = float(line.get("Quantity", 1))
+                gross_unit = float(line.get("UnitPrice", 0)) * (1 - item_discount_rate)
+                line_gross = float(line.get("TotalAmount", 0)) * (
+                    1 - item_discount_rate
                 )
-                tax_ids = self._resolve_tax_ids(round(vat_rate * 100, 2))
+
+                # If item has a valid Totals.NetAmount, distribute it proportionally
+                # to avoid rounding errors. Otherwise fall back to direct division.
+                if item_net_total and item_gross_total and lines_gross_sum:
+                    # Proportion of this line's gross vs total item gross
+                    proportion = line_gross / lines_gross_sum if lines_gross_sum else 0
+                    line_net_total = item_net_total * proportion
+                    price_unit = line_net_total / qty if qty else 0
+                else:
+                    price_unit = gross_unit / (1 + vat_rate) if vat_rate else gross_unit
+
+                tax_ids = self._resolve_tax_ids(
+                    round(vat_rate * 100, 2), journal_company_id
+                )
                 lines.append(
                     {
                         "name": line.get("ProductName", _("Product")),
-                        "quantity": float(line.get("Quantity", 1)),
+                        "quantity": qty,
                         "price_unit": price_unit,
                         "tax_ids": tax_ids,
                         "account_id": account_id,
@@ -244,26 +400,89 @@ class AgoraImporter(models.AbstractModel):
         }
 
     def _resolve_journal(self, workplace_id, invoice_type):
-        """Find the Odoo journal from the agora.journal.mapping table."""
+        """Find the Odoo journal from the agora.journal.mapping table.
+
+        Per spec: rectificativas use the same journal as the corresponding
+        simplified (RFS series) or normal (RFV series) invoice.
+        If no explicit rectification mapping exists, fall back to simplified.
+        """
         mapping = self.agora_journal_ids.filtered(
             lambda m: m.workplace_id == workplace_id and m.invoice_type == invoice_type
         )
-        return mapping[:1].journal_id.id if mapping else False
+        if mapping:
+            return mapping[:1].journal_id.id
+        # Rectificativas fallback: use simplified journal (same per spec)
+        if invoice_type == "rectification":
+            fallback = self.agora_journal_ids.filtered(
+                lambda m: m.workplace_id == workplace_id
+                and m.invoice_type == "simplified"
+            )
+            return fallback[:1].journal_id.id if fallback else False
+        return False
 
     def _resolve_invoice_partner(self, raw):
-        """Find or fall back to anonymous partner for normal invoices.
+        """Find or create partner from the Customer field of the Agora invoice.
 
-        Phase 1: match by CIF/NIF if present.
-        Phase 2 (future): full customer create logic.
+        The Customer object is at the invoice root level (not inside InvoiceItems).
+        Logic:
+          1. If no Customer key → anonymous partner.
+          2. Search by VAT (Cif), trying both with and without 'ES' prefix.
+          3. If not found → create the partner with available data.
+          4. Fallback → anonymous partner.
         """
-        for item in raw.get("InvoiceItems", []):
-            customer = item.get("Customer")
-            if customer and customer.get("Id"):
-                cif = customer.get("Cif") or customer.get("FiscalId") or ""
-                if cif:
-                    partner = self.env["res.partner"].search(
-                        [("vat", "in", [cif, "ES{}".format(cif)])], limit=1
-                    )
-                    if partner:
-                        return partner.id
-        return self.anonymous_partner_id.id if self.anonymous_partner_id else False
+        customer = raw.get("Customer")
+        if not customer or not customer.get("Id"):
+            return self.anonymous_partner_id.id if self.anonymous_partner_id else False
+
+        cif = (customer.get("Cif") or "").strip()
+        name = (customer.get("FiscalName") or "").strip()
+        if not name:
+            name = "Agora Customer {}".format(customer.get("Id", "unknown"))
+
+        # Search by VAT: try exact CIF and with ES prefix
+        if cif:
+            partner = self.env["res.partner"].search(
+                [("vat", "in", [cif, "ES{}".format(cif)])], limit=1
+            )
+            if partner:
+                return partner.id
+
+        # Search by name if no VAT match
+        if name:
+            partner = self.env["res.partner"].search([("name", "=", name)], limit=1)
+            if partner:
+                return partner.id
+
+        # Create the partner with data from Agora
+        country_code = (customer.get("CountryCode") or "ES").strip()
+        country = self.env["res.country"].search([("code", "=", country_code)], limit=1)
+        vals = {
+            "name": name or "Agora Customer {}".format(customer.get("Id")),
+            "is_company": True,
+            "customer_rank": 1,
+            "street": customer.get("Street") or False,
+            "city": customer.get("City") or False,
+            "zip": customer.get("ZipCode") or False,
+            "country_id": country.id if country else False,
+        }
+        if cif:
+            vals["vat"] = cif if cif.startswith("ES") else "ES{}".format(cif)
+
+        try:
+            partner = self.env["res.partner"].create(vals)
+            _logger.info(
+                "Created new partner '%s' (VAT: %s) from Agora Customer id=%s",
+                vals["name"],
+                vals.get("vat"),
+                customer.get("Id"),
+            )
+            return partner.id
+        except Exception as e:
+            _logger.warning(
+                "Could not create partner for Agora Customer id=%s name='%s':"
+                " %s — using anonymous",
+                customer.get("Id"),
+                name,
+                str(e),
+            )
+            return self.anonymous_partner_id.id if self.anonymous_partner_id else False

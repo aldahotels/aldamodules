@@ -32,6 +32,14 @@
                         class="btn-primary"
                         attrs="{'invisible': [('connection_type','=',False)]}"
                     />
+                    <button
+                        name="connector_agora.action_agora_import_wizard"
+                        string="Import by Date…"
+                        type="action"
+                        class="btn-secondary"
+                        attrs="{'invisible': [('connection_type','!=','api')]}"
+                        help="Open a wizard to import invoices for a specific business day or date range."
+                    />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

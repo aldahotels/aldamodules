@@ -20,6 +20,7 @@
     "data": [
         "security/groups.xml",
         "security/ir.model.access.csv",
+        "views/agora_import_wizard.xml",
         "views/agora_backend.xml",
         "views/account_move.xml",
     ],

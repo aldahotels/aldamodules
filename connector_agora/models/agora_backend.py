@@ -460,18 +460,32 @@ class AgoraBackend(models.Model):
         }
         return mapping.get(str(raw_type).lower(), "invoice")
 
-    def _resolve_tax_ids(self, tax_rate):
-        """Find the account.tax ID matching the given rate (sale type)"""
+    def _resolve_tax_ids(self, tax_rate, company_id=None):
+        """Find the account.tax ID matching the given rate (sale type).
+
+        :param tax_rate: numeric tax rate (e.g. 10.0 for 10%)
+        :param company_id: company to search in; defaults to self.env.company.id
+        """
         if not tax_rate:
             return []
+        company_id = company_id or self.env.company.id
         tax = self.env["account.tax"].search(
             [
                 ("amount", "=", tax_rate),
                 ("type_tax_use", "=", "sale"),
-                ("company_id", "=", self.env.company.id),
+                ("company_id", "=", company_id),
             ],
             limit=1,
         )
+        if not tax:
+            company_name = self.env["res.company"].browse(company_id).name
+            _logger.warning(
+                "No sale tax with rate %s%% found for company '%s'. "
+                "Install the Spanish fiscal localization for this company "
+                "or create the missing tax manually.",
+                tax_rate,
+                company_name,
+            )
         return [tax.id] if tax else []
 
     def _resolve_income_account(self):

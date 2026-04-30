@@ -75,12 +75,32 @@
         </field>
     </record>
 
+    <!-- Dedicated list view for Agora invoices showing Agora-specific fields -->
+    <record id="view_agora_account_move_list" model="ir.ui.view">
+        <field name="name">account.move.agora.list</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancel'">
+                <field name="invoice_date" string="Date" />
+                <field name="name" string="Odoo Number" />
+                <field name="agora_invoice_ref" string="Agora Number" />
+                <field name="agora_origin" string="Workplace" />
+                <field name="partner_id" string="Customer" />
+                <field name="amount_untaxed" string="Untaxed Amount" />
+                <field name="amount_tax" string="Tax" />
+                <field name="amount_total" string="Total" />
+                <field name="state" string="Status" />
+            </tree>
+        </field>
+    </record>
+
     <!-- Dedicated action to list ALL invoices imported from ANY Agora backend.
          Reachable from Accounting > Customers > Agora Invoices.-->
     <record id="action_agora_invoices_accounting" model="ir.actions.act_window">
         <field name="name">Agora Invoices</field>
         <field name="res_model">account.move</field>
         <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_agora_account_move_list" />
         <field name="domain">[
             ('move_type', '=', 'out_invoice'),
             ('agora_bind_ids', '!=', False)

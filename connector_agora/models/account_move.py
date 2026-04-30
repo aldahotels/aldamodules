@@ -49,9 +49,12 @@ class AccountMove(models.Model):
             if binding:
                 series = binding.agora_series or ""
                 number = binding.agora_number or ""
-                move.agora_invoice_ref = (
-                    "{} {}".format(series, number).strip() or binding.agora_invoice_id
-                )
+                if series and number:
+                    move.agora_invoice_ref = "{}/{}".format(series, number)
+                else:
+                    move.agora_invoice_ref = (
+                        series or number or binding.agora_invoice_id
+                    )
                 move.agora_origin = binding.agora_workplace_name or ""
             else:
                 move.agora_invoice_ref = False
@@ -193,7 +196,16 @@ class AgoraAccountMove(models.Model):
         # Resolve partner
         partner_id = invoice_data.get("partner_id")
         if not partner_id:
-            partner_id = backend.execute_user_id.partner_id.id
+            if backend.anonymous_partner_id:
+                partner_id = backend.anonymous_partner_id.id
+            else:
+                raise ValidationError(
+                    _(
+                        "No anonymous customer configured in the Agora backend '%(backend)s'. "
+                        "Please set the 'Anonymous Customer' field before importing invoices."
+                    )
+                    % {"backend": backend.name}
+                )
 
         # Resolve journal: use provided or find the first sales journal
         journal_id = invoice_data.get("journal_id")
@@ -207,6 +219,13 @@ class AgoraAccountMove(models.Model):
                     _("No sales journal found to post Agora invoices")
                 )
             journal_id = journal.id
+
+        # Use the journal's company to ensure taxes, accounts and the move
+        # all belong to the same company — avoids "Incompatible companies" errors
+        # when env.company differs from the journal's company.
+        journal_company_id = (
+            self.env["account.journal"].browse(journal_id).company_id.id
+        )
 
         # Build invoice lines
         line_vals = []
@@ -245,10 +264,11 @@ class AgoraAccountMove(models.Model):
         # invoice_payment_term_id is required so Odoo can auto-set the due date
         # on the receivable line (enforced by account_payment_partner)
         payment_term = self.env["account.payment.term"].search(
-            [("company_id", "in", [self.env.company.id, False])], limit=1
+            [("company_id", "in", [journal_company_id, False])], limit=1
         )
         move_vals = {
             "move_type": invoice_data.get("move_type", "out_invoice"),
+            "company_id": journal_company_id,
             "partner_id": partner_id,
             "journal_id": journal_id,
             "invoice_date": invoice_date,
