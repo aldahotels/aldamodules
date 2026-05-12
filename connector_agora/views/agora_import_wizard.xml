@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Wizard: agora.import.wizard -->
+    <record id="view_agora_import_wizard_form" model="ir.ui.view">
+        <field name="name">agora.import.wizard.form</field>
+        <field name="model">agora.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Agora Invoices by Date">
+                <group>
+                    <group string="Backend">
+                        <field name="backend_id" />
+                        <field name="current_watermark" />
+                    </group>
+                    <group string="Date Range">
+                        <field name="date_from" />
+                        <field name="date_to" />
+                    </group>
+                </group>
+                <group string="Options">
+                    <field name="advance_watermark" />
+                </group>
+                <div class="alert alert-info" role="alert">
+                    <strong>Tip:</strong>
+                    Use this wizard when the automatic import is stuck on the same date
+                    (e.g. because all invoices were skipped due to missing journal
+                    mappings). After fixing the mappings, re-import the affected days
+                    here and optionally update the watermark.
+                </div>
+                <footer>
+                    <button
+                        name="action_import"
+                        string="Import"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open the wizard -->
+    <record id="action_agora_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Invoices by Date</field>
+        <field name="res_model">agora.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_backend_id': active_id}</field>
+    </record>
+
+</odoo>
