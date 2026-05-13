@@ -5,10 +5,10 @@
         <field name="model">maintenance.equipment</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_view_form" />
         <field name="arch" type="xml">
-            <!-- Insert hotel field after owner_user_id in the first group -->
-            <field name="owner_user_id" position="after">
+            <!-- Insert hotel field after category_id in the first group -->
+            <xpath expr="//field[@name='category_id']" position="after">
                 <field name="hotel" />
-            </field>
+            </xpath>
         </field>
     </record>
 </odoo>
