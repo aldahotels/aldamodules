@@ -579,9 +579,8 @@ class AgoraJournalMapping(models.Model):
     )
     invoice_type = fields.Selection(
         [
-            ("simplified", "Simplified Invoice (Factura Simplificada)"),
-            ("normal", "Normal Invoice (Factura con Cliente)"),
-            ("rectification", "Credit Note (Factura Rectificativa)"),
+            ("simplified", "Simplified Invoice"),
+            ("normal", "Normal Invoice"),
         ],
         required=True,
     )
