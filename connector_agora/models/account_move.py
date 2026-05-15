@@ -88,11 +88,12 @@ class AgoraAccountMove(models.Model):
     )
     agora_document_type = fields.Selection(
         [
-            ("invoice", "Invoice"),
-            ("ticket", "Ticket"),
-            ("room_charge", "Room Charge"),
+            ("normal", "Normal Invoice"),
+            ("simplified", "Simplified Invoice"),
+            ("rectification", "Credit Note"),
         ],
         readonly=True,
+        string="Invoice Type",
     )
     agora_workplace_id = fields.Integer(
         readonly=True,
@@ -266,6 +267,21 @@ class AgoraAccountMove(models.Model):
         payment_term = self.env["account.payment.term"].search(
             [("company_id", "in", [journal_company_id, False])], limit=1
         )
+
+        # Force invoice name to match Agora's Number so the draft already shows
+        # the correct reference (e.g. FV807/2026/00154 for Number=154).
+        # Odoo only overwrites name on action_post() when name == '/'.
+        agora_number = invoice_data.get("agora_number", "")
+        journal = self.env["account.journal"].browse(journal_id)
+        if invoice_date and agora_number:
+            move_name = "{}/{}/{}".format(
+                journal.code,
+                invoice_date.year,
+                agora_number.zfill(5),
+            )
+        else:
+            move_name = "/"
+
         move_vals = {
             "move_type": invoice_data.get("move_type", "out_invoice"),
             "company_id": journal_company_id,
@@ -273,6 +289,7 @@ class AgoraAccountMove(models.Model):
             "journal_id": journal_id,
             "invoice_date": invoice_date,
             "invoice_payment_term_id": payment_term.id if payment_term else False,
+            "name": move_name,
             "ref": invoice_data.get("ref")
             or "{} {}".format(
                 invoice_data.get("agora_series", ""),

@@ -256,21 +256,38 @@ class AgoraImporter(models.AbstractModel):
 
         doc_type = (raw.get("DocumentType") or "").lower()
         serie_upper = serie.upper()
+        # Credit notes: DocumentType has priority; serie prefix is the fallback.
+        # rectification_subtype tells which base journal to use:
+        # 'normal' (RFV) or 'simplified' (RFS/RFC/RFB).
         if "refund" in doc_type or serie_upper.startswith(("RFC", "RFS", "RFV", "RFB")):
             invoice_type = "rectification"
             move_type = "out_refund"
-        elif "standard" in doc_type or serie_upper.startswith(("FV", "FB")):
-            invoice_type = "normal"
+            rectification_subtype = (
+                "normal" if serie_upper.startswith("RFV") else "simplified"
+            )
+        elif doc_type:
+            # DocumentType is present → use it as the authoritative source.
+            # "StandardInvoice" → normal | "BasicInvoice" (and any other value) → simplified.
+            invoice_type = "normal" if doc_type == "standardinvoice" else "simplified"
             move_type = "out_invoice"
+            rectification_subtype = None
         else:
-            invoice_type = "simplified"
+            # No DocumentType → fall back to serie prefix.
+            # FV (FV803...) and FB (FB423...) = StandardInvoice → normal.
+            # FS (FS423...) and FC (FC423...) = BasicInvoice → simplified.
+            invoice_type = (
+                "normal" if serie_upper.startswith(("FV", "FB")) else "simplified"
+            )
             move_type = "out_invoice"
+            rectification_subtype = None
 
         workplace = raw.get("Workplace") or {}
         workplace_id = int(workplace.get("Id", 0))
         workplace_name = workplace.get("Name", "")
 
-        journal_id = self._resolve_journal(workplace_id, invoice_type)
+        journal_id = self._resolve_journal(
+            workplace_id, invoice_type, rectification_subtype
+        )
         if not journal_id:
             _logger.warning(
                 "No journal mapping for workplace %s (%s) type %s — skipping %s",
@@ -281,12 +298,14 @@ class AgoraImporter(models.AbstractModel):
             )
             return None
 
-        if invoice_type == "simplified":
+        # Rule: only standardinvoice includes real customer data.
+        # basicinvoice always uses the anonymous partner, even if the JSON has a Customer field.
+        if "standard" in doc_type:
+            partner_id = self._resolve_invoice_partner(raw)
+        else:
             partner_id = (
                 self.anonymous_partner_id.id if self.anonymous_partner_id else False
             )
-        else:
-            partner_id = self._resolve_invoice_partner(raw)
 
         # Resolve income account:
         # 1. Use the fixed account configured on the backend (if any)
@@ -366,6 +385,7 @@ class AgoraImporter(models.AbstractModel):
         business_day = (raw.get("BusinessDay") or invoice_date)[:10]
 
         # Reference format: "FC4232026-03054 - Cierre 423: 18.03.26"
+        # For credit notes: "RFS423-00001 Rectifica: FC423-03054 - Cierre 423: 18.03.26"
         digits = "".join(filter(str.isdigit, serie))
         cierre_num = digits[:-4] if len(digits) >= 4 else digits
         day_str = ""
@@ -379,10 +399,22 @@ class AgoraImporter(models.AbstractModel):
         ref = "{}-{} - Cierre {}: {}".format(
             serie, number.zfill(5), cierre_num, day_str
         )
+        # For credit notes, add a reference to the original invoice.
+        if invoice_type == "rectification":
+            orig_serie = (
+                raw.get("OriginalSerie") or raw.get("OriginalInvoiceSerie") or ""
+            ).strip()
+            orig_number = str(
+                raw.get("OriginalNumber") or raw.get("OriginalInvoiceNumber") or ""
+            ).strip()
+            if orig_serie or orig_number:
+                ref = "{} Rectifica: {}-{}".format(
+                    ref, orig_serie, orig_number.zfill(5)
+                )
 
         return {
             "agora_invoice_id": agora_invoice_id,
-            "agora_document_type": "invoice",
+            "agora_document_type": invoice_type,
             "agora_workplace_id": workplace_id,
             "agora_workplace_name": workplace_name,
             "agora_pos_id": int((raw.get("Pos") or {}).get("Id", 0)),
@@ -399,23 +431,22 @@ class AgoraImporter(models.AbstractModel):
             "raw_data": json.dumps(raw),
         }
 
-    def _resolve_journal(self, workplace_id, invoice_type):
+    def _resolve_journal(self, workplace_id, invoice_type, rectification_subtype=None):
         """Find the Odoo journal from the agora.journal.mapping table.
 
-        Per spec: rectificativas use the same journal as the corresponding
-        simplified (RFS series) or normal (RFV series) invoice.
-        If no explicit rectification mapping exists, fall back to simplified.
+        Credit notes do not need their own mapping: they use the same journal
+        as their base type — RFV → 'normal' journal, RFS/RFC/RFB → 'simplified' journal.
         """
         mapping = self.agora_journal_ids.filtered(
             lambda m: m.workplace_id == workplace_id and m.invoice_type == invoice_type
         )
         if mapping:
             return mapping[:1].journal_id.id
-        # Rectificativas fallback: use simplified journal (same per spec)
+        # Credit notes: look for the journal of the matching base type.
         if invoice_type == "rectification":
+            base_type = rectification_subtype or "simplified"
             fallback = self.agora_journal_ids.filtered(
-                lambda m: m.workplace_id == workplace_id
-                and m.invoice_type == "simplified"
+                lambda m: m.workplace_id == workplace_id and m.invoice_type == base_type
             )
             return fallback[:1].journal_id.id if fallback else False
         return False
