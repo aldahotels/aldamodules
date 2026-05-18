@@ -22,7 +22,7 @@
 {
     "name": "Helpdesk PMS Alda",
     "summary": "Create tickets related with the property",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "author": "Odoo Community Association (OCA),"
     "Irlui Ramirez (Alda Hotels), Jose Luis Algara (Alda Hotels)",
     "website": "https://github.com/OCA/pms",
@@ -37,6 +37,7 @@
     "category": "PMS",
     "data": [
         "security/ir.model.access.csv",
+        "security/helpdesk_portal_property_rule.xml",
         "report/helpdesk_analysis_views.xml",
         "views/menu_portal.xml",
         "views/menu_item.xml",
