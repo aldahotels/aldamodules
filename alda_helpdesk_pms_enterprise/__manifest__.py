@@ -22,7 +22,7 @@
 {
     "name": "Helpdesk PMS Entreprise",
     "summary": "Create tickets related with the property",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "license": "AGPL-3",
     "author": "Odoo Community Association (OCA),"
     "Jose Luis Algara (Alda Hotels), Irlui Ramirez (Alda Hotels)",
@@ -31,6 +31,7 @@
     "category": "PMS",
     "data": [
         "security/helpdesk_security.xml",
+        "security/helpdesk_portal_rule.xml",
         "views/actions.xml",
         "data/mail_template_data.xml",
         "views/pms_property_views.xml",

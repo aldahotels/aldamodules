@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="helpdesk.helpdesk_portal_ticket_rule" model="ir.rule">
+        <field name="name">Portal Tickets (own + assigned properties)</field>
+        <field name="domain_force">
+            [
+                ('team_privacy_visibility', '=', 'portal'),
+                    '|', '|',
+                ('message_partner_ids', 'in', [user.partner_id.id]),
+                    ('team_id.message_partner_ids', 'in',
+                    [user.partner_id.id]),
+                    ('pms_property_id', 'in', user.pms_property_ids.ids),
+            ]
+        </field>
+    </record>
+</odoo>
