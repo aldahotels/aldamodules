@@ -11,4 +11,28 @@
             </xpath>
         </field>
     </record>
+
+    <record id="hr_equipment_search_view_alda" model="ir.ui.view">
+        <field name="name">maintenance.equipment.search.alda</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_search" />
+        <field name="arch" type="xml">
+            <!-- Add hotel filter and group by -->
+            <xpath expr="//search/filter[last()]" position="after">
+                <separator />
+                <filter
+                    string="Hotel"
+                    name="filter_hotel"
+                    domain="[('hotel', '!=', False)]"
+                />
+            </xpath>
+            <xpath expr="//search/group" position="inside">
+                <filter
+                    string="Hotel"
+                    name="group_by_hotel"
+                    context="{'group_by': 'hotel'}"
+                />
+            </xpath>
+        </field>
+    </record>
 </odoo>
