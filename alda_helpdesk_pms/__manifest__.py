@@ -31,6 +31,7 @@
         "base",
         "website",
         "helpdesk",
+        "alda_helpdesk_pms_enterprise",
         "alda_pms_kpi",
     ],
     "category": "PMS",
