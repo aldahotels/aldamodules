@@ -31,13 +31,11 @@
         "base",
         "website",
         "helpdesk",
-        "alda_helpdesk_pms_enterprise",
         "alda_pms_kpi",
     ],
     "category": "PMS",
     "data": [
         "security/ir.model.access.csv",
-        "security/helpdesk_portal_property_rule.xml",
         "report/helpdesk_analysis_views.xml",
         "views/menu_portal.xml",
         "views/menu_item.xml",
