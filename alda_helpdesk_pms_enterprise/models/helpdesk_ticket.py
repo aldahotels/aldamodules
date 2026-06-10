@@ -119,10 +119,40 @@ class HelpdeskPmsEnterprise(models.Model):
 
     @api.model
     def create(self, vals):
-        ticket = super().create(vals)
+        if self.env.context.get("from_web_create"):
+            ticket = super(
+                HelpdeskPmsEnterprise,
+                self.with_context(
+                    tracking_disable=True,
+                    mail_notrack=True,
+                    mail_create_nosubscribe=True,
+                ),
+            ).create(vals)
+        else:
+            ticket = super().create(vals)
         if ticket.pms_property_id and ticket.pms_property_id.partner_id:
             ticket.message_subscribe(partner_ids=[ticket.pms_property_id.partner_id.id])
+
+        if self.env.context.get("from_web_create"):
+            template = self.env.ref(
+                "alda_helpdesk_pms_enterprise.alda_confirmation_ticket",
+                raise_if_not_found=False,
+            )
+            if template:
+                try:
+                    template.send_mail(ticket.id, force_send=True, raise_exception=True)
+                except Exception:
+                    _logger.exception(
+                        "Error sending confirmation email for ticket %s", ticket.id
+                    )
         return ticket
+
+    def _track_template(self, changes):
+        res = super()._track_template(changes)
+        # For website-created tickets we send only the custom Alda template.
+        if self.env.context.get("from_web_create"):
+            res.pop("stage_id", None)
+        return res
 
     def write(self, vals):
         old_properties = {}

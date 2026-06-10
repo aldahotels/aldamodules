@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo noupdate="1">
+<odoo>
+    <function model="ir.model.data" name="write">
+        <function model="ir.model.data" name="search">
+            <value
+                eval="[('module', '=', 'alda_helpdesk_pms_enterprise'), ('name', '=', 'alda_confirmation_ticket')]"
+            />
+        </function>
+        <value eval="{'noupdate': False}" />
+    </function>
+
     <record id="alda_confirmation_ticket" model="mail.template">
         <field name="name">Confirmación de Creación de Ticket - Alda-PMS</field>
         <field
@@ -8,18 +17,18 @@
         />
         <field
             name="subject"
-        >Confirmation Received: {{object.id}} {{object.name}}</field>
+        >Confirmation Received: {{object.id}} {{object.name}} - Hotel: {{ object.pms_property_id.name if object.pms_property_id else 'N/A' }}</field>
         <field name="email_from">${{object.user_id.email or user.email}}</field>
         <field
             name="description"
         >Set this template on a project's stage to automate email when tasks reach stages</field>
         <field
             name="email_to"
-        >{{ ', '.join(filter(None, [ (object.partner_email), (object.pms_property_id.partner_id.email if object.pms_property_id and object.pms_property_id.partner_id and object.pms_property_id.partner_id.email else '') ])) }}
+        >{{ ', '.join(filter(None, [ (object.partner_email), (object.pms_property_id.partner_id.email if object.pms_property_id and object.pms_property_id.partner_id and object.pms_property_id.partner_id.email else '') ] + object.team_id.member_ids.mapped('partner_id.email'))) }}
         </field>
         <field
             name="partner_to"
-        >{{ ', '.join(filter(None, [ object.partner_id.email, object.pms_property_id.partner_id.email ])) }}
+        >{{ ', '.join(filter(None, [ object.partner_id.email, object.pms_property_id.partner_id.email ] + object.team_id.member_ids.mapped('partner_id.email'))) }}
         </field>
 
         <field name="body_html" type="html">
@@ -153,6 +162,11 @@
                                                  has been received and is being reviewed by our team <t
                                                     t-out="object.team_id.name or ''"
                                                 >Helpdesk</t>.<br />
+                                                 Hotel/Property: <strong
+                                                    style="font-weight:bold;"
+                                                ><t
+                                                        t-out="object.pms_property_id.name or 'N/A'"
+                                                    >N/A</t></strong>.<br />
                                                  The reference of your ticket is <strong
                                                     style="font-weight:bold;"
                                                 >#<t
