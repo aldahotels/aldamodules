@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <function model="ir.model.data" name="write">
-        <function model="ir.model.data" name="search">
-            <value
-                eval="[('module', '=', 'alda_helpdesk_pms_enterprise'), ('name', '=', 'alda_confirmation_ticket')]"
-            />
-        </function>
-        <value eval="{'noupdate': False}" />
-    </function>
+<odoo noupdate="1">
 
     <record id="alda_confirmation_ticket" model="mail.template">
         <field name="name">Confirmación de Creación de Ticket - Alda-PMS</field>
@@ -17,19 +9,23 @@
         />
         <field
             name="subject"
-        >Confirmation Received: {{object.id}} {{object.name}} - Hotel: {{ object.pms_property_id.name if object.pms_property_id else 'N/A' }}</field>
-        <field name="email_from">${{object.user_id.email or user.email}}</field>
+        >Confirmación HelpDesk: #{{object.id}} {{object.name}} - {{ object.pms_property_id.name if object.pms_property_id else 'N/A' }}</field>
+        <field
+            name="email_from"
+        >{{ object.team_id.alias_email_from or object.company_id.email_formatted or object.user_id.email_formatted or user.email_formatted }}</field>
         <field
             name="description"
         >Set this template on a project's stage to automate email when tasks reach stages</field>
-        <field
-            name="email_to"
-        >{{ ', '.join(filter(None, [ (object.partner_email), (object.pms_property_id.partner_id.email if object.pms_property_id and object.pms_property_id.partner_id and object.pms_property_id.partner_id.email else '') ] + object.team_id.member_ids.mapped('partner_id.email'))) }}
-        </field>
-        <field
-            name="partner_to"
-        >{{ ', '.join(filter(None, [ object.partner_id.email, object.pms_property_id.partner_id.email ] + object.team_id.member_ids.mapped('partner_id.email'))) }}
-        </field>
+        <field name="email_to">{{ ', '.join(filter(None, [
+            object.partner_email or (object.partner_id.email if object.partner_id else ''),
+            object.pms_property_id.partner_id.email if object.pms_property_id and object.pms_property_id.partner_id else '',
+            object.user_id.email if object.user_id else '',
+        ])) }}</field>
+        <field name="partner_to">{{ ', '.join([str(x) for x in filter(None, [
+            object.partner_id.id if object.partner_id else False,
+            object.pms_property_id.partner_id.id if object.pms_property_id and object.pms_property_id.partner_id else False,
+            object.user_id.partner_id.id if object.user_id and object.user_id.partner_id else False,
+        ])]) }}</field>
 
         <field name="body_html" type="html">
              <div
@@ -148,10 +144,10 @@
                                              <td
                                                 style="padding:40px 30px; color:#333333; font-size:16px; line-height:1.5;"
                                             >
-                                                 Dear <t
-                                                    t-out="object.sudo().partner_id.name or 'Customer'"
-                                                >Customer</t>,<br />
-                                                 Your request
+                                                 Estimado/a <t
+                                                    t-out="object.sudo().partner_id.name or 'Cliente'"
+                                                >Cliente</t>,<br /><br />
+                                                 Hemos recibido su solicitud
                                                  <t t-if="object.get_portal_url()">
                                                      <a
                                                         t-attf-href="/my/ticket/{{ object.id }}/{{ object.access_token }}"
@@ -159,15 +155,22 @@
                                                         t-out="object.name or ''"
                                                     />
                                                  </t>
-                                                 has been received and is being reviewed by our team <t
+                                                 <t t-if="object.pms_property_id">
+                                                     Referida al Hotel:<br />
+                                                     <center><t
+                                                            t-out="object.pms_property_id.partner_id.name or ''"
+                                                        /></center>
+                                                 </t>
+                                                 <t t-if="object.user_id">
+                                                     <br />Asignado a: <t
+                                                        t-out="object.user_id.name"
+                                                    />
+                                                 </t>
+                                                 <br />
+                                                 y está siendo revisada por nuestro equipo <t
                                                     t-out="object.team_id.name or ''"
                                                 >Helpdesk</t>.<br />
-                                                 Hotel/Property: <strong
-                                                    style="font-weight:bold;"
-                                                ><t
-                                                        t-out="object.pms_property_id.name or 'N/A'"
-                                                    >N/A</t></strong>.<br />
-                                                 The reference of your ticket is <strong
+                                                 La referencia de su ticket es <strong
                                                     style="font-weight:bold;"
                                                 >#<t
                                                         t-out="object.ticket_ref or ''"
@@ -179,25 +182,33 @@
                                                         style="background-color:#875A7B; color:#fff; padding:10px 20px; text-decoration:none; border-radius:4px; display:inline-block;"
                                                         t-att-href="object.get_portal_url()"
                                                         target="_blank"
-                                                    >View the ticket</a>
+                                                    >Ver el ticket Web</a>
                                                  </div>
-                                                 To add additional comments, reply to this email and we will get back to you soon.<br
+                                                 <div
+                                                    style="text-align:center; margin:20px 0;"
+                                                >
+                                                     <a
+                                                        t-attf-href="#{object.get_base_url()}/web#id=#{object.id}&amp;view_type=form&amp;model=#{object._name}"
+                                                        style="padding:8px 12px; font-size:14px; color:#ffffff; background-color:#875A7B; border-radius:5px; text-decoration:none; display:inline-block;"
+                                                    >Ver Ticket en Odoo</a>
+                                                 </div>
+                                                 Para agregar preguntas o comentarios adicionales, responda a este correo electrónico y nos pondremos en contacto con usted a la brevedad.<br
                                                 /><br />
                                                  <t
                                                     t-if="object.team_id.show_knowledge_base"
                                                 >
-                                                     Please don’t hesitate to visit our
+                                                     Por favor, no dude en visitar nuestro
                                                      <a
                                                         t-attf-href="{{ object.team_id.get_knowledge_base_url() }}"
                                                         style="color:#008f8c; text-decoration:none;"
-                                                    >Help Center</a>.
-                                                     You might find the answer to your question.<br
+                                                    >centro de ayuda</a>.
+                                                     Es posible que encuentre la respuesta a su pregunta.<br
                                                     /><br />
                                                  </t>
-                                                 Thank you,<br /><br />
-                                                 The <t
+                                                 Gracias,<br /><br />
+                                                 Equipo <t
                                                     t-out="object.team_id.name or 'Helpdesk'"
-                                                >Helpdesk</t> Team.
+                                                >Helpdesk</t>.
                                              </td>
                                          </tr>
                                      </tbody>
