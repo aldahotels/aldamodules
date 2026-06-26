@@ -8,6 +8,7 @@ from datetime import date, datetime, timedelta
 import requests
 
 from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ class AgoraImporter(models.AbstractModel):
         :returns: dict with keys ``imported``, ``skipped``, ``errors``,
                   ``invoice_list_count``.
         :raises requests.exceptions.RequestException: on network/API failure.
+        :raises UserError: on functional/configuration errors.
         """
         self.ensure_one()
         url = "{}/api/export/".format(self.api_url.rstrip("/"))
@@ -53,37 +55,37 @@ class AgoraImporter(models.AbstractModel):
             "Agora API returned %d invoices for %s", len(invoice_list), target_day
         )
 
+        if not self.anonymous_partner_id:
+            requires_anonymous = 0
+            for raw in invoice_list:
+                doc_type = (raw.get("DocumentType") or "").lower()
+                serie_upper = (raw.get("Serie") or "").upper()
+                if "standard" not in doc_type and not serie_upper.startswith(
+                    ("FV", "FB")
+                ):
+                    requires_anonymous += 1
+            if requires_anonymous:
+                raise UserError(
+                    _(
+                        "Cannot import business day %(day)s: %(count)d invoices "
+                        "require 'Anonymous Customer', but it is not configured "
+                        "on backend '%(backend)s'."
+                    )
+                    % {
+                        "day": target_day.strftime("%d/%m/%Y"),
+                        "count": requires_anonymous,
+                        "backend": self.name,
+                    }
+                )
+
         day_imported = 0
         day_skipped = 0
         day_errors = 0
 
         for raw_invoice in invoice_list:
-            try:
-                invoice_data = self._parse_agora_api_invoice(raw_invoice)
-                if not invoice_data:
-                    day_skipped += 1
-                    continue
-                self.env["agora.account.move"].import_invoice_data(self, invoice_data)
-                day_imported += 1
-            except Exception as e:
-                serie = raw_invoice.get("Serie", "?")
-                number = raw_invoice.get("Number", "?")
-                _logger.error(
-                    "Error importing invoice %s-%s (day %s): %s",
-                    serie,
-                    number,
-                    target_day,
-                    str(e),
-                )
-                day_errors += 1
-
-        if day_imported == 0 and day_skipped > 0 and day_errors == 0:
-            _logger.warning(
-                "Day %s: 0 invoices imported, %d skipped — "
-                "likely missing journal mappings for this backend.",
-                target_day,
-                day_skipped,
-            )
+            invoice_data = self._parse_agora_api_invoice(raw_invoice)
+            self.env["agora.account.move"].import_invoice_data(self, invoice_data)
+            day_imported += 1
 
         return {
             "imported": day_imported,
@@ -161,10 +163,10 @@ class AgoraImporter(models.AbstractModel):
                 stats = self._import_day_from_api(target_day)
             except requests.exceptions.RequestException as e:
                 _logger.error("API error for business day %s: %s", target_day, str(e))
-                days_with_errors += 1
-                total_errors += 1
-                # Stop processing further days on API failure
-                break
+                raise UserError(
+                    _("Agora API error importing business day %(day)s: %(error)s")
+                    % {"day": target_day.strftime("%d/%m/%Y"), "error": str(e)}
+                ) from e
 
             total_imported += stats["imported"]
             total_skipped += stats["skipped"]
@@ -247,8 +249,8 @@ class AgoraImporter(models.AbstractModel):
     def _parse_agora_api_invoice(self, raw):
         """Parse a single invoice dict from the Agora HTTP API JSON response.
 
-        Returns a dict ready for agora.account.move.import_invoice_data(),
-        or None if the invoice should be skipped (no journal mapping, no lines).
+        Returns a dict ready for agora.account.move.import_invoice_data().
+        Raises UserError on functional/configuration issues to keep imports atomic.
         """
         serie = raw.get("Serie", "")
         number = str(raw.get("Number", ""))
@@ -289,14 +291,18 @@ class AgoraImporter(models.AbstractModel):
             workplace_id, invoice_type, rectification_subtype
         )
         if not journal_id:
-            _logger.warning(
-                "No journal mapping for workplace %s (%s) type %s — skipping %s",
-                workplace_name,
-                workplace_id,
-                invoice_type,
-                agora_invoice_id,
+            raise UserError(
+                _(
+                    "Missing journal mapping for workplace %(name)s (%(id)s), "
+                    "invoice type %(invoice_type)s. Invoice: %(invoice)s"
+                )
+                % {
+                    "name": workplace_name or "-",
+                    "id": workplace_id,
+                    "invoice_type": invoice_type,
+                    "invoice": agora_invoice_id,
+                }
             )
-            return None
 
         # Rule: only standardinvoice includes real customer data.
         # basicinvoice always uses the anonymous partner, even if the JSON has a Customer field.
@@ -322,7 +328,7 @@ class AgoraImporter(models.AbstractModel):
                 else self._resolve_income_account()
             )
 
-        # UnitPrice from Agora includes VAT → convert to net price for Odoo
+        # HU-04: import Agora unit price as-is (tax-included) from UnitPrice/PrecioUnit.
         lines = []
         for item in raw.get("InvoiceItems", []):
             # Discount applied at InvoiceItem level (not at individual line level).
@@ -332,37 +338,18 @@ class AgoraImporter(models.AbstractModel):
             )
             item_lines = item.get("Lines", [])
 
-            # Use Totals.NetAmount from the InvoiceItem when available to avoid
-            # accumulated rounding errors that arise from dividing each line's
-            # UnitPrice individually. We distribute the item-level net total
-            # proportionally across lines based on their gross TotalAmount.
-            item_totals = item.get("Totals") or {}
-            item_net_total = float(item_totals.get("NetAmount") or 0)
-            item_gross_total = float(item_totals.get("GrossAmount") or 0)
-
-            # Compute total gross across all lines (for proportional distribution)
-            lines_gross_sum = sum(
-                float(ln.get("TotalAmount", 0)) * (1 - item_discount_rate)
-                for ln in item_lines
-            )
-
             for line in item_lines:
                 vat_rate = float(line.get("VatRate", 0))
                 qty = float(line.get("Quantity", 1))
-                gross_unit = float(line.get("UnitPrice", 0)) * (1 - item_discount_rate)
-                line_gross = float(line.get("TotalAmount", 0)) * (
-                    1 - item_discount_rate
+                raw_unit = (
+                    line.get("UnitPrice")
+                    or line.get("PrecioUnit")
+                    or line.get("unit_price")
+                    or 0
                 )
-
-                # If item has a valid Totals.NetAmount, distribute it proportionally
-                # to avoid rounding errors. Otherwise fall back to direct division.
-                if item_net_total and item_gross_total and lines_gross_sum:
-                    # Proportion of this line's gross vs total item gross
-                    proportion = line_gross / lines_gross_sum if lines_gross_sum else 0
-                    line_net_total = item_net_total * proportion
-                    price_unit = line_net_total / qty if qty else 0
-                else:
-                    price_unit = gross_unit / (1 + vat_rate) if vat_rate else gross_unit
+                # Keep discount handling at InvoiceItem level and persist the
+                # resulting tax-included unit price in Odoo.
+                price_unit = float(raw_unit) * (1 - item_discount_rate)
 
                 tax_ids = self._resolve_tax_ids(
                     round(vat_rate * 100, 2), journal_company_id
@@ -378,8 +365,10 @@ class AgoraImporter(models.AbstractModel):
                 )
 
         if not lines:
-            _logger.warning("Invoice %s has no lines, skipping", agora_invoice_id)
-            return None
+            raise UserError(
+                _("Invoice %(invoice)s has no lines and cannot be imported.")
+                % {"invoice": agora_invoice_id}
+            )
 
         invoice_date = (raw.get("Date") or "")[:10]
         business_day = (raw.get("BusinessDay") or invoice_date)[:10]
