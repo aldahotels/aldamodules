@@ -104,8 +104,10 @@ class AgoraImportWizard(models.TransientModel):
                 _logger.error(
                     "API error importing business day %s: %s", target_day, str(e)
                 )
-                total_errors += 1
-                break
+                raise UserError(
+                    _("Agora API error importing business day %(day)s: %(error)s")
+                    % {"day": target_day.strftime("%d/%m/%Y"), "error": str(e)}
+                ) from e
 
             total_imported += stats["imported"]
             total_skipped += stats["skipped"]
