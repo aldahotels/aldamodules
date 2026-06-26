@@ -5,7 +5,8 @@
     "main_entrance": "Main Entrance",
     "reception": "Reception",
     "restaurant": "Restaurant/Cafeteria",
-    "living_room": "Living Room"
+    "living_room": "Living Room",
+    "gym": "Gym"
   },
   "technical": {
     "electrical_panel": "Electrical Panel",
