@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 import requests
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -115,6 +115,12 @@ class AgoraBackend(models.Model):
         "agora.payment.mode",
         "backend_id",
         help="Map Agora payment methods to Odoo payment modes",
+    )
+    agora_tax_mapping_ids = fields.One2many(
+        "agora.tax.mapping",
+        "backend_id",
+        string="Tax Mapping by Company",
+        help="Map Agora VAT rates to Odoo taxes per company",
     )
 
     # Execution settings
@@ -461,32 +467,47 @@ class AgoraBackend(models.Model):
         return mapping.get(str(raw_type).lower(), "invoice")
 
     def _resolve_tax_ids(self, tax_rate, company_id=None):
-        """Find the account.tax ID matching the given rate (sale type).
+        """Resolve tax from explicit backend mapping by company and VAT rate.
 
-        :param tax_rate: numeric tax rate (e.g. 10.0 for 10%)
+        :param tax_rate: VAT rate from Agora, as fraction (0.10) or percent (10.0)
         :param company_id: company to search in; defaults to self.env.company.id
         """
         if not tax_rate:
             return []
+
         company_id = company_id or self.env.company.id
-        tax = self.env["account.tax"].search(
+        # Agora API usually sends fractions (0.10), but some file exports may
+        # contain percentages (10.0). Normalize everything to fraction form.
+        normalized_rate = float(tax_rate)
+        if normalized_rate > 1:
+            normalized_rate = normalized_rate / 100.0
+        normalized_rate = round(normalized_rate, 6)
+
+        mappings = self.env["agora.tax.mapping"].search(
             [
-                ("amount", "=", tax_rate),
-                ("type_tax_use", "=", "sale"),
+                ("backend_id", "=", self.id),
                 ("company_id", "=", company_id),
-            ],
-            limit=1,
+            ]
         )
-        if not tax:
+        mapping = mappings.filtered(lambda m: round(m.vat_rate, 6) == normalized_rate)[
+            :1
+        ]
+
+        if not mapping:
             company_name = self.env["res.company"].browse(company_id).name
-            _logger.warning(
-                "No sale tax with rate %s%% found for company '%s'. "
-                "Install the Spanish fiscal localization for this company "
-                "or create the missing tax manually.",
-                tax_rate,
-                company_name,
+            raise UserError(
+                _(
+                    "No Agora tax mapping configured for backend '%(backend)s', "
+                    "company '%(company)s', VAT rate %(rate)s. "
+                    "Please configure it in 'Taxes by Company'."
+                )
+                % {
+                    "backend": self.name,
+                    "company": company_name,
+                    "rate": "{:.6f}".format(normalized_rate),
+                }
             )
-        return [tax.id] if tax else []
+        return [mapping.tax_id.id]
 
     def _resolve_income_account(self):
         """Return a default income account for invoice lines"""
@@ -641,5 +662,47 @@ class AgoraPaymentMode(models.Model):
             "unique_payment_backend",
             "unique(agora_name, backend_id)",
             "Payment method name must be unique per backend",
+        )
+    ]
+
+
+class AgoraTaxMapping(models.Model):
+    """Map Agora VAT rates to Odoo taxes per backend and company."""
+
+    _name = "agora.tax.mapping"
+    _description = "Agora Tax Mapping"
+
+    backend_id = fields.Many2one("agora.backend", required=True, ondelete="cascade")
+    company_id = fields.Many2one("res.company", required=True)
+    vat_rate = fields.Float(
+        string="Agora VAT Rate",
+        required=True,
+        digits=(16, 6),
+        help="VAT rate from Agora as fraction (e.g. 0.10 for 10%%)",
+    )
+    tax_id = fields.Many2one(
+        "account.tax",
+        string="Odoo Tax",
+        required=True,
+        domain="[('type_tax_use', '=', 'sale'), ('company_id', '=', company_id)]",
+    )
+
+    @api.constrains("vat_rate")
+    def _check_vat_rate_range(self):
+        for rec in self:
+            if rec.vat_rate < 0:
+                raise ValidationError(_("Agora VAT Rate cannot be negative."))
+
+    @api.constrains("company_id", "tax_id")
+    def _check_company_matches_tax(self):
+        for rec in self:
+            if rec.tax_id and rec.company_id != rec.tax_id.company_id:
+                raise ValidationError(_("Tax company must match mapping company."))
+
+    _sql_constraints = [
+        (
+            "unique_backend_company_vat_rate",
+            "unique(backend_id, company_id, vat_rate)",
+            "Only one tax mapping per backend, company and VAT rate is allowed.",
         )
     ]

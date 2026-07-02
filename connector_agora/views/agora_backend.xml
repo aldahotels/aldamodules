@@ -136,6 +136,19 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Taxes by Company" name="tax_mappings">
+                            <p class="text-muted">
+                                Map each Agora VAT rate to the correct Odoo tax
+                                per company.
+                            </p>
+                            <field name="agora_tax_mapping_ids">
+                                <tree editable="bottom">
+                                    <field name="company_id" />
+                                    <field name="vat_rate" />
+                                    <field name="tax_id" />
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
