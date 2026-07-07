@@ -134,18 +134,75 @@ class HelpdeskPmsEnterprise(models.Model):
             ticket.message_subscribe(partner_ids=[ticket.pms_property_id.partner_id.id])
 
         if self.env.context.get("from_web_create"):
-            template = self.env.ref(
-                "alda_helpdesk_pms_enterprise.alda_confirmation_ticket",
-                raise_if_not_found=False,
-            )
-            if template:
-                try:
-                    template.send_mail(ticket.id, force_send=True, raise_exception=True)
-                except Exception:
-                    _logger.exception(
-                        "Error sending confirmation email for ticket %s", ticket.id
-                    )
+            ticket._send_ticket_creation_notifications()
         return ticket
+
+    def _get_ticket_notification_recipients(self):
+        self.ensure_one()
+        recipients = {
+            "external_emails": set(),
+            "internal_emails": set(),
+        }
+
+        hotel_partner = (
+            self.pms_property_id.partner_id if self.pms_property_id else False
+        )
+        if hotel_partner:
+            if hotel_partner.email:
+                recipients["external_emails"].add(hotel_partner.email)
+
+        technician_partner = self.user_id.partner_id if self.user_id else False
+        if technician_partner:
+            if technician_partner.email:
+                recipients["internal_emails"].add(technician_partner.email)
+
+        return recipients
+
+    def _send_ticket_creation_notifications(self):
+        self.ensure_one()
+        recipients = self._get_ticket_notification_recipients()
+
+        external_template = self.env.ref(
+            "alda_helpdesk_pms_enterprise.alda_confirmation_ticket_external_v4",
+            raise_if_not_found=False,
+        )
+        if external_template and recipients["external_emails"]:
+            try:
+                external_template.send_mail(
+                    self.id,
+                    force_send=True,
+                    raise_exception=True,
+                    email_values={
+                        "email_to": ", ".join(sorted(recipients["external_emails"])),
+                    },
+                )
+            except Exception:
+                _logger.exception(
+                    "Error sending external confirmation email for ticket %s", self.id
+                )
+
+        internal_template = self.env.ref(
+            "alda_helpdesk_pms_enterprise.alda_confirmation_ticket_internal_v2",
+            raise_if_not_found=False,
+        )
+        if internal_template and recipients["internal_emails"]:
+            try:
+                internal_template.send_mail(
+                    self.id,
+                    force_send=True,
+                    raise_exception=True,
+                    email_values={
+                        "email_to": ", ".join(sorted(recipients["internal_emails"])),
+                        # Keep internal notice out of portal chatter/history.
+                        "model": False,
+                        "res_id": False,
+                        "mail_message_id": False,
+                    },
+                )
+            except Exception:
+                _logger.exception(
+                    "Error sending internal confirmation email for ticket %s", self.id
+                )
 
     def _track_template(self, changes):
         res = super()._track_template(changes)
