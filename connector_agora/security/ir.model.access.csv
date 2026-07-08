@@ -10,4 +10,6 @@ access_agora_account_move_user,agora.account.move.user,model_agora_account_move,
 access_agora_account_move_manager,agora.account.move.manager,model_agora_account_move,connector_agora.group_connector_agora_manager,1,1,1,1
 access_agora_journal_mapping_user,agora.journal.mapping.user,model_agora_journal_mapping,connector_agora.group_connector_agora_user,1,0,0,0
 access_agora_journal_mapping_manager,agora.journal.mapping.manager,model_agora_journal_mapping,connector_agora.group_connector_agora_manager,1,1,1,1
+access_agora_tax_mapping_user,agora.tax.mapping.user,model_agora_tax_mapping,connector_agora.group_connector_agora_user,1,0,0,0
+access_agora_tax_mapping_manager,agora.tax.mapping.manager,model_agora_tax_mapping,connector_agora.group_connector_agora_manager,1,1,1,1
 access_agora_import_wizard_manager,agora.import.wizard.manager,model_agora_import_wizard,connector_agora.group_connector_agora_manager,1,1,1,1
