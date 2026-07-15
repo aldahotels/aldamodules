@@ -1,6 +1,6 @@
 from datetime import timedelta
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+
+from odoo import _, api, fields, models
 
 
 class AccountJournal(models.Model):
@@ -28,16 +28,18 @@ class AccountJournal(models.Model):
                     journal._group_outstanding_payments_for_journal()
             except Exception as e:
                 # No aborta el cron por un diario con error
-                self.env["ir.logging"].create({
-                    "name": "group_outstanding_payments",
-                    "type": "server",
-                    "dbname": self._cr.dbname,
-                    "level": "ERROR",
-                    "message": str(e),
-                    "path": __name__,
-                    "func": "_cron_group_outstanding_payments",
-                    "line": 0,
-                })
+                self.env["ir.logging"].create(
+                    {
+                        "name": "group_outstanding_payments",
+                        "type": "server",
+                        "dbname": self._cr.dbname,
+                        "level": "ERROR",
+                        "message": str(e),
+                        "path": __name__,
+                        "func": "_cron_group_outstanding_payments",
+                        "line": 0,
+                    }
+                )
 
     def _group_outstanding_payments_for_journal(self):
         self.ensure_one()
@@ -54,7 +56,7 @@ class AccountJournal(models.Model):
         aml_obj = self.env["account.move.line"]
         domain = [
             ("journal_id", "=", self.id),
-            ("payment_id", "!=", False),      # líneas procedentes de pagos
+            ("payment_id", "!=", False),  # líneas procedentes de pagos
             ("reconciled", "=", False),
             ("account_id", "in", account_ids),
             ("parent_state", "=", "posted"),
@@ -83,9 +85,12 @@ class AccountJournal(models.Model):
         vals = {
             "date": gdate,
             "journal_id": self.id,
-            "ref": _("Auto grouped payments %s - %s") % (self.name, fields.Date.to_string(gdate)),
+            "ref": _("Auto grouped payments %s - %s")
+            % (self.name, fields.Date.to_string(gdate)),
             "line_ids": [],
-            "pms_property_id": self.pms_property_ids and self.pms_property_ids[0].id or False,
+            "pms_property_id": self.pms_property_ids
+            and self.pms_property_ids[0].id
+            or False,
         }
 
         total_debit = 0.0
@@ -96,7 +101,7 @@ class AccountJournal(models.Model):
             if aml.balance > 0:  # original es débito -> creamos un crédito
                 debit = 0.0
                 credit = amount
-            else:                # original es crédito -> creamos un débito
+            else:  # original es crédito -> creamos un débito
                 debit = amount
                 credit = 0.0
 
@@ -104,16 +109,25 @@ class AccountJournal(models.Model):
             # compatible with old lines that used the move line id.
             line_name = "Reverse:%s" % aml.move_name
 
-            vals["line_ids"].append((0, 0, {
-                "name": line_name,
-                "account_id": aml.account_id.id,
-                "partner_id": aml.partner_id.id or False,  # opcional; ayuda a conciliar
-                "debit": debit,
-                "credit": credit,
-                "currency_id": aml.currency_id.id or False,
-                "amount_currency": aml.currency_id and (-aml.amount_currency) or 0.0,
-                "date_maturity": aml.date_maturity or aml.date,
-            }))
+            vals["line_ids"].append(
+                (
+                    0,
+                    0,
+                    {
+                        "name": line_name,
+                        "account_id": aml.account_id.id,
+                        "partner_id": aml.partner_id.id
+                        or False,  # opcional; ayuda a conciliar
+                        "debit": debit,
+                        "credit": credit,
+                        "currency_id": aml.currency_id.id or False,
+                        "amount_currency": aml.currency_id
+                        and (-aml.amount_currency)
+                        or 0.0,
+                        "date_maturity": aml.date_maturity or aml.date,
+                    },
+                )
+            )
 
             total_debit += debit
             total_credit += credit
@@ -127,21 +141,27 @@ class AccountJournal(models.Model):
         if diff > 0:  # sobra débito -> añadir crédito
             bal_debit = 0.0
             bal_credit = abs(diff)
-        else:         # sobra crédito -> añadir débito
+        else:  # sobra crédito -> añadir débito
             bal_debit = abs(diff)
             bal_credit = 0.0
 
         # Misma cuenta de pendientes, sin partner
-        vals["line_ids"].append((0, 0, {
-            "name": _("Grouped pending %s") % fields.Date.to_string(gdate),
-            "account_id": amls[0].account_id.id,
-            "partner_id": False,
-            "debit": bal_debit,
-            "credit": bal_credit,
-            "currency_id": amls[0].currency_id.id,
-            "amount_currency": -1 * diff,
-            "date_maturity": gdate,
-        }))
+        vals["line_ids"].append(
+            (
+                0,
+                0,
+                {
+                    "name": _("Grouped pending %s") % fields.Date.to_string(gdate),
+                    "account_id": amls[0].account_id.id,
+                    "partner_id": False,
+                    "debit": bal_debit,
+                    "credit": bal_credit,
+                    "currency_id": amls[0].currency_id.id,
+                    "amount_currency": -1 * diff,
+                    "date_maturity": gdate,
+                },
+            )
+        )
 
         move = Move.create(vals)
         move.action_post()

@@ -19,9 +19,9 @@ class AccountMove(models.Model):
                 move.line_ids.matched_debit_ids.debit_move_id
                 | move.line_ids.matched_credit_ids.credit_move_id
             )
-            move.reconciled_statement_line_id = counterpart_lines.move_id.statement_line_id[
-                :1
-            ]
+            move.reconciled_statement_line_id = (
+                counterpart_lines.move_id.statement_line_id[:1]
+            )
 
     def button_open_reconciled_statement_line(self):
         self.ensure_one()

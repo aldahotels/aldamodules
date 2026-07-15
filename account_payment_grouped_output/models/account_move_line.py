@@ -24,7 +24,5 @@ class AccountMoveLine(models.Model):
             if line.move_name:
                 expected_names.add("Reverse:%s" % line.move_name)
 
-        grouping_lines = counterpart_lines.filtered(
-            lambda l: l.name in expected_names
-        )
+        grouping_lines = counterpart_lines.filtered(lambda l: l.name in expected_names)
         return grouping_lines.move_id[:1]
