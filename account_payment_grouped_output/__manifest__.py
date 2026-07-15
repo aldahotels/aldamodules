@@ -2,13 +2,15 @@
 
 {
     "name": "Account Payment - Generate grouped moves",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.2.0",
     "license": "AGPL-3",
     "author": "Comunitea",
     "website": "https://github.com/OCA/pms",
     "category": "Banking addons",
     "depends": ["account", "pms"],
     "data": ["data/ir_cron.xml",
-             "views/account_journal_view.xml"],
+             "views/account_journal_view.xml",
+             "views/account_move_view.xml",
+             "views/account_payment_view.xml"],
     "installable": True,
 }

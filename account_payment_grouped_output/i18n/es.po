@@ -6,14 +6,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-23 17:46+0000\n"
-"PO-Revision-Date: 2025-12-23 17:46+0000\n"
+"POT-Creation-Date: 2026-07-15 16:24+0000\n"
+"PO-Revision-Date: 2026-07-15 16:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: account_payment_grouped_output
+#: model_terms:ir.ui.view,arch_db:account_payment_grouped_output.view_account_payment_form_grouped_output
+msgid "<span class=\"o_stat_text\">Grouped Move</span>"
+msgstr "<span class=\"o_stat_text\">Asiento agrupado</span>"
 
 #. module: account_payment_grouped_output
 #. odoo-python
@@ -28,6 +33,31 @@ msgid "Automatic Group Payments to Reconcile"
 msgstr "Pagos automáticos agrupados para conciliar"
 
 #. module: account_payment_grouped_output
+#: model:ir.model.fields,help:account_payment_grouped_output.field_account_payment__grouped_payments_move_id
+msgid ""
+"Automatic grouping move that reconciled this payment together with other "
+"outstanding payments."
+msgstr "Movimiento de agrupación automático que concilió este pago junto con otros pagos pendientes."
+
+#. module: account_payment_grouped_output
+#. odoo-python
+#: code:addons/account_payment_grouped_output/models/account_move.py:0
+#, python-format
+msgid "Bank Transaction"
+msgstr "Transacción bancaria"
+
+#. module: account_payment_grouped_output
+#: model:ir.model.fields,help:account_payment_grouped_output.field_account_bank_statement_line__reconciled_statement_line_id
+#: model:ir.model.fields,help:account_payment_grouped_output.field_account_move__reconciled_statement_line_id
+#: model:ir.model.fields,help:account_payment_grouped_output.field_account_payment__reconciled_statement_line_id
+msgid ""
+"Bank transaction reconciled with (any line of) this journal entry, if any. "
+"Used to link an automatic payments grouping move with the bank statement "
+"line it was reconciled with."
+msgstr ""
+"Transacción bancaria conciliada con (cualquier línea de) este asiento contable, si la hay. Se utiliza para vincular un movimiento de agrupación de pagos automáticos con la línea del extracto bancario con la que se concilió."
+
+#. module: account_payment_grouped_output
 #: model:ir.model.fields,field_description:account_payment_grouped_output.field_account_journal__grace_days_to_group_payments
 msgid "Grace Days to Group Payments"
 msgstr "Días de gracia para agrupar pagos"
@@ -37,6 +67,14 @@ msgstr "Días de gracia para agrupar pagos"
 #: model:ir.cron,cron_name:account_payment_grouped_output.ir_cron_group_outstanding_payments
 msgid "Group Outstanding Payments"
 msgstr "Agrupar pagos pendientes"
+
+#. module: account_payment_grouped_output
+#. odoo-python
+#: code:addons/account_payment_grouped_output/models/account_payment.py:0
+#: model:ir.model.fields,field_description:account_payment_grouped_output.field_account_payment__grouped_payments_move_id
+#, python-format
+msgid "Grouped Payments Move"
+msgstr "Agrupamiento de pagos"
 
 #. module: account_payment_grouped_output
 #. odoo-python
@@ -58,6 +96,33 @@ msgid "Journal"
 msgstr "Diario"
 
 #. module: account_payment_grouped_output
+#: model:ir.model,name:account_payment_grouped_output.model_account_move
+msgid "Journal Entry"
+msgstr "Asiento contable"
+
+#. module: account_payment_grouped_output
+#: model:ir.model,name:account_payment_grouped_output.model_account_move_line
+msgid "Journal Item"
+msgstr "Apunte contable"
+
+#. module: account_payment_grouped_output
 #: model:ir.model.fields,help:account_payment_grouped_output.field_account_journal__grace_days_to_group_payments
 msgid "Number of days to wait before grouping payments for reconciliation."
 msgstr "Número de días a esperar antes de agrupar los pagos para la conciliación."
+
+#. module: account_payment_grouped_output
+#: model:ir.model,name:account_payment_grouped_output.model_account_payment
+msgid "Payments"
+msgstr "Pagos"
+
+#. module: account_payment_grouped_output
+#: model:ir.model.fields,field_description:account_payment_grouped_output.field_account_bank_statement_line__reconciled_statement_line_id
+#: model:ir.model.fields,field_description:account_payment_grouped_output.field_account_move__reconciled_statement_line_id
+#: model:ir.model.fields,field_description:account_payment_grouped_output.field_account_payment__reconciled_statement_line_id
+msgid "Reconciled Bank Transaction"
+msgstr "Transacción bancaria conciliada"
+
+#. module: account_payment_grouped_output
+#: model_terms:ir.ui.view,arch_db:account_payment_grouped_output.view_move_form_grouped_output
+msgid "Show Transaction"
+msgstr "Ver transacción"
