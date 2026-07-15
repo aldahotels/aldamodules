@@ -1,16 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
 
     <record id="view_account_journal_form_grouped_payments" model="ir.ui.view">
       <field name="name">account.journal.form.grouped.payments</field>
       <field name="model">account.journal</field>
-      <field name="inherit_id" ref="account.view_account_journal_form"/>
+      <field name="inherit_id" ref="account.view_account_journal_form" />
       <field name="arch" type="xml">
         <!-- Inserta el bloque justo después del campo 'type' -->
         <xpath expr="//field[@name='type']" position="after">
-            <field name="automatic_group_payments_to_reconcile" attrs="{'invisible': [('type', 'not in', ['bank', 'cash'])]}"/>
-            <field name="grace_days_to_group_payments"
-                   attrs="{'invisible': [('automatic_group_payments_to_reconcile','=',False)]}"/>
+            <field
+                    name="automatic_group_payments_to_reconcile"
+                    attrs="{'invisible': [('type', 'not in', ['bank', 'cash'])]}"
+                />
+            <field
+                    name="grace_days_to_group_payments"
+                    attrs="{'invisible': [('automatic_group_payments_to_reconcile','=',False)]}"
+                />
         </xpath>
       </field>
     </record>
