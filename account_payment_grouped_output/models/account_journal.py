@@ -90,8 +90,6 @@ class AccountJournal(models.Model):
 
         total_debit = 0.0
         total_credit = 0.0
-        reverse_names = []
-
         for aml in amls:
             amount = abs(aml.balance)
             # Línea inversa en la misma cuenta para poder conciliar individualmente
@@ -102,8 +100,9 @@ class AccountJournal(models.Model):
                 debit = amount
                 credit = 0.0
 
-            line_name = "Reverse:%s" % aml.id
-            reverse_names.append(line_name)
+            # New format keeps human-readable source move name while remaining
+            # compatible with old lines that used the move line id.
+            line_name = "Reverse:%s" % aml.move_name
 
             vals["line_ids"].append((0, 0, {
                 "name": line_name,
@@ -149,6 +148,10 @@ class AccountJournal(models.Model):
 
         # Conciliar cada pago con su línea inversa; la línea agregada queda abierta
         for aml in amls:
-            rev = move.line_ids.filtered(lambda l: l.name == ("Reverse:%s" % aml.id))
+            reverse_names = {
+                "Reverse:%s" % aml.id,
+                "Reverse:%s" % aml.move_name,
+            }
+            rev = move.line_ids.filtered(lambda l: l.name in reverse_names)
             if rev:
                 (aml + rev).reconcile()
