@@ -274,8 +274,13 @@ class AgoraAccountMove(models.Model):
         agora_number = invoice_data.get("agora_number", "")
         journal = self.env["account.journal"].browse(journal_id)
         if invoice_date and agora_number:
+            journal_prefix = (
+                "R{}".format(journal.code)
+                if invoice_data.get("agora_document_type") == "rectification"
+                else journal.code
+            )
             move_name = "{}/{}/{}".format(
-                journal.code,
+                journal_prefix,
                 invoice_date.year,
                 agora_number.zfill(5),
             )

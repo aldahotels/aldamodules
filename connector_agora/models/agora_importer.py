@@ -341,6 +341,8 @@ class AgoraImporter(models.AbstractModel):
             for line in item_lines:
                 vat_rate = float(line.get("VatRate", 0))
                 qty = float(line.get("Quantity", 1))
+                if doc_type == "basicrefund":
+                    qty = abs(qty)
                 raw_unit = (
                     line.get("UnitPrice")
                     or line.get("PrecioUnit")
