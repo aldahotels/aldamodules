@@ -448,8 +448,9 @@ class AgoraImporter(models.AbstractModel):
         The Customer object is at the invoice root level (not inside InvoiceItems).
         Logic:
           1. If no Customer key → anonymous partner.
-          2. Search by VAT (Cif), trying both with and without 'ES' prefix.
-          3. If not found → create the partner with available data.
+                    2. If Cif is present, search by VAT, AEAT identification, then
+                         partner identification numbers.
+                    3. If not found → create the partner with available data.
           4. Fallback → anonymous partner.
         """
         customer = raw.get("Customer")
@@ -469,8 +470,22 @@ class AgoraImporter(models.AbstractModel):
             if partner:
                 return partner.id
 
+            partner = self.env["res.partner"].search(
+                [("aeat_identification", "in", [cif, "ES{}".format(cif)])],
+                limit=1,
+            )
+            if partner:
+                return partner.id
+
+            partner = self.env["res.partner"].search(
+                [("id_numbers.name", "=", cif)],
+                limit=1,
+            )
+            if partner:
+                return partner.id
+
         # Search by name if no VAT match
-        if name:
+        if name and not cif:
             partner = self.env["res.partner"].search([("name", "=", name)], limit=1)
             if partner:
                 return partner.id
