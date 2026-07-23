@@ -164,7 +164,8 @@ class PurchaseRequestJsonMethods(http.Controller):
             })
 
             # portal=False to avoid onchange_product_id to be raise error
-            request_line.with_context(portal=False).onchange_product_id()
+            # force sudo to avoid access rights error when onchange_product_id is called (recomputes code)
+            request_line.sudo().with_context(portal=False).onchange_product_id()
             request_line.with_context(portal=True, no_msg=True).write({
                 'product_qty': float(qty),
                 'product_uom_id': product_info.product_uom.id if product_info else False,
