@@ -66,6 +66,16 @@ class HelpdeskTicket(models.Model):
         help="Indicates if the room is blocked for this ticket.",
     )
 
+    room_closure_reason_id = fields.Many2one(
+        comodel_name="room.closure.reason",
+        string="Closure Reason",
+        compute="_compute_is_room_blocked",
+        compute_sudo=True,
+        store=False,
+        readonly=True,
+        help="Shows the closure reason of the current out-of-service reservation for the room.",
+    )
+
     is_room = fields.Boolean(
         string="Room's ticket",
         compute="_compute_is_room",
@@ -272,7 +282,7 @@ class HelpdeskTicket(models.Model):
     )
 
     @api.model
-    def _is_room_blocked(self, pms_room_id):
+    def _get_current_out_of_service_line(self, pms_room_id):
         today = fields.Date.context_today(self)
         line = (
             self.env["pms.reservation.line"]
@@ -288,6 +298,11 @@ class HelpdeskTicket(models.Model):
                 limit=1,
             )
         )
+        return line
+
+    @api.model
+    def _is_room_blocked(self, pms_room_id):
+        line = self._get_current_out_of_service_line(pms_room_id)
         return bool(line)
 
     @api.depends("pms_room_id")
@@ -297,8 +312,13 @@ class HelpdeskTicket(models.Model):
                 ticket.is_room_blocked = False
                 ticket.color = 0
                 ticket.ticket_blocked_room_adr_accumulated = 0.0
+                ticket.room_closure_reason_id = False
             else:
-                ticket.is_room_blocked = self._is_room_blocked(ticket.pms_room_id)
+                line = self._get_current_out_of_service_line(ticket.pms_room_id)
+                ticket.is_room_blocked = bool(line)
+                ticket.room_closure_reason_id = (
+                    line.reservation_id.closure_reason_id if line else False
+                )
                 ticket.color = 9 if ticket.is_room_blocked else 0
 
     @api.onchange("team_id")
