@@ -1,30 +1,47 @@
 <odoo>
-    <template id="portal_my_home_menu_stock_picking" name="Portal layout : stock_picking menu entries" inherit_id="portal.portal_breadcrumbs" priority="30">
+    <template
+        id="portal_my_home_menu_stock_picking"
+        name="Portal layout : stock_picking menu entries"
+        inherit_id="portal.portal_breadcrumbs"
+        priority="30"
+    >
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
-            <li t-if="page_name == 'stock_picking'" t-attf-class="breadcrumb-item #{'active ' if not stock_picking else ''}">
-                <a t-if="stock_picking" t-attf-href="/my/stock_pickings?{{ keep_query() }}">Stock pickings</a>
+            <li
+                t-if="page_name == 'stock_picking'"
+                t-attf-class="breadcrumb-item #{'active ' if not stock_picking else ''}"
+            >
+                <a
+                    t-if="stock_picking"
+                    t-attf-href="/my/stock_pickings?{{ keep_query() }}"
+                >Stock pickings</a>
                 <t t-else="">Stock pickings</t>
             </li>
             <li t-if="stock_picking" class="breadcrumb-item active">
-                <t t-out="stock_picking.name" t-if="stock_picking.name != '/'"/>
+                <t t-out="stock_picking.name" t-if="stock_picking.name != '/'" />
                 <t t-else=""><em>Draft stock picking</em></t>
             </li>
         </xpath>
     </template>
 
-    <template id="portal_my_home_stock_picking" name="Show stock pickings" inherit_id="portal.portal_my_home" customize_show="True" priority="30">
+    <template
+        id="portal_my_home_stock_picking"
+        name="Show stock pickings"
+        inherit_id="portal.portal_my_home"
+        customize_show="True"
+        priority="30"
+    >
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
             <t t-call="portal.portal_docs_entry">
                 <t t-set="title">Stock pickings</t>
-                <t t-set="url" t-value="'/my/stock_pickings'"/>
-                <t t-set="placeholder_count" t-value="'stock_picking_count'"/>
+                <t t-set="url" t-value="'/my/stock_pickings'" />
+                <t t-set="placeholder_count" t-value="'stock_picking_count'" />
             </t>
         </xpath>
     </template>
 
     <template id="portal_my_stock_pickings" name="My stock_pickings and Payments">
       <t t-call="portal.portal_layout">
-        <t t-set="breadcrumbs_searchbar" t-value="True"/>
+        <t t-set="breadcrumbs_searchbar" t-value="True" />
 
         <t t-call="portal.portal_searchbar">
             <t t-set="title">stock_pickings</t>
@@ -39,7 +56,7 @@
                     <th>Date</th>
                     <th>Origin</th>
                     <th>Supplier</th>
-                    <th/>
+                    <th />
                 </tr>
             </thead>
             <tbody>
@@ -47,31 +64,76 @@
                     <tr>
                         <td>
                             <a t-att-href="stock_picking.get_portal_url()">
-                                <t t-out="stock_picking.name" t-if="stock_picking.name != '/'"/>
+                                <t
+                                        t-out="stock_picking.name"
+                                        t-if="stock_picking.name != '/'"
+                                    />
                                 <em t-else="">Draft stock picking</em>
                             </a>
                         </td>
-                        <td><span t-field="stock_picking.scheduled_date"/></td>
-                        <td><span t-field="stock_picking.origin"/></td>
-                        <td><span t-field="stock_picking.partner_id.name"/></td>
+                        <td><span t-field="stock_picking.scheduled_date" /></td>
+                        <td><span t-field="stock_picking.origin" /></td>
+                        <td><span t-field="stock_picking.partner_id.name" /></td>
                         <td class="tx_status">
                             <t t-if="stock_picking.state == 'draft'">
-                                <span class="badge rounded-pill text-bg-info"><i class="fa fa-fw fa-clock-o" aria-label="Draft" title="Draft" role="img"></i><span class="d-none d-md-inline"> Draft</span></span>
+                                <span class="badge rounded-pill text-bg-info"><i
+                                            class="fa fa-fw fa-clock-o"
+                                            aria-label="Draft"
+                                            title="Draft"
+                                            role="img"
+                                        /><span
+                                            class="d-none d-md-inline"
+                                        > Draft</span></span>
                             </t>
                             <t t-if="stock_picking.state == 'waiting'">
-                                <span class="badge rounded-pill text-bg-secondary"><i class="fa fa-fw fa-check" aria-label="Waiting" title="Waiting" role="img"></i><span class="d-none d-md-inline"> Waiting</span></span>
+                                <span class="badge rounded-pill text-bg-secondary"><i
+                                            class="fa fa-fw fa-check"
+                                            aria-label="Waiting"
+                                            title="Waiting"
+                                            role="img"
+                                        /><span
+                                            class="d-none d-md-inline"
+                                        > Waiting</span></span>
                             </t>
                             <t t-if="stock_picking.state == 'assigned'">
-                                <span class="badge rounded-pill text-bg-secondary"><i class="fa fa-fw fa-check" aria-label="Assigned" title="Assigned" role="img"></i><span class="d-none d-md-inline"> Assigned</span></span>
+                                <span class="badge rounded-pill text-bg-secondary"><i
+                                            class="fa fa-fw fa-check"
+                                            aria-label="Assigned"
+                                            title="Assigned"
+                                            role="img"
+                                        /><span
+                                            class="d-none d-md-inline"
+                                        > Assigned</span></span>
                             </t>
                             <t t-if="stock_picking.state == 'confirmed'">
-                                <span class="badge rounded-pill text-bg-primary"><i class="fa fa-fw fa-check" aria-label="Confirmed" title="Confirmed" role="img"></i><span class="d-none d-md-inline"> Confirmed</span></span>
+                                <span class="badge rounded-pill text-bg-primary"><i
+                                            class="fa fa-fw fa-check"
+                                            aria-label="Confirmed"
+                                            title="Confirmed"
+                                            role="img"
+                                        /><span
+                                            class="d-none d-md-inline"
+                                        > Confirmed</span></span>
                             </t>
                             <t t-if="stock_picking.state == 'done'">
-                                <span class="badge rounded-pill text-bg-success"><i class="fa fa-fw fa-check" aria-label="Done" title="Done" role="img"></i><span class="d-none d-md-inline"> Done</span></span>
+                                <span class="badge rounded-pill text-bg-success"><i
+                                            class="fa fa-fw fa-check"
+                                            aria-label="Done"
+                                            title="Done"
+                                            role="img"
+                                        /><span
+                                            class="d-none d-md-inline"
+                                        > Done</span></span>
                             </t>
                             <t t-if="stock_picking.state == 'cancel'">
-                                <span class="badge rounded-pill text-bg-warning"><i class="fa fa-fw fa-remove" aria-label="Cancel" title="Cancel" role="img"></i><span class="d-none d-md-inline"> Cancel</span></span>
+                                <span class="badge rounded-pill text-bg-warning"><i
+                                            class="fa fa-fw fa-remove"
+                                            aria-label="Cancel"
+                                            title="Cancel"
+                                            role="img"
+                                        /><span
+                                            class="d-none d-md-inline"
+                                        > Cancel</span></span>
                             </t>
                         </td>
                     </tr>
@@ -81,78 +143,146 @@
       </t>
     </template>
 
-    <template id="portal_stock_picking_page" name="stock_picking Portal Template" inherit_id="portal.portal_sidebar" primary="True">
+    <template
+        id="portal_stock_picking_page"
+        name="stock_picking Portal Template"
+        inherit_id="portal.portal_sidebar"
+        primary="True"
+    >
         <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
             <t t-set="o_portal_fullwidth_alert" groups="stock.group_stock_manager">
                 <t t-call="portal.portal_back_in_edit_mode">
-                    <t t-set="backend_url" t-value="'/web#model=%s&amp;id=%s&amp;action=%s&amp;view_type=form' % (stock_picking._name, stock_picking.id, stock_picking.env.ref('stock.action_picking_tree_all').id)"/>
+                    <t
+                        t-set="backend_url"
+                        t-value="'/web#model=%s&amp;id=%s&amp;action=%s&amp;view_type=form' % (stock_picking._name, stock_picking.id, stock_picking.env.ref('stock.action_picking_tree_all').id)"
+                    />
                 </t>
             </t>
             <div class="row mt16 o_portal_stock_picking_sidebar">
                 <!-- Sidebar -->
                 <t t-call="portal.portal_record_sidebar">
-                    <t t-set="classes" t-value="'col-lg-auto d-print-none'"/>
+                    <t t-set="classes" t-value="'col-lg-auto d-print-none'" />
                     <t t-set="title">
                         <h2 class="mb-0">
-                            <b t-field="stock_picking.name"/>
-                            <em t-field="stock_picking.state"/>
+                            <b t-field="stock_picking.name" />
+                            <em t-field="stock_picking.state" />
                         </h2>
                     </t>
 
                     <t t-set="entries">
-                        <ul class="list-group list-group-flush flex-wrap flex-row flex-lg-column">
-                            <li class="navspy list-group-item ps-0 flex-grow-1" t-ignore="true" role="complementary">
-                                <ul class="nav flex-column bs-sidenav"></ul>
+                        <ul
+                            class="list-group list-group-flush flex-wrap flex-row flex-lg-column"
+                        >
+                            <li
+                                class="navspy list-group-item ps-0 flex-grow-1"
+                                t-ignore="true"
+                                role="complementary"
+                            >
+                                <ul class="nav flex-column bs-sidenav" />
                             </li>
 
-                            <li t-if="stock_picking.partner_id" class="list-group-item flex-grow-1">
+                            <li
+                                t-if="stock_picking.partner_id"
+                                class="list-group-item flex-grow-1"
+                            >
                                 <div class="small mb-1"><strong class="text-muted">
                                     Receive from
                                 </strong></div>
                                 <div class="row">
                                     <div class="col flex-grow-0 pr-2">
-                                        <img t-if="stock_picking.partner_id.image_1024" class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(stock_picking.partner_id.image_1024)" alt="Contact"/>
-                                        <img t-else="" class="rounded-circle mt-1 o_portal_contact_img" src="/web/static/src/img/user_menu_avatar.png" alt="Contact"/>
+                                        <img
+                                            t-if="stock_picking.partner_id.image_1024"
+                                            class="rounded-circle mt-1 o_portal_contact_img"
+                                            t-att-src="image_data_uri(stock_picking.partner_id.image_1024)"
+                                            alt="Contact"
+                                        />
+                                        <img
+                                            t-else=""
+                                            class="rounded-circle mt-1 o_portal_contact_img"
+                                            src="/web/static/src/img/user_menu_avatar.png"
+                                            alt="Contact"
+                                        />
                                     </div>
                                     <div class="col pl-0">
-                                        <span t-field="stock_picking.partner_id" t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>
-                                        <a href="#discussion" class="small"><i class="fa fa-fw fa-comments"/><b>Send message</b></a>
+                                        <span
+                                            t-field="stock_picking.partner_id"
+                                            t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'
+                                        />
+                                        <a href="#discussion" class="small"><i
+                                                class="fa fa-fw fa-comments"
+                                            /><b>Send message</b></a>
                                     </div>
                                 </div>
                             </li>
 
-                            <li t-if="stock_picking.property_id" class="list-group-item flex-grow-1">
+                            <li
+                                t-if="stock_picking.property_id"
+                                class="list-group-item flex-grow-1"
+                            >
                                 <div class="small mb-1"><strong class="text-muted">
                                     Hotel
                                 </strong></div>
                                 <div class="row">
                                     <div class="col flex-grow-0 pr-2">
-                                        <img class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(stock_picking.property_id.logo)" alt="Hotel"/>
+                                        <img
+                                            class="rounded-circle mt-1 o_portal_contact_img"
+                                            t-att-src="image_data_uri(stock_picking.property_id.logo)"
+                                            alt="Hotel"
+                                        />
                                     </div>
                                     <div class="col pl-0">
-                                        <span t-field="stock_picking.property_id" t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>
+                                        <span
+                                            t-field="stock_picking.property_id"
+                                            t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'
+                                        />
                                     </div>
                                 </div>
                             </li>
 
-                            <li t-if="stock_picking.user_id" class="list-group-item flex-grow-1">
+                            <li
+                                t-if="stock_picking.user_id"
+                                class="list-group-item flex-grow-1"
+                            >
                                 <div class="small mb-1"><strong class="text-muted">
                                     Assigned to
                                 </strong></div>
                                 <div class="row">
                                     <div class="col flex-grow-0 pr-2">
-                                        <img t-if="stock_picking.user_id.image_1024" class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(stock_picking.user_id.image_1024)" alt="Contact"/>
-                                        <img t-else="" class="rounded-circle mt-1 o_portal_contact_img" src="/web/static/src/img/user_menu_avatar.png" alt="Contact"/>
+                                        <img
+                                            t-if="stock_picking.user_id.image_1024"
+                                            class="rounded-circle mt-1 o_portal_contact_img"
+                                            t-att-src="image_data_uri(stock_picking.user_id.image_1024)"
+                                            alt="Contact"
+                                        />
+                                        <img
+                                            t-else=""
+                                            class="rounded-circle mt-1 o_portal_contact_img"
+                                            src="/web/static/src/img/user_menu_avatar.png"
+                                            alt="Contact"
+                                        />
                                     </div>
                                     <div class="col pl-0">
-                                        <span t-field="stock_picking.user_id" t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>
-                                        <a href="#discussion" class="small"><i class="fa fa-fw fa-comments"/><b>Send message</b></a>
+                                        <span
+                                            t-field="stock_picking.user_id"
+                                            t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'
+                                        />
+                                        <a href="#discussion" class="small"><i
+                                                class="fa fa-fw fa-comments"
+                                            /><b>Send message</b></a>
                                     </div>
                                 </div>
                             </li>
 
-                            <li class="list-group-item flex-grow-1" t-if="stock_picking.state not in ['cancel', 'done']" id="stock_picking_controls">
-                                <button t-if="stock_picking.state not in ['cancel', 'done']" class="btn btn-primary picking_validate" t-att-data-stock_picking="stock_picking.id">Validate</button>
+                            <li
+                                class="list-group-item flex-grow-1"
+                                t-if="stock_picking.state not in ['cancel', 'done']"
+                                id="stock_picking_controls"
+                            >
+                                <button
+                                    t-if="stock_picking.state not in ['cancel', 'done']"
+                                    class="btn btn-primary picking_validate"
+                                    t-att-data-stock_picking="stock_picking.id"
+                                >Validate</button>
                             </li>
                         </ul>
                     </t>
@@ -172,19 +302,22 @@
                             </thead>
                             <tbody id="stock_picking_container">
                                 <t t-call="purchase_portal.stock_picking_lines_table">
-                                    <t t-set="stock_picking" t-value="stock_picking"/>
-                                    <t t-set="move_ids" t-value="stock_picking.move_ids"/>
+                                    <t t-set="stock_picking" t-value="stock_picking" />
+                                    <t
+                                        t-set="move_ids"
+                                        t-value="stock_picking.move_ids"
+                                    />
                                 </t>
                             </tbody>
                         </table>
                     </div>
                     <!-- errors -->
-                    <div id="edit_errors"/>
+                    <div id="edit_errors" />
                     <!-- chatter -->
                     <div id="stock_picking_communication" class="mt-4">
                         <h2>History</h2>
                         <t t-call="portal.message_thread">
-                            <t t-set="object" t-value="stock_picking"/>
+                            <t t-set="object" t-value="stock_picking" />
                         </t>
                     </div>
                 </div>
@@ -196,14 +329,24 @@
         <t t-foreach="move_ids" t-as="ol" t-key="ol_index">
             <tr>
                 <td>
-                    <img t-att-src="'/web/image/product.product/%s/image_128' % ol.product_id.id" alt="Product" class="d-none d-lg-inline"/>
-                    <span t-out="ol.name"/>
+                    <img
+                        t-att-src="'/web/image/product.product/%s/image_128' % ol.product_id.id"
+                        alt="Product"
+                        class="d-none d-lg-inline"
+                    />
+                    <span t-out="ol.name" />
                 </td>
                 <td class="text-right">
-                    <span t-out="ol.product_original_qty"/> <span  t-if="ol.product_original_qty_uom" t-out="ol.product_original_qty_uom.name"/>
+                    <span t-out="ol.product_original_qty" /> <span
+                        t-if="ol.product_original_qty_uom"
+                        t-out="ol.product_original_qty_uom.name"
+                    />
                 </td>
                 <td class="text-right">
-                    <span t-out="ol.product_qty"/> <span t-if="ol.product_uom" t-out="ol.product_uom.name"/>
+                    <span t-out="ol.product_qty" /> <span
+                        t-if="ol.product_uom"
+                        t-out="ol.product_uom.name"
+                    />
                 </td>
                 <td class="text-right">
                     <span
@@ -218,7 +361,7 @@
                         t-att-data-line_id="ol.id"
                         t-att-value="ol.quantity_done"
                     />
-                    <span t-if="ol.product_uom" t-out="ol.product_uom.name"/>
+                    <span t-if="ol.product_uom" t-out="ol.product_uom.name" />
                 </td>
             </tr>
         </t>
@@ -226,13 +369,14 @@
 
     <template id="portal_product_product" name="Portal product list">
       <t t-call="portal.portal_layout">
-        <t t-set="breadcrumbs_searchbar" t-value="True"/>
+        <t t-set="breadcrumbs_searchbar" t-value="True" />
 
         <t t-call="portal.portal_searchbar">
             <t t-set="title">product_products</t>
         </t>
         <t t-if="not product_products">
-            <p>There are currently no product_products and payments for your account.</p>
+            <p
+                >There are currently no product_products and payments for your account.</p>
         </t>
         <t t-if="product_products" t-call="portal.portal_table">
             <thead>
@@ -249,39 +393,53 @@
                 <t t-foreach="product_products" t-as="product_product">
                     <tr>
                         <td>
-                            <img t-att-src="'/web/image/product.product/%s/image_128' % product_product.id" alt="Product" class="d-none d-lg-inline"/>
-                            <span t-out="product_product.name"/>
+                            <img
+                                    t-att-src="'/web/image/product.product/%s/image_128' % product_product.id"
+                                    alt="Product"
+                                    class="d-none d-lg-inline"
+                                />
+                            <span t-out="product_product.name" />
                         </td>
                         <td>
-                            <span t-field="product_product.default_code"/><br/>
-                            <t t-set="attachment" t-value="product_product.get_first_attachment()"/>
+                            <span t-field="product_product.default_code" /><br />
+                            <t
+                                    t-set="attachment"
+                                    t-value="product_product.get_first_attachment()"
+                                />
                             <t t-if="attachment">
-                                <a t-att-href="'/web/content/%s?download=True' % attachment.id">
-                                    <i class="fa fa-file-pdf-o"></i> Data sheet
+                                <a
+                                        t-att-href="'/web/content/%s?download=True' % attachment.id"
+                                    >
+                                    <i class="fa fa-file-pdf-o" /> Data sheet
                                 </a>
                             </t>
                         </td>
                         <td>
                             <t t-if="product_product.mapped('seller_ids')">
-                                <t t-set="seller" t-value="product_product.mapped('seller_ids')[0]"/>
+                                <t
+                                        t-set="seller"
+                                        t-value="product_product.mapped('seller_ids')[0]"
+                                    />
                                 <span>
-                                    <t t-out="seller.partner_id.name"/><br/>
+                                    <t t-out="seller.partner_id.name" /><br />
                                     <span t-if="seller.product_code">
-                                        Ref. <t t-out="seller.product_code"/>
+                                        Ref. <t t-out="seller.product_code" />
                                     </span>
                                 </span>
                             </t>
                         </td>
                         <td>
-                            <span t-field="product_product.categ_id"/>
+                            <span t-field="product_product.categ_id" />
                         </td>
                         <td>
-                            <span t-att-class="product_product.active and 'text-success' or 'text-danger'">
-                                <t t-out="product_product.active and 'Yes' or 'No'"/>
+                            <span
+                                    t-att-class="product_product.active and 'text-success' or 'text-danger'"
+                                >
+                                <t t-out="product_product.active and 'Yes' or 'No'" />
                             </span>
                         </td>
                         <td class="tx_status">
-                            <span t-out="product_product.get_supplier_lowest_price()"/>
+                            <span t-out="product_product.get_supplier_lowest_price()" />
                         </td>
                     </tr>
                 </t>

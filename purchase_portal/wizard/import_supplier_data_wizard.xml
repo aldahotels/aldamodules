@@ -7,14 +7,17 @@
         <field name="arch" type="xml">
             <form string="">
                 <p attrs="{'invisible': [('imported', '!=', False)]}">
-                    This wizard allow to import a csv file with the stock of the products.<br/>
+                    This wizard allow to import a csv file with the stock of the products.<br
+                    />
                     The csv file must contain the columns reference and stock, being reference the supplier code for the product.
                 </p>
                 <group>
                     <field name="imported" invisible="1" />
                     <field name="supplier_file_name" invisible="1" />
                     <field
-                        name="supplier_file" filename="supplier_file_name" widget="binary"
+                        name="supplier_file"
+                        filename="supplier_file_name"
+                        widget="binary"
                         attrs="{'invisible': [('imported', '!=', False)]}"
                     />
                     <field

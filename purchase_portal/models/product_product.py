@@ -21,11 +21,11 @@ from odoo import fields, models
 
 
 class ProductProduct(models.Model):
-    _inherit = 'product.product'
+    _inherit = "product.product"
 
     purchase_property_ids = fields.Many2many(
-        'pms.property',
-        string='Allowed in properties',
+        "pms.property",
+        string="Allowed in properties",
         relation="pms_property_product_product_rel",
         column1="property_id",
         column2="product_id",
@@ -35,7 +35,9 @@ class ProductProduct(models.Model):
         self.ensure_one()
         supplier_stock = 0.0
         if self.seller_ids:
-            seller = self.seller_ids.filtered(lambda x: x.partner_id.id in purchase_request.property_id.seller_ids.ids).sorted(key=lambda r: r.price)[0]
+            seller = self.seller_ids.filtered(
+                lambda x: x.partner_id.id in purchase_request.property_id.seller_ids.ids
+            ).sorted(key=lambda r: r.price)[0]
             if seller:
                 supplier_stock = seller.supplier_stock
         return supplier_stock
@@ -49,4 +51,10 @@ class ProductProduct(models.Model):
 
     def get_first_attachment(self):
         self.ensure_one()
-        return self.env['ir.attachment'].search([('res_model', '=', 'product.template'), ('res_id', '=', self.product_tmpl_id.id)], limit=1)
+        return self.env["ir.attachment"].search(
+            [
+                ("res_model", "=", "product.template"),
+                ("res_id", "=", self.product_tmpl_id.id),
+            ],
+            limit=1,
+        )

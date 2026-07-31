@@ -27,14 +27,14 @@ from odoo.exceptions import UserError
 class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     _inherit = "purchase.request.line.make.purchase.order"
 
-    property_id = fields.Many2one('pms.property', string='Property')
-    multiple_suppliers = fields.Boolean('Multiple suppliers', default=False)
+    property_id = fields.Many2one("pms.property", string="Property")
+    multiple_suppliers = fields.Boolean("Multiple suppliers", default=False)
 
     @api.model
     def _prepare_purchase_order(self, picking_type, group_id, company, origin):
         res = super()._prepare_purchase_order(picking_type, group_id, company, origin)
         if self.property_id:
-            res['property_id'] = self.property_id.id
+            res["property_id"] = self.property_id.id
         return res
 
     @api.model
@@ -51,15 +51,20 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             )
         if not request_line_ids:
             return res
-        request_line_ids
         request_lines = self.env["purchase.request.line"].browse(request_line_ids)
         property_id = request_lines.mapped("property_id")
         if len(property_id) > 1:
             raise UserError(_("You can't select lines from different properties"))
         if property_id:
             res["property_id"] = property_id.id
-            if not res.get('supplier_id', False) and request_lines.mapped("suggested_supplier_id"):
-                res["supplier_id"] = request_lines.mapped("supplier_id").ids[0] if request_lines.mapped("supplier_id") else False
+            if not res.get("supplier_id", False) and request_lines.mapped(
+                "suggested_supplier_id"
+            ):
+                res["supplier_id"] = (
+                    request_lines.mapped("supplier_id").ids[0]
+                    if request_lines.mapped("supplier_id")
+                    else False
+                )
                 res["multiple_suppliers"] = True
         return res
 
@@ -70,32 +75,44 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         pr_line_obj = self.env["purchase.request.line"]
         purchase = False
 
-        line_ids = pr_line_obj.sudo().search([
-            ('id', 'in', self.item_ids.mapped("line_id").ids)
-        ])
+        line_ids = pr_line_obj.sudo().search(
+            [("id", "in", self.item_ids.mapped("line_id").ids)]
+        )
 
-        if len(line_ids.mapped('suggested_supplier_id')) < 2:
-            self.item_ids = self.item_ids.filtered(lambda x: x.line_id.suggested_supplier_id)
-            return super(PurchaseRequestLineMakePurchaseOrder, self).make_purchase_order()
+        if len(line_ids.mapped("suggested_supplier_id")) < 2:
+            self.item_ids = self.item_ids.filtered(
+                lambda x: x.line_id.suggested_supplier_id
+            )
+            return super(
+                PurchaseRequestLineMakePurchaseOrder, self
+            ).make_purchase_order()
 
         # We use the original method with a few moditifications to create a PO for each supplier
 
-        suppliers = line_ids.mapped('suggested_supplier_id')
+        suppliers = line_ids.mapped("suggested_supplier_id")
         for supplier in suppliers:
             purchase = None
-            supplier_lines = self.item_ids.filtered(lambda x: x.line_id.suggested_supplier_id == supplier)
+            supplier_lines = self.item_ids.filtered(
+                lambda x: x.line_id.suggested_supplier_id == supplier
+            )
 
             for item in supplier_lines:
                 line = item.line_id
                 if item.product_qty <= 0.0:
                     raise UserError(_("Enter a positive quantity."))
-                if self.purchase_order_id and self.purchase_order_id.partner_id.id == supplier.id:
+                if (
+                    self.purchase_order_id
+                    and self.purchase_order_id.partner_id.id == supplier.id
+                ):
                     purchase = self.purchase_order_id
                 if not purchase:
-                    purchase = self.env['purchase.order'].search([
-                        ('partner_id', '=', supplier.id),
-                        ('state', 'in', ['draft']),
-                    ], limit=1)
+                    purchase = self.env["purchase.order"].search(
+                        [
+                            ("partner_id", "=", supplier.id),
+                            ("state", "in", ["draft"]),
+                        ],
+                        limit=1,
+                    )
                 if not purchase:
                     po_data = {
                         "origin": line.origin,

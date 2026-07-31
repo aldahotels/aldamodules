@@ -22,18 +22,22 @@ from odoo import api, models
 
 
 class PosSession(models.Model):
-    _inherit = 'pos.session'
+    _inherit = "pos.session"
 
     @api.model
     def create(self, values):
         ctx = self.env.context.copy()
-        res = super(PosSession, self.with_context(ctx).sudo()).create(values)
-        if ctx.get('cash_register_id', False):
-            cash_register_id = self.env['account.bank.statement'].browse(ctx['cash_register_id'])
+        res = super(PosSession, self.with_context(**ctx).sudo()).create(values)
+        if ctx.get("cash_register_id", False):
+            cash_register_id = self.env["account.bank.statement"].browse(
+                ctx["cash_register_id"]
+            )
             statement_ids = res.statement_ids.ids + cash_register_id.ids
             if cash_register_id:
-                res.update({
-                    'statement_ids': [(6, 0, statement_ids)],
-                })
+                res.update(
+                    {
+                        "statement_ids": [(6, 0, statement_ids)],
+                    }
+                )
                 res._compute_cash_all()
         return res

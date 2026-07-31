@@ -18,50 +18,76 @@
 #
 ##############################################################################
 
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
 class PurchaseOrder(models.Model):
-    _inherit = 'purchase.order'
+    _inherit = "purchase.order"
 
-    property_id = fields.Many2one('pms.property', string='Property')
+    property_id = fields.Many2one("pms.property", string="Property")
     wating_delivery = fields.Boolean(
-        string='Waiting Delivery',
+        string="Waiting Delivery",
         default=False,
         readonly=True,
-        compute='_compute_wating_delivery',
-        store=True
+        compute="_compute_wating_delivery",
+        store=True,
     )
 
-    @api.depends('picking_ids.state', 'picking_ids')
+    @api.depends("picking_ids.state", "picking_ids")
     def _compute_wating_delivery(self):
         for purchase in self:
-            purchase.wating_delivery = any(picking.state not in ['done', 'cancel'] for picking in purchase.picking_ids)
+            purchase.wating_delivery = any(
+                picking.state not in ["done", "cancel"]
+                for picking in purchase.picking_ids
+            )
 
     @api.model
     def create(self, values):
-        property_id = values.get('property_id', False)
-        wharehouse_id = self.env['pms.property'].browse(property_id).wharehouse_id.id if property_id else False
+        property_id = values.get("property_id", False)
+        wharehouse_id = (
+            self.env["pms.property"].browse(property_id).wharehouse_id.id
+            if property_id
+            else False
+        )
         if wharehouse_id:
-            values['picking_type_id'] = self.env['stock.picking.type'].search([
-                ('warehouse_id', '=', wharehouse_id),
-                ('code', '=', 'incoming')
-            ], order="id", limit=1).id
+            values["picking_type_id"] = (
+                self.env["stock.picking.type"]
+                .search(
+                    [("warehouse_id", "=", wharehouse_id), ("code", "=", "incoming")],
+                    order="id",
+                    limit=1,
+                )
+                .id
+            )
         return super().create(values)
 
     def button_confirm(self):
-        force_confirm = self.env.context.get('force_confirm', False)
-        if not force_confirm and self.partner_id.min_purchase_amount and self.amount_total < self.partner_id.min_purchase_amount:
-            raise UserError(_('The minimum purchase amount for {} is {}').format(self.partner_id.name, self.partner_id.min_purchase_amount))
+        force_confirm = self.env.context.get("force_confirm", False)
+        if (
+            not force_confirm
+            and self.partner_id.min_purchase_amount
+            and self.amount_total < self.partner_id.min_purchase_amount
+        ):
+            raise UserError(
+                _("The minimum purchase amount for %(partner)s is %(amount)s")
+                % {
+                    "partner": self.partner_id.name,
+                    "amount": self.partner_id.min_purchase_amount,
+                }
+            )
 
         res = super().button_confirm()
 
         for purchase in self:
             if purchase.property_id:
-                purchase.message_subscribe(partner_ids=purchase.property_id.partner_id.ids)
+                purchase.message_subscribe(
+                    partner_ids=purchase.property_id.partner_id.ids
+                )
                 for ps in purchase.picking_ids:
-                    ps.message_subscribe(partner_ids=purchase.property_id.partner_id.ids)
+                    ps.message_subscribe(
+                        partner_ids=purchase.property_id.partner_id.ids
+                    )
 
         return res
 

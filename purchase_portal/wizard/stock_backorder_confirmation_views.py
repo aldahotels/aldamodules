@@ -27,15 +27,18 @@ class StockBackorderConfirmation(models.TransientModel):
     @api.model
     def default_get(self, fields):
         res = super(StockBackorderConfirmation, self).default_get(fields)
-        res['backorder_message'] = _("The following products didn't arrive:")
+        res["backorder_message"] = _("The following products didn't arrive:")
         return res
 
-    send_mail_to_seller = fields.Boolean('Mail to seller', default=False)
-    backorder_message = fields.Html('Mail to seller content', help='A line will be added for each product not received')
+    send_mail_to_seller = fields.Boolean("Mail to seller", default=False)
+    backorder_message = fields.Html(
+        "Mail to seller content",
+        help="A line will be added for each product not received",
+    )
 
     def process(self):
         ctx = self.env.context.copy()
         if self.send_mail_to_seller:
-            ctx['backorder_message'] = self.backorder_message
-        super(StockBackorderConfirmation, self.with_context(ctx)).process()
+            ctx["backorder_message"] = self.backorder_message
+        super(StockBackorderConfirmation, self.with_context(**ctx)).process()
         return True
