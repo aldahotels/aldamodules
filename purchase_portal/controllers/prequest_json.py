@@ -168,7 +168,7 @@ class PurchaseRequestJsonMethods(http.Controller):
             request_line.sudo().with_context(portal=False).onchange_product_id()
             request_line.with_context(portal=True, no_msg=True).write({
                 'product_qty': float(qty),
-                'product_uom_id': product_info.product_uom.id if product_info else False,
+                'product_uom_id': product_info.product_uom.id if product_info else request_line.product_uom_id.id,
             })
         except Exception as e:
             return json.dumps(

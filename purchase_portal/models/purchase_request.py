@@ -99,11 +99,13 @@ class PurchaseRequestLine(models.Model):
             ])
 
             min_cost_productinfo = self.env["product.supplierinfo"].sudo().search([
-                '&',
                 ('partner_id', 'in', pms_seller_ids.ids),
                 '|',
                 ('product_tmpl_id', '=', product.product_tmpl_id.id),
                 ('product_id', '=', product.id),
+                '|',
+                ('company_id', '=', request.company_id.id),
+                ('company_id', '=', False),
             ]).sorted(key=lambda r: r.price)
             if not min_cost_productinfo:
                 raise UserError(_('There are no sellers allowed for this request.'))
@@ -144,11 +146,13 @@ class PurchaseRequestLine(models.Model):
             ])
 
             min_cost_productinfo = self.env["product.supplierinfo"].sudo().search([
-                '&',
                 ('partner_id', 'in', pms_seller_ids.ids),
                 '|',
                 ('product_tmpl_id', '=', product.product_tmpl_id.id),
                 ('product_id', '=', product.id),
+                '|',
+                ('company_id', '=', request.company_id.id),
+                ('company_id', '=', False),
             ]).sorted(key=lambda r: r.price)
             if not min_cost_productinfo:
                 raise UserError(_('There are no sellers allowed for this request.'))
@@ -191,39 +195,46 @@ class PurchaseRequestLine(models.Model):
         if lines:
             for hotel in lines.mapped('property_id'):
                 filtered_lines = lines.filtered(lambda r: r.property_id == hotel)
-                ctx = self.env.context.copy()
-                ctx['active_model'] = 'purchase.request.line'
-                ctx['active_ids'] = filtered_lines.ids
                 supplier_id = filtered_lines.mapped('suggested_supplier_id')[0].id if filtered_lines.mapped('suggested_supplier_id') else \
                     filtered_lines.mapped('supplier_id')[0].id if filtered_lines.mapped('supplier_id') else False
                 if not supplier_id:
                     _logger.error(_('No supplier found for purchase request lines %s') % filtered_lines.ids)
                     continue
-                wiz = self.env['purchase.request.line.make.purchase.order'].with_context(ctx).create({
-                    'supplier_id': supplier_id,
-                    'multiple_suppliers': True if len(hotel.seller_ids) > 1 else False,
-                    'property_id': hotel.id,
-                    'sync_data_planned': True,
-                })
                 try:
-                    res = wiz.make_purchase_order()
-                    orders = res['domain'][0][2]
-                    orno_duplicates = []
-                    [orno_duplicates.append(item) for item in orders if item not in orno_duplicates]
-                    order_ids = self.env['purchase.order'].browse(orno_duplicates)
-                    for order in order_ids:
-                        order.button_confirm()
+                    # savepoint to avoid creating purchase orders if any error occurs
+                    with self.env.cr.savepoint():
+                        ctx = self.env.context.copy()
+                        ctx['active_model'] = 'purchase.request.line'
+                        ctx['active_ids'] = filtered_lines.ids
+                        wiz = self.env['purchase.request.line.make.purchase.order'].with_context(ctx).create({
+                            'supplier_id': supplier_id,
+                            'multiple_suppliers': True if len(hotel.seller_ids) > 1 else False,
+                            'property_id': hotel.id,
+                            'sync_data_planned': True,
+                        })
+                        res = wiz.make_purchase_order()
+                        orders = res['domain'][0][2]
+                        orno_duplicates = []
+                        [orno_duplicates.append(item) for item in orders if item not in orno_duplicates]
+                        order_ids = self.env['purchase.order'].browse(orno_duplicates)
+                        for order in order_ids:
+                            order.button_confirm()
 
-                        ir_model_data = self.env['ir.model.data']
-                        template_id = ir_model_data.check_object_reference('purchase', 'email_template_edi_purchase_done')[1]
-                        mail_wiz = self.env['mail.compose.message'].create({
-                            'res_id': order.id,
-                            'template_id': template_id or False,
-                            'model': 'purchase.order',
-                            'composition_mode': 'comment'}
-                        )
-                        mail_wiz._onchange_template_id_wrapper()
-                        mail_wiz.action_send_mail()
+                            ir_model_data = self.env['ir.model.data']
+                            template_id = ir_model_data.check_object_reference('purchase', 'email_template_edi_purchase_done')[1]
+                            mail_wiz = self.env['mail.compose.message'].create({
+                                'res_id': order.id,
+                                'template_id': template_id or False,
+                                'model': 'purchase.order',
+                                'composition_mode': 'comment'}
+                            )
+                            mail_wiz._onchange_template_id_wrapper()
+                            mail_wiz.action_send_mail()
                 except UserError as e:
                     _logger.warning(e)
+                    continue
+                except Exception:
+                    _logger.exception(
+                        _('Unexpected error creating purchase orders for property %s (lines %s)') % (hotel.display_name, filtered_lines.ids)
+                    )
                     continue
