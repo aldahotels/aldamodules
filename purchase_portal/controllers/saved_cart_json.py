@@ -19,13 +19,13 @@
 ##############################################################################
 
 import json
-from odoo import http, _
+
+from odoo import _, http
 from odoo.http import request
 from odoo.tools.misc import get_lang
 
 
 class SavedCartJsonMethods(http.Controller):
-
     @http.route(
         ["/saved_cart_item_edit"],
         type="json",
@@ -34,24 +34,26 @@ class SavedCartJsonMethods(http.Controller):
         website=True,
         csrf=False,
     )
-    def saved_cart_item_edit(
-        self, item_id=False, value=False, attr_name=False, **kw
-    ):
+    def saved_cart_item_edit(self, item_id=False, value=False, attr_name=False, **kw):
         if item_id and value and attr_name:
             lang = get_lang(request.env).code
-            item_id = request.env['purchase.request.saved.cart.item'].browse(item_id)
+            item_id = request.env["purchase.request.saved.cart.item"].browse(item_id)
             if not item_id:
                 return json.dumps({"error": True, "message": _("Line not found")})
             try:
-                item_id.sudo().update({
-                    attr_name: value,
-                })
+                item_id.sudo().update(
+                    {
+                        attr_name: value,
+                    }
+                )
 
                 values = {
                     "saved_cart": item_id.cart_id,
                 }
-                return request.env["ir.ui.view"].with_context(lang=lang)._render_template(
-                    "purchase_portal.portal_my_saved_items", values
+                return (
+                    request.env["ir.ui.view"]
+                    .with_context(lang=lang)
+                    ._render_template("purchase_portal.portal_my_saved_items", values)
                 )
             except Exception as e:
                 return json.dumps(
@@ -70,24 +72,26 @@ class SavedCartJsonMethods(http.Controller):
         website=True,
         csrf=False,
     )
-    def saved_cart_edit(
-        self, saved_cart=False, value=False, attr_name=False, **kw
-    ):
+    def saved_cart_edit(self, saved_cart=False, value=False, attr_name=False, **kw):
         if saved_cart and value and attr_name:
             lang = get_lang(request.env).code
-            saved_cart = request.env['purchase.request.saved.cart'].browse(saved_cart)
+            saved_cart = request.env["purchase.request.saved.cart"].browse(saved_cart)
             if not saved_cart:
                 return json.dumps({"error": True, "message": _("Line not found")})
             try:
-                saved_cart.sudo().update({
-                    attr_name: value,
-                })
+                saved_cart.sudo().update(
+                    {
+                        attr_name: value,
+                    }
+                )
 
                 values = {
                     "saved_cart": saved_cart,
                 }
-                return request.env["ir.ui.view"].with_context(lang=lang)._render_template(
-                    "purchase_portal.portal_saved_cart_info", values
+                return (
+                    request.env["ir.ui.view"]
+                    .with_context(lang=lang)
+                    ._render_template("purchase_portal.portal_saved_cart_info", values)
                 )
             except Exception as e:
                 return json.dumps(

@@ -9,6 +9,6 @@ class PurchaseReport(models.Model):
         string="Comercial Partner",
         readonly=True,
         help="Comercial partner of the supplier",
-        related='partner_id.commercial_partner_id',
+        related="partner_id.commercial_partner_id",
         store=True,
     )

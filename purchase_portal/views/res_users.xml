@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <odoo>
     <record id="view_users_form_token_access" model="ir.ui.view">
         <field name="name">view.users.form.token.access</field>
@@ -8,8 +8,8 @@
             <notebook position="inside">
                 <page string="Purchase Portal" name="purchase_portal">
                     <group>
-                        <field name="hide_menus"/>
-                        <field name="banned_product_ids"/>
+                        <field name="hide_menus" />
+                        <field name="banned_product_ids" />
                     </group>
                 </page>
             </notebook>

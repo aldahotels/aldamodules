@@ -22,7 +22,7 @@ from odoo import models
 
 
 class PosConfig(models.Model):
-    _inherit = 'pos.config'
+    _inherit = "pos.config"
 
     def get_pos_session(self, check_coa=True):
         self.ensure_one()
@@ -37,8 +37,7 @@ class PosConfig(models.Model):
             self._check_profit_loss_cash_journal()
             self._check_payment_method_ids()
             self._check_payment_method_receivable_accounts()
-            session = self.env['pos.session'].create({
-                'user_id': self.env.uid,
-                'config_id': self.id
-            })
+            session = self.env["pos.session"].create(
+                {"user_id": self.env.uid, "config_id": self.id}
+            )
             return session.id

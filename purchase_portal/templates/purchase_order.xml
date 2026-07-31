@@ -1,29 +1,50 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <template id="purchase_portal_my_purchase_orders" inherit_id="purchase.portal_my_purchase_orders">
+    <template
+        id="purchase_portal_my_purchase_orders"
+        inherit_id="purchase.portal_my_purchase_orders"
+    >
         <xpath expr="//thead/tr/th[1]" position="after">
             <th>Vendor</th>
         </xpath>
         <xpath expr="//thead/following-sibling::t/tr/td[3]" position="inside">
-            <span t-if="order.wating_delivery" class="badge rounded-pill text-bg-warning">
-                <i class="fa fa-fw fa-file-text" role="img" aria-label="Waiting for Delivery" title="Waiting for Delivery"></i>
+            <span
+                t-if="order.wating_delivery"
+                class="badge rounded-pill text-bg-warning"
+            >
+                <i
+                    class="fa fa-fw fa-file-text"
+                    role="img"
+                    aria-label="Waiting for Delivery"
+                    title="Waiting for Delivery"
+                />
                 <span class="d-none d-md-inline"> Waiting for Delivery</span>
             </span>
         </xpath>
         <xpath expr="//thead/following-sibling::t/tr/td[1]" position="after">
-            <td><t t-esc="order.partner_id.name"/></td>
+            <td><t t-esc="order.partner_id.name" /></td>
         </xpath>
     </template>
-    <template id="purchase_portal_my_purchase_order" inherit_id="purchase.portal_my_purchase_order">
+    <template
+        id="purchase_portal_my_purchase_order"
+        inherit_id="purchase.portal_my_purchase_order"
+    >
         <xpath expr="//span[@t-field='order.user_id']/../../../.." position="inside">
             <li t-if="order.property_id" class="list-group-item flex-grow-1">
                 <div class="small mb-1"><strong class="text-muted">Hotel</strong></div>
                 <div class="row flex-nowrap">
                     <div class="col flex-grow-0 pe-2">
-                        <img class="rounded-circle mr4 float-start o_portal_contact_img" t-att-src="image_data_uri(order.property_id.logo)" alt="Hotel"/>
+                        <img
+                            class="rounded-circle mr4 float-start o_portal_contact_img"
+                            t-att-src="image_data_uri(order.property_id.logo)"
+                            alt="Hotel"
+                        />
                     </div>
                     <div class="col ps-0" style="min-width: 150px">
-                        <span t-field="order.property_id" t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>
+                        <span
+                            t-field="order.property_id"
+                            t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'
+                        />
                     </div>
                 </div>
             </li>

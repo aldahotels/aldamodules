@@ -18,17 +18,17 @@
 #
 ##############################################################################
 
-from odoo import models, fields, _
+from odoo import _, fields, models
 
 
 class StockPicking(models.Model):
-    _name = 'stock.picking'
-    _inherit = ['stock.picking', 'portal.mixin']
+    _name = "stock.picking"
+    _inherit = ["stock.picking", "portal.mixin"]
 
     property_id = fields.Many2one(
-        'pms.property',
-        string='Hotel',
-        related='purchase_id.property_id',
+        "pms.property",
+        string="Hotel",
+        related="purchase_id.property_id",
         store=True,
         readonly=True,
     )
@@ -36,11 +36,12 @@ class StockPicking(models.Model):
     def _compute_access_url(self):
         super(StockPicking, self)._compute_access_url()
         for picking in self:
-            picking.access_url = '/my/stock_pickings/%s' % (picking.id)
+            picking.access_url = "/my/stock_pickings/%s" % (picking.id)
+        return
 
     def _create_backorder(self):
         res = super(StockPicking, self)._create_backorder()
-        text = self.env.context.get('backorder_message', False)
+        text = self.env.context.get("backorder_message", False)
         if text:
             text = str(text) + "<br/> {}".format(
                 _("Ref.: <b>{}</b> <br/>").format(res.origin or res.name)
@@ -48,14 +49,24 @@ class StockPicking(models.Model):
             lines = ""
 
             for line in res.move_ids:
-                lines += _("Product: <b>{}</b>, quantity: <b>{}</b><br/>").format(
-                    line.product_id.display_name,
-                    "{} {}".format(
-                        line.purchase_line_id.product_qty if line.purchase_line_id else line.product_qty,
-                        line.purchase_line_id.product_uom.display_name if line.purchase_line_id else line.product_uom_id.name,
-                    )
-                )
-            message = _("Hi {}, <br/> {} {}").format(res.partner_id.name, text, lines)
+                lines += _(
+                    "Product: <b>%(product)s</b>, quantity: <b>%(qty)s</b><br/>"
+                ) % {
+                    "product": line.product_id.display_name,
+                    "qty": "{} {}".format(
+                        line.purchase_line_id.product_qty
+                        if line.purchase_line_id
+                        else line.product_qty,
+                        line.purchase_line_id.product_uom.display_name
+                        if line.purchase_line_id
+                        else line.product_uom_id.name,
+                    ),
+                }
+            message = _("Hi %(partner)s, <br/> %(text)s %(lines)s") % {
+                "partner": res.partner_id.name,
+                "text": text,
+                "lines": lines,
+            }
 
             res.message_post(
                 body=message, subtype_id=self.env.ref("mail.mt_comment").id
@@ -64,7 +75,9 @@ class StockPicking(models.Model):
 
     def picking_reception_status_mail(self):
         mt_comment = self.env.ref("mail.mt_comment")
-        tpl = self.env.ref("purchase_portal.alda_picking_reception_status_email_template")
+        tpl = self.env.ref(
+            "purchase_portal.alda_picking_reception_status_email_template"
+        )
         self.message_post_with_template(
             tpl.id,
             composition_mode="mass_post",

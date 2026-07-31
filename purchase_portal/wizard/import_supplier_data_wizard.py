@@ -4,15 +4,15 @@ import csv
 from base64 import b64decode
 from io import StringIO
 
-from odoo import fields, models, exceptions, _
+from odoo import _, exceptions, fields, models
 
 
 class ImportSupplierDataWizard(models.TransientModel):
     _name = "import.supplier.data.wizard"
 
     supplier_file = fields.Binary(required=True)
-    supplier_file_name = fields.Char('CSV File Name')
-    supplier_id = fields.Many2one('res.partner', string='Supplier')
+    supplier_file_name = fields.Char("CSV File Name")
+    supplier_id = fields.Many2one("res.partner", string="Supplier")
     imported = fields.Boolean()
     product_errors = fields.Text()
 
@@ -28,23 +28,28 @@ class ImportSupplierDataWizard(models.TransientModel):
                 raise exceptions.ValidationError(message)
             product_ref = row["reference"]
 
-            product = self.env['product.supplierinfo'].search([
-                ('product_code', '=', product_ref),
-                ('partner_id', '=', self.supplier_id.id)
-            ], limit=1)
+            product = self.env["product.supplierinfo"].search(
+                [
+                    ("product_code", "=", product_ref),
+                    ("partner_id", "=", self.supplier_id.id),
+                ],
+                limit=1,
+            )
 
             if product:
-                product.write({
-                    "supplier_stock": row["stock"]
-                })
+                product.write({"supplier_stock": row["stock"]})
             else:
                 not_found_products.append(product_ref)
                 continue
 
         if not not_found_products:
-            self.product_errors = _("All supplier {} products have been updated successfully").format(self.supplier_id.name)
+            self.product_errors = _(
+                "All supplier {} products have been updated successfully"
+            ).format(self.supplier_id.name)
         else:
-            self.product_errors = _("This products could not be found:\n\n\t- {}").format("\n\t- ".join(not_found_products))
+            self.product_errors = _(
+                "This products could not be found:\n\n\t- {}"
+            ).format("\n\t- ".join(not_found_products))
         self.imported = True
         return {
             "type": "ir.actions.act_window",

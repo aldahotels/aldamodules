@@ -19,14 +19,14 @@
 ##############################################################################
 
 import json
-from odoo import http, _
+
+from odoo import _, http
+from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.tools.misc import get_lang
-from odoo.exceptions import UserError
 
 
 class PurchaseRequestJsonMethods(http.Controller):
-
     @http.route(
         ["/purchase_request_product_table"],
         type="json",
@@ -36,11 +36,11 @@ class PurchaseRequestJsonMethods(http.Controller):
     )
     def get_purchase_request_product_table(self, **kw):
         lang = get_lang(request.env).code
-        search = kw.get('search', False)
-        property_id = kw.get('property_id', False)
-        category_id = kw.get('category_id', False)
-        seller_id = kw.get('seller_id', False)
-        purchase_request = kw.get('purchase_request', False)
+        search = kw.get("search", False)
+        property_id = kw.get("property_id", False)
+        category_id = kw.get("category_id", False)
+        seller_id = kw.get("seller_id", False)
+        purchase_request = kw.get("purchase_request", False)
         if not property_id:
             return json.dumps(
                 {
@@ -49,7 +49,7 @@ class PurchaseRequestJsonMethods(http.Controller):
                 }
             )
 
-        property_id = request.env['pms.property'].browse(int(property_id))
+        property_id = request.env["pms.property"].browse(int(property_id))
         if not property_id:
             return json.dumps(
                 {
@@ -58,7 +58,7 @@ class PurchaseRequestJsonMethods(http.Controller):
                 }
             )
 
-        purchase_request = request.env['purchase.request'].browse(int(purchase_request))
+        purchase_request = request.env["purchase.request"].browse(int(purchase_request))
         if not purchase_request:
             return json.dumps(
                 {
@@ -68,28 +68,45 @@ class PurchaseRequestJsonMethods(http.Controller):
             )
 
         product_ids = property_id.sudo().product_ids
-        if search and search != '':
-            product_ids = request.env["product.product"].sudo().search([
-                ("id", "in", product_ids.ids),
-                "|",
-                ("name", "ilike", search),
-                ("default_code", "ilike", search)
-            ])
-        if category_id and category_id != 'all':
-            product_ids = request.env["product.product"].sudo().search([
-                ("id", "in", product_ids.ids),
-                ("categ_id", "=", int(category_id))
-            ])
+        if search and search != "":
+            product_ids = (
+                request.env["product.product"]
+                .sudo()
+                .search(
+                    [
+                        ("id", "in", product_ids.ids),
+                        "|",
+                        ("name", "ilike", search),
+                        ("default_code", "ilike", search),
+                    ]
+                )
+            )
+        if category_id and category_id != "all":
+            product_ids = (
+                request.env["product.product"]
+                .sudo()
+                .search(
+                    [("id", "in", product_ids.ids), ("categ_id", "=", int(category_id))]
+                )
+            )
 
-        if seller_id and seller_id != 'all':
-            partner_id = request.env['res.partner'].sudo().search([('id', '=', int(seller_id))])
+        if seller_id and seller_id != "all":
+            partner_id = (
+                request.env["res.partner"].sudo().search([("id", "=", int(seller_id))])
+            )
             commercial_partner_id = partner_id.commercial_partner_id
-            product_ids = request.env["product.product"].sudo().search([
-                ("id", "in", product_ids.ids),
-                "|",
-                ("seller_ids.partner_id", "=", partner_id.id),
-                ("seller_ids.partner_id", "=", commercial_partner_id.id)
-            ])
+            product_ids = (
+                request.env["product.product"]
+                .sudo()
+                .search(
+                    [
+                        ("id", "in", product_ids.ids),
+                        "|",
+                        ("seller_ids.partner_id", "=", partner_id.id),
+                        ("seller_ids.partner_id", "=", commercial_partner_id.id),
+                    ]
+                )
+            )
 
         if request.env.user.banned_product_ids:
             product_ids = product_ids - request.env.user.banned_product_ids
@@ -99,8 +116,10 @@ class PurchaseRequestJsonMethods(http.Controller):
             "purchase_request": purchase_request,
         }
 
-        return request.env["ir.ui.view"].with_context(lang=lang)._render_template(
-            "purchase_portal.purchase_request_product_table", values
+        return (
+            request.env["ir.ui.view"]
+            .with_context(lang=lang)
+            ._render_template("purchase_portal.purchase_request_product_table", values)
         )
 
     @http.route(
@@ -112,9 +131,9 @@ class PurchaseRequestJsonMethods(http.Controller):
     )
     def purchase_request_add_product(self, **kw):
         lang = get_lang(request.env).code
-        purchase_request = kw.get('purchase_request', False)
-        product_id = kw.get('product_id', False)
-        qty = kw.get('qty', False)
+        purchase_request = kw.get("purchase_request", False)
+        product_id = kw.get("product_id", False)
+        qty = kw.get("qty", False)
 
         if not purchase_request or not product_id or not qty:
             return json.dumps(
@@ -124,8 +143,11 @@ class PurchaseRequestJsonMethods(http.Controller):
                 }
             )
 
-        purchase_request = request.env['purchase.request'].browse(int(purchase_request))
-        if not purchase_request or purchase_request.state not in ["to_approve", "draft"]:
+        purchase_request = request.env["purchase.request"].browse(int(purchase_request))
+        if not purchase_request or purchase_request.state not in [
+            "to_approve",
+            "draft",
+        ]:
             return json.dumps(
                 {
                     "error": True,
@@ -134,42 +156,75 @@ class PurchaseRequestJsonMethods(http.Controller):
             )
         try:
             # Buscamos la combinación exacta y permitida para este hotel y compañía.
-            product_info = request.env['product.supplierinfo'].search([
-                '|',
-                ('partner_id', 'in', purchase_request.property_id.seller_ids.ids),
-                ('partner_id', 'in', purchase_request.property_id.seller_commercial_ids.ids),
-                ('product_id', '=', int(product_id)),
-                ('company_id', '=', purchase_request.company_id.id)
-            ], order='price asc', limit=1)
+            product_info = request.env["product.supplierinfo"].search(
+                [
+                    "|",
+                    ("partner_id", "in", purchase_request.property_id.seller_ids.ids),
+                    (
+                        "partner_id",
+                        "in",
+                        purchase_request.property_id.seller_commercial_ids.ids,
+                    ),
+                    ("product_id", "=", int(product_id)),
+                    ("company_id", "=", purchase_request.company_id.id),
+                ],
+                order="price asc",
+                limit=1,
+            )
 
             # Si no la encuentra buscamos en el resto.
             if not product_info:
-                product_info = request.env['product.supplierinfo'].search([
-                    '|',
-                    ('partner_id', 'in', purchase_request.property_id.seller_ids.ids),
-                    ('partner_id', 'in', purchase_request.property_id.seller_commercial_ids.ids),
-                    '|',
-                    ('product_id', '=', int(product_id)),
-                    ('product_tmpl_id.product_variant_ids', '=', int(product_id)),
-                    '|',
-                    ('company_id', '=', purchase_request.company_id.id),
-                    ('company_id', '=', False)
-                ], order='price asc', limit=1)
+                product_info = request.env["product.supplierinfo"].search(
+                    [
+                        "|",
+                        (
+                            "partner_id",
+                            "in",
+                            purchase_request.property_id.seller_ids.ids,
+                        ),
+                        (
+                            "partner_id",
+                            "in",
+                            purchase_request.property_id.seller_commercial_ids.ids,
+                        ),
+                        "|",
+                        ("product_id", "=", int(product_id)),
+                        ("product_tmpl_id.product_variant_ids", "=", int(product_id)),
+                        "|",
+                        ("company_id", "=", purchase_request.company_id.id),
+                        ("company_id", "=", False),
+                    ],
+                    order="price asc",
+                    limit=1,
+                )
 
-            request_line = request.env['purchase.request.line'].with_context(portal=True).create({
-                'request_id': purchase_request.id,
-                'product_id': int(product_id),
-                'product_qty': float(qty),
-                'estimated_cost': (product_info.price * float(qty)) if product_info else 0,
-            })
+            request_line = (
+                request.env["purchase.request.line"]
+                .with_context(portal=True)
+                .create(
+                    {
+                        "request_id": purchase_request.id,
+                        "product_id": int(product_id),
+                        "product_qty": float(qty),
+                        "estimated_cost": (product_info.price * float(qty))
+                        if product_info
+                        else 0,
+                    }
+                )
+            )
 
             # portal=False to avoid onchange_product_id to be raise error
-            # force sudo to avoid access rights error when onchange_product_id is called (recomputes code)
+            # force sudo to avoid access rights error when
+            # onchange_product_id is called (recomputes code)
             request_line.sudo().with_context(portal=False).onchange_product_id()
-            request_line.with_context(portal=True, no_msg=True).write({
-                'product_qty': float(qty),
-                'product_uom_id': product_info.product_uom.id if product_info else request_line.product_uom_id.id,
-            })
+            request_line.with_context(portal=True, no_msg=True).write(
+                {
+                    "product_qty": float(qty),
+                    "product_uom_id": product_info.product_uom.id
+                    if product_info
+                    else request_line.product_uom_id.id,
+                }
+            )
         except Exception as e:
             return json.dumps(
                 {
@@ -182,8 +237,10 @@ class PurchaseRequestJsonMethods(http.Controller):
             "line_ids": purchase_request.line_ids,
         }
 
-        return request.env["ir.ui.view"].with_context(lang=lang)._render_template(
-            "purchase_portal.purchase_request_details_table", values
+        return (
+            request.env["ir.ui.view"]
+            .with_context(lang=lang)
+            ._render_template("purchase_portal.purchase_request_details_table", values)
         )
 
     @http.route(
@@ -195,8 +252,8 @@ class PurchaseRequestJsonMethods(http.Controller):
     )
     def purchase_request_update_line(self, **kw):
         lang = get_lang(request.env).code
-        line_id = kw.get('line_id', False)
-        qty = kw.get('qty', False)
+        line_id = kw.get("line_id", False)
+        qty = kw.get("qty", False)
 
         if not line_id or not qty:
             return json.dumps(
@@ -206,7 +263,7 @@ class PurchaseRequestJsonMethods(http.Controller):
                 }
             )
 
-        line_id = request.env['purchase.request.line'].browse(int(line_id))
+        line_id = request.env["purchase.request.line"].browse(int(line_id))
         if not line_id:
             return json.dumps(
                 {
@@ -223,10 +280,12 @@ class PurchaseRequestJsonMethods(http.Controller):
                 line_id.unlink()
             else:
                 estimated_cost = (line_id.estimated_cost / line_id.product_qty) * qty
-                line_id.with_context(portal=True).write({
-                    'product_qty': qty,
-                    'estimated_cost': estimated_cost,
-                })
+                line_id.with_context(portal=True).write(
+                    {
+                        "product_qty": qty,
+                        "estimated_cost": estimated_cost,
+                    }
+                )
         except Exception as e:
             return json.dumps(
                 {
@@ -239,8 +298,10 @@ class PurchaseRequestJsonMethods(http.Controller):
             "line_ids": request_id.line_ids,
         }
 
-        return request.env["ir.ui.view"].with_context(lang=lang)._render_template(
-            "purchase_portal.purchase_request_details_table", values
+        return (
+            request.env["ir.ui.view"]
+            .with_context(lang=lang)
+            ._render_template("purchase_portal.purchase_request_details_table", values)
         )
 
     @http.route(
@@ -252,7 +313,7 @@ class PurchaseRequestJsonMethods(http.Controller):
     )
     def purchase_delete_line(self, **kw):
         lang = get_lang(request.env).code
-        line_id = kw.get('line_id', False)
+        line_id = kw.get("line_id", False)
 
         if not line_id:
             return json.dumps(
@@ -262,7 +323,7 @@ class PurchaseRequestJsonMethods(http.Controller):
                 }
             )
 
-        line_id = request.env['purchase.request.line'].browse(int(line_id))
+        line_id = request.env["purchase.request.line"].browse(int(line_id))
         if not line_id:
             return json.dumps(
                 {
@@ -287,24 +348,33 @@ class PurchaseRequestJsonMethods(http.Controller):
             "line_ids": request_id.line_ids,
         }
 
-        return request.env["ir.ui.view"].with_context(lang=lang)._render_template(
-            "purchase_portal.purchase_request_details_table", values
+        return (
+            request.env["ir.ui.view"]
+            .with_context(lang=lang)
+            ._render_template("purchase_portal.purchase_request_details_table", values)
         )
 
     def _get_seller_ids(self, purchase_request):
-        seller_ids = request.env['product.supplierinfo']
-        for product in purchase_request.line_ids.mapped('product_id'):
-            partners = purchase_request.property_id.seller_ids + purchase_request.property_id.seller_commercial_ids
-            seller = seller_ids.search([
-                '&',
-                ('partner_id', 'in', partners.ids),
-                '|',
-                ('product_id', '=', product.id),
-                ('product_tmpl_id.product_variant_ids', '=', product.id),
-                '|',
-                ('company_id', '=', purchase_request.company_id.id),
-                ('company_id', '=', False)
-            ], order='price asc', limit=1)
+        seller_ids = request.env["product.supplierinfo"]
+        for product in purchase_request.line_ids.mapped("product_id"):
+            partners = (
+                purchase_request.property_id.seller_ids
+                + purchase_request.property_id.seller_commercial_ids
+            )
+            seller = seller_ids.search(
+                [
+                    "&",
+                    ("partner_id", "in", partners.ids),
+                    "|",
+                    ("product_id", "=", product.id),
+                    ("product_tmpl_id.product_variant_ids", "=", product.id),
+                    "|",
+                    ("company_id", "=", purchase_request.company_id.id),
+                    ("company_id", "=", False),
+                ],
+                order="price asc",
+                limit=1,
+            )
             if seller not in seller_ids:
                 seller_ids += seller
         return seller_ids
@@ -318,7 +388,7 @@ class PurchaseRequestJsonMethods(http.Controller):
     )
     def purchase_request_validation(self, **kw):
         # lang = get_lang(request.env).code
-        purchase_request = kw.get('purchase_request', False)
+        purchase_request = kw.get("purchase_request", False)
 
         if not purchase_request:
             return json.dumps(
@@ -328,7 +398,7 @@ class PurchaseRequestJsonMethods(http.Controller):
                 }
             )
 
-        purchase_request = request.env['purchase.request'].browse(int(purchase_request))
+        purchase_request = request.env["purchase.request"].browse(int(purchase_request))
         if not purchase_request:
             return json.dumps(
                 {
@@ -340,23 +410,28 @@ class PurchaseRequestJsonMethods(http.Controller):
         try:
             for line in purchase_request.line_ids:
                 if line.product_qty <= 0:
-                    raise UserError(_('The quantity for %s must be greater than 0') % (line.product_id.name))
+                    raise UserError(
+                        _("The quantity for %s must be greater than 0")
+                        % (line.product_id.name)
+                    )
 
             seller_ids = self._get_seller_ids(purchase_request)
 
             error_msg = ""
 
-            for partner_id in seller_ids.sudo().mapped('partner_id'):
+            for partner_id in seller_ids.sudo().mapped("partner_id"):
                 min_amount = partner_id.min_purchase_amount
                 if not min_amount:
                     min_amount = partner_id.commercial_partner_id.min_purchase_amount
                 sellers = seller_ids.sudo().filtered(
-                    lambda x: x.partner_id == partner_id or x.partner_id == partner_id.commercial_partner_id
+                    lambda x: x.partner_id == partner_id
+                    or x.partner_id == partner_id.commercial_partner_id
                 )
                 purchase_seller_amount = 0
                 for seller in sellers:
                     lines = purchase_request.sudo().line_ids.filtered(
-                        lambda x: x.product_id == seller.product_id or x.product_id in seller.product_tmpl_id.product_variant_ids
+                        lambda x: x.product_id == seller.product_id
+                        or x.product_id in seller.product_tmpl_id.product_variant_ids
                     )
                     purchase_seller_amount += sum(line.estimated_cost for line in lines)
 
@@ -372,18 +447,25 @@ class PurchaseRequestJsonMethods(http.Controller):
                             lambda x: x.commercial_partner_id == partner_id
                         ).name
 
-                    error_msg += _('The minimum amount for %s is %s%s. Current amount %s%s.<br/>') % (
-                        name,
-                        min_amount,
-                        symbol,
-                        purchase_seller_amount,
-                        symbol,
-                    )
+                    error_msg += _(
+                        "The minimum amount for %(name)s is %(min_amount)s"
+                        "%(symbol)s. Current amount "
+                        "%(purchase_seller_amount)s%(symbol2)s.<br/>"
+                    ) % {
+                        "name": name,
+                        "min_amount": min_amount,
+                        "symbol": symbol,
+                        "purchase_seller_amount": purchase_seller_amount,
+                        "symbol2": symbol,
+                    }
 
             if error_msg:
                 raise UserError(error_msg)
 
-            if purchase_request.estimated_cost <= 300 or not purchase_request.need_validation:
+            if (
+                purchase_request.estimated_cost <= 300
+                or not purchase_request.need_validation
+            ):
                 purchase_request.button_approved()
             else:
                 purchase_request.sudo().request_validation()
@@ -410,7 +492,7 @@ class PurchaseRequestJsonMethods(http.Controller):
     )
     def purchase_request_restart_validation(self, **kw):
         # lang = get_lang(request.env).code
-        purchase_request = kw.get('purchase_request', False)
+        purchase_request = kw.get("purchase_request", False)
 
         if not purchase_request:
             return json.dumps(
@@ -420,7 +502,7 @@ class PurchaseRequestJsonMethods(http.Controller):
                 }
             )
 
-        purchase_request = request.env['purchase.request'].browse(int(purchase_request))
+        purchase_request = request.env["purchase.request"].browse(int(purchase_request))
         if not purchase_request:
             return json.dumps(
                 {

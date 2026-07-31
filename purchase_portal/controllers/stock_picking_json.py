@@ -19,14 +19,14 @@
 ##############################################################################
 
 import json
-from odoo import http, _
+
+from odoo import _, http
 from odoo.http import request
-from odoo.tools.misc import get_lang
 from odoo.tests import Form
+from odoo.tools.misc import get_lang
 
 
 class StockPickingJsonMethods(http.Controller):
-
     @http.route(
         ["/stock_picking_line_edit"],
         type="json",
@@ -40,20 +40,26 @@ class StockPickingJsonMethods(http.Controller):
     ):
         if line_id and value and attr_name:
             lang = get_lang(request.env).code
-            line_id = request.env['stock.move'].browse(line_id)
+            line_id = request.env["stock.move"].browse(line_id)
             if not line_id:
                 return json.dumps({"error": True, "message": _("Line not found")})
             try:
-                line_id.sudo().update({
-                    attr_name: value,
-                })
+                line_id.sudo().update(
+                    {
+                        attr_name: value,
+                    }
+                )
 
                 values = {
                     "stock_picking": line_id.picking_id,
                     "move_ids": line_id.picking_id.move_ids,
                 }
-                return request.env["ir.ui.view"].with_context(lang=lang)._render_template(
-                    "purchase_portal.stock_picking_lines_table", values
+                return (
+                    request.env["ir.ui.view"]
+                    .with_context(lang=lang)
+                    ._render_template(
+                        "purchase_portal.stock_picking_lines_table", values
+                    )
                 )
             except Exception as e:
                 return json.dumps(
@@ -75,14 +81,21 @@ class StockPickingJsonMethods(http.Controller):
     def stock_picking_validate(self, picking_id=None, **kw):
         if picking_id:
             # lang = get_lang(request.env).code
-            picking_id = request.env['stock.picking'].sudo().browse(picking_id)
+            picking_id = request.env["stock.picking"].sudo().browse(picking_id)
             if not picking_id:
                 return json.dumps({"error": True, "message": _("Picking not found")})
             try:
                 res = picking_id.button_validate()
-                if type(res) is dict and res.get('res_model', False) == 'stock.backorder.confirmation':
-                    res['context']['default_send_mail_to_seller'] = True
-                    back_order_wizard = Form(request.env[(res.get('res_model'))].sudo().with_context(res['context'])).save()
+                if (
+                    type(res) is dict
+                    and res.get("res_model", False) == "stock.backorder.confirmation"
+                ):
+                    res["context"]["default_send_mail_to_seller"] = True
+                    back_order_wizard = Form(
+                        request.env[(res.get("res_model"))]
+                        .sudo()
+                        .with_context(**res["context"])
+                    ).save()
                     res = back_order_wizard.process()
                 return res
             except Exception as e:

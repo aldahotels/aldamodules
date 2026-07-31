@@ -17,12 +17,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import models, fields
+from odoo import fields, models
 
 
 class ResUsers(models.Model):
 
     _inherit = "res.users"
 
-    banned_product_ids = fields.Many2many('product.product', string='User banned products')
-    hide_menus = fields.Boolean('Hide menus')
+    banned_product_ids = fields.Many2many(
+        "product.product", string="User banned products"
+    )
+    hide_menus = fields.Boolean("Hide menus")
