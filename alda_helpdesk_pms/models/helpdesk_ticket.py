@@ -99,6 +99,10 @@ class HelpdeskTicket(models.Model):
         help="Indicates if the ticket is linked to an external repair ID.",
     )
 
+    purchase_additional_comment = fields.Text(
+        help="Additional comment entered by the user in purchase request tickets.",
+    )
+
     is_property_operated_normaly = fields.Boolean(
         string="Property Operated Normaly",
         default=True,

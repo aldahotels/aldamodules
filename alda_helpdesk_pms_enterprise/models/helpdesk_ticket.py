@@ -182,7 +182,7 @@ class HelpdeskPmsEnterprise(models.Model):
                 )
 
         internal_template = self.env.ref(
-            "alda_helpdesk_pms_enterprise.alda_confirmation_ticket_internal_v2",
+            "alda_helpdesk_pms_enterprise.alda_confirmation_ticket_internal_v3",
             raise_if_not_found=False,
         )
         if internal_template and recipients["internal_emails"]:

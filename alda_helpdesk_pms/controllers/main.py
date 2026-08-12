@@ -81,13 +81,15 @@ class HelpdeskFormController(http.Controller):
                     request.httprequest.files.getlist(f"attachment{i}")
                 )
 
+            additional_description = post.get("description", "").strip()
+
             description = request.env["ir.qweb"]._render(
                 "alda_helpdesk_pms.helpdesk_purchase_description",
                 {
                     "property_name": post.get("property_name", "N/A"),
                     "num_products": num_products,
                     "products": products,
-                    "additional_description": post.get("description", "").strip(),
+                    "additional_description": additional_description,
                 },
             )
 
@@ -96,6 +98,7 @@ class HelpdeskFormController(http.Controller):
                 "description": description.decode("utf-8")
                 if isinstance(description, bytes)
                 else description,
+                "purchase_additional_comment": additional_description,
                 "partner_id": partner_id,
                 "team_id": team_id,
                 "pms_property_id": property_id,
