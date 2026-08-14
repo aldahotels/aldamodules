@@ -93,8 +93,24 @@ class HelpdeskFormController(http.Controller):
                 },
             )
 
+            # Determine if the room (if provided) is operated normally using
+            # the same helper as the non-purchase flow. This avoids
+            # duplicating blocked-room logic here.
+            is_room_operated_normaly = True
+            room_id = post.get("room_ids", "")
+            pms_room_id = int(room_id) if room_id else False
+            if pms_room_id:
+                room = request.env["pms.room"].browse(pms_room_id)
+                is_room_operated_normaly = (
+                    not request.env["helpdesk.ticket"].sudo()._is_room_blocked(room)
+                )
+
+            # Prefer a user-provided Subject when present; otherwise use fallback.
+            subject_text = (post.get("subject") or "").strip()
             vals = {
-                "name": f"Purchase Request - {post.get('property_name', '')}",
+                "name": subject_text
+                if subject_text
+                else f"Purchase Request - {post.get('property_name', '')}",
                 "description": description.decode("utf-8")
                 if isinstance(description, bytes)
                 else description,
@@ -102,6 +118,12 @@ class HelpdeskFormController(http.Controller):
                 "partner_id": partner_id,
                 "team_id": team_id,
                 "pms_property_id": property_id,
+                # Include optional PMS fields if provided by the form so
+                # computes on the model can populate closure reason, tags
+                # and color after create.
+                "pms_room_id": pms_room_id,
+                "location_type": post.get("location_type") or False,
+                "is_room_operated_normaly": is_room_operated_normaly,
             }
 
             return vals, attachment_files
@@ -269,6 +291,37 @@ class HelpdeskFormController(http.Controller):
             )
         )
 
+        # Provide room and location options so the purchase form can
+        # include/select them and the purchase flow preserves PMS fields.
+        is_overnight_room = (
+            request.env["pms.room.type"]
+            .sudo()
+            .search([("overnight_room", "=", True)])
+            .ids
+        )
+
+        room_ids = (
+            request.env["pms.room"]
+            .sudo()
+            .search(
+                [
+                    ("pms_property_id", "=", pms_property_ids.id),
+                    ("room_type_id", "in", is_overnight_room),
+                    ("active", "=", True),
+                ]
+            )
+        )
+
+        location_type_options = request.env["helpdesk.ticket"]._get_location_selection()
+        room_state_ids = {}
+        for room in room_ids:
+            room_state_ids[room.id] = (
+                request.env["helpdesk.ticket"].sudo()._is_room_blocked(room)
+            )
+
+        company_external_id = False
+        is_property_operated_normaly = True
+
         return request.render(
             "alda_helpdesk_pms.create_ticket_purchase_form",
             {
@@ -277,6 +330,11 @@ class HelpdeskFormController(http.Controller):
                 "property_id": pms_property_ids.id,
                 "property_name": pms_property_ids.name,
                 "team_ids": team_ids,
+                "room_ids": room_ids,
+                "location_type_options": location_type_options,
+                "is_room_blocked_ids": room_state_ids,
+                "company_external_id": company_external_id,
+                "is_property_operated_normaly": is_property_operated_normaly,
             },
         )
 
@@ -306,11 +364,10 @@ class HelpdeskFormController(http.Controller):
         )
 
         if team.is_purchases_form:
-            ticket.sudo().write(
-                {
-                    "name": f"Purchase Request - #{ticket.id}",
-                }
-            )
+            # Only set a generated name when the ticket has no name at all.
+            # Do NOT overwrite a user-provided Subject.
+            if not ticket.name:
+                ticket.sudo().write({"name": f"Purchase Request - #{ticket.id}"})
 
         attachment_ids = []
         if post.get("attachment", False) or attachments:

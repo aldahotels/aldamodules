@@ -147,10 +147,16 @@ class HelpdeskPmsEnterprise(models.Model):
         hotel_partner = (
             self.pms_property_id.partner_id if self.pms_property_id else False
         )
-        if hotel_partner:
-            if hotel_partner.email:
-                recipients["external_emails"].add(hotel_partner.email)
+        if hotel_partner and hotel_partner.email:
+            recipients["external_emails"].add(hotel_partner.email)
 
+        # Person who created the ticket (external)
+        ticket_partner = self.partner_id
+
+        if ticket_partner and ticket_partner.email:
+            recipients["external_emails"].add(ticket_partner.email)
+
+        # Internal
         technician_partner = self.user_id.partner_id if self.user_id else False
         if technician_partner:
             if technician_partner.email:
