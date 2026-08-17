@@ -7,6 +7,7 @@
             <form string="Supplier Products">
                 <group>
                     <field name="hotel_id" invisible="1"/>
+                    <field name="hotel_ids" invisible="1"/>
                     <field name="seller_ids" invisible="1"/>
                     <field name="supplier_ids" widget="many2many"/>
                     <field name="product_supplier_ids" invisible="1" widget="many2many"/>
@@ -18,5 +19,13 @@
                 </footer>
             </form>
         </field>
+    </record>
+    <record id="action_supplier_products_wizard" model="ir.actions.act_window">
+        <field name="name">Add Supplier Products</field>
+        <field name="res_model">supplier.products.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_hotel_ids': active_ids}</field>
+        <field name="binding_model_id" ref="model_pms_property"/>
     </record>
 </odoo>
