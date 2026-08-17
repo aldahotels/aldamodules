@@ -66,6 +66,16 @@ class HelpdeskTicket(models.Model):
         help="Indicates if the room is blocked for this ticket.",
     )
 
+    room_closure_reason_id = fields.Many2one(
+        comodel_name="room.closure.reason",
+        string="Closure Reason",
+        compute="_compute_is_room_blocked",
+        compute_sudo=True,
+        store=False,
+        readonly=True,
+        help="Shows the closure reason of the current out-of-service reservation for the room.",
+    )
+
     is_room = fields.Boolean(
         string="Room's ticket",
         compute="_compute_is_room",
@@ -87,6 +97,10 @@ class HelpdeskTicket(models.Model):
         store=True,
         tracking=True,
         help="Indicates if the ticket is linked to an external repair ID.",
+    )
+
+    purchase_additional_comment = fields.Text(
+        help="Additional comment entered by the user in purchase request tickets.",
     )
 
     is_property_operated_normaly = fields.Boolean(
@@ -272,7 +286,7 @@ class HelpdeskTicket(models.Model):
     )
 
     @api.model
-    def _is_room_blocked(self, pms_room_id):
+    def _get_current_out_of_service_line(self, pms_room_id):
         today = fields.Date.context_today(self)
         line = (
             self.env["pms.reservation.line"]
@@ -288,7 +302,23 @@ class HelpdeskTicket(models.Model):
                 limit=1,
             )
         )
-        return bool(line)
+        return line
+
+    @api.model
+    def _is_room_blocked(self, pms_room_id):
+        line = self._get_current_out_of_service_line(pms_room_id)
+        if not line:
+            return False
+
+        # Only consider the room blocked for the specific closure reasons
+        # allowed by product requirement (compare by name because there
+        # are no stable xmlids for these reasons in the DB).
+        reason = line.reservation_id.closure_reason_id
+        if not reason:
+            return False
+
+        allowed_names = {"Avería", "Mantenimiento programado", "Plaga", "Obras"}
+        return reason.name in allowed_names
 
     @api.depends("pms_room_id")
     def _compute_is_room_blocked(self):
@@ -297,8 +327,16 @@ class HelpdeskTicket(models.Model):
                 ticket.is_room_blocked = False
                 ticket.color = 0
                 ticket.ticket_blocked_room_adr_accumulated = 0.0
+                ticket.room_closure_reason_id = False
             else:
+                # Use centralized logic to determine blocked state so both
+                # compute and action/cron paths are consistent. _is_room_blocked
+                # already checks the reservation line and the closure reason.
+                line = self._get_current_out_of_service_line(ticket.pms_room_id)
                 ticket.is_room_blocked = self._is_room_blocked(ticket.pms_room_id)
+                ticket.room_closure_reason_id = (
+                    line.reservation_id.closure_reason_id if line else False
+                )
                 ticket.color = 9 if ticket.is_room_blocked else 0
 
     @api.onchange("team_id")

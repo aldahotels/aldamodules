@@ -181,6 +181,13 @@
                     {'invisible': [('location_type', 'not in', ['room', 'bathroom'])]}
                 </attribute>
             </xpath>
+            <xpath expr="//field[@name='pms_room_id']" position="after">
+                <field
+                    name="room_closure_reason_id"
+                    options="{'no_open': True, 'no_create': True}"
+                    attrs="{'invisible': ['|', ('pms_room_id', '=', False), ('is_room_blocked', '=', False)]}"
+                />
+            </xpath>
         </field>
     </record>
 
