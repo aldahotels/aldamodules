@@ -3,6 +3,7 @@
 
 import json
 import logging
+import unicodedata
 from datetime import date, datetime, timedelta
 
 import requests
@@ -442,23 +443,18 @@ class AgoraImporter(models.AbstractModel):
             return fallback[:1].journal_id.id if fallback else False
         return False
 
+    # Resolve the partner for an invoice based on the Agora customer data.
     def _resolve_invoice_partner(self, raw):
-        """Find or create partner from the Customer field of the Agora invoice.
 
-        The Customer object is at the invoice root level (not inside InvoiceItems).
-        Logic:
-          1. If no Customer key → anonymous partner.
-                    2. If Cif is present, search by VAT, AEAT identification, then
-                         partner identification numbers.
-                    3. If not found → create the partner with available data.
-          4. Fallback → anonymous partner.
-        """
-        customer = raw.get("Customer")
+        customer = self._extract_customer_dict(raw)
         if not customer or not customer.get("Id"):
             return self.anonymous_partner_id.id if self.anonymous_partner_id else False
 
         cif = (customer.get("Cif") or "").strip()
         name = (customer.get("FiscalName") or "").strip()
+
+        if not cif:
+            return self.anonymous_partner_id.id if self.anonymous_partner_id else False
         if not name:
             name = "Agora Customer {}".format(customer.get("Id", "unknown"))
 
@@ -468,6 +464,7 @@ class AgoraImporter(models.AbstractModel):
                 [("vat", "in", [cif, "ES{}".format(cif)])], limit=1
             )
             if partner:
+                self._set_state_if_missing(partner, customer)
                 return partner.id
 
             partner = self.env["res.partner"].search(
@@ -475,6 +472,7 @@ class AgoraImporter(models.AbstractModel):
                 limit=1,
             )
             if partner:
+                self._set_state_if_missing(partner, customer)
                 return partner.id
 
             partner = self.env["res.partner"].search(
@@ -482,17 +480,13 @@ class AgoraImporter(models.AbstractModel):
                 limit=1,
             )
             if partner:
-                return partner.id
-
-        # Search by name if no VAT match
-        if name and not cif:
-            partner = self.env["res.partner"].search([("name", "=", name)], limit=1)
-            if partner:
+                self._set_state_if_missing(partner, customer)
                 return partner.id
 
         # Create the partner with data from Agora
         country_code = (customer.get("CountryCode") or "ES").strip()
         country = self.env["res.country"].search([("code", "=", country_code)], limit=1)
+        state = self._find_state(country, customer.get("Region"))
         vals = {
             "name": name or "Agora Customer {}".format(customer.get("Id")),
             "is_company": True,
@@ -501,9 +495,14 @@ class AgoraImporter(models.AbstractModel):
             "city": customer.get("City") or False,
             "zip": customer.get("ZipCode") or False,
             "country_id": country.id if country else False,
+            "state_id": state.id if state else False,
         }
         if cif:
-            vals["vat"] = cif if cif.startswith("ES") else "ES{}".format(cif)
+            vals["vat"] = (
+                cif
+                if cif.upper().startswith(country_code.upper())
+                else country_code + cif
+            )
 
         try:
             partner = self.env["res.partner"].create(vals)
@@ -523,3 +522,58 @@ class AgoraImporter(models.AbstractModel):
                 str(e),
             )
             return self.anonymous_partner_id.id if self.anonymous_partner_id else False
+
+    @staticmethod
+    def _normalize_region(value):
+        """Lowercase and strip diacritics/spaces to compare province names."""
+        if not value:
+            return ""
+        text = unicodedata.normalize("NFD", str(value))
+        text = "".join(c for c in text if not unicodedata.combining(c))
+        return " ".join(text.lower().split())
+
+    def _find_state(self, country, region):
+        """Return the province matching Region within the country, if any."""
+        if not country or not region:
+            return self.env["res.country.state"]
+        region_key = self._normalize_region(region)
+        if not region_key:
+            return self.env["res.country.state"]
+        for candidate in self.env["res.country.state"].search(
+            [("country_id", "=", country.id)]
+        ):
+            if self._normalize_region(candidate.name) == region_key:
+                return candidate
+        return self.env["res.country.state"]
+
+    def _set_state_if_missing(self, partner, customer):
+        """Assign the Agora Region province to an existing partner without state."""
+        if partner.state_id:
+            return
+        country_code = (customer.get("CountryCode") or "ES").strip()
+        country = self.env["res.country"].search([("code", "=", country_code)], limit=1)
+        state = self._find_state(country, customer.get("Region"))
+        if state:
+            partner.state_id = state.id
+
+    # Extract a dict with the Agora customer data from the raw invoice JSON.
+    @staticmethod
+    def _extract_customer_dict(raw):
+
+        if not raw:
+            return None
+
+        # 1) Full Customer object already present (API or well-formed file JSON).
+        customer = raw.get("Customer")
+        if isinstance(customer, dict) and customer:
+            return customer
+
+        agora_customer_id = (
+            raw.get("agora_customer_id")
+            or raw.get("CustomerId")
+            or raw.get("customer_id")
+        )
+        if agora_customer_id:
+            return {"Id": str(agora_customer_id)}
+
+        return None
