@@ -367,10 +367,10 @@ class AgoraBackend(models.Model):
         invoice_date = node.get("Date", "") or node.get("InvoiceDate", "")
         business_day = node.get("BusinessDay", "") or invoice_date
 
-        return {
+        invoice_data = {
             "agora_invoice_id": agora_id,
             "agora_document_type": self._resolve_document_type(
-                node.get("Type", "invoice")
+                node.get("Type", "simplified")
             ),
             "agora_workplace_id": workplace_id,
             "agora_workplace_name": workplace_name,
@@ -384,8 +384,16 @@ class AgoraBackend(models.Model):
             "raw_data": raw_data,
         }
 
+        # Assign the real customer when Agora provides enough data to identify them.
+        invoice_data["partner_id"] = self._resolve_file_invoice_partner(
+            customer_node=customer_node,
+            agora_customer_id=customer_id,
+            agora_document_type=invoice_data["agora_document_type"],
+        )
+        return invoice_data
+
     def _parse_json_file(self, filepath):
-        """Parse Agora JSON export file"""
+        """Parse Agora JSON export file."""
         with open(filepath, "r", encoding="utf-8") as f:
             data = json.load(f)
 
@@ -402,25 +410,9 @@ class AgoraBackend(models.Model):
             agora_id = str(item.get("Id") or item.get("id", ""))
             if not agora_id:
                 continue
-            lines = []
-            for line in item.get("Lines") or item.get("lines") or []:
-                tax_rate = float(line.get("TaxRate") or line.get("tax_rate", 0))
-                tax_ids = self._resolve_tax_ids(tax_rate)
-                account_id = self._resolve_income_account()
-                lines.append(
-                    {
-                        "name": line.get("Description")
-                        or line.get("name", _("Product")),
-                        "quantity": float(
-                            line.get("Quantity") or line.get("quantity", 1)
-                        ),
-                        "price_unit": float(
-                            line.get("UnitPrice") or line.get("unit_price", 0)
-                        ),
-                        "tax_ids": tax_ids,
-                        "account_id": account_id,
-                    }
-                )
+
+            lines = self._parse_json_invoice_lines(item)
+
             invoice_date = (
                 item.get("Date")
                 or item.get("InvoiceDate")
@@ -429,42 +421,139 @@ class AgoraBackend(models.Model):
             business_day = (
                 item.get("BusinessDay") or item.get("business_day") or invoice_date
             )
-            invoices.append(
-                {
-                    "agora_invoice_id": agora_id,
-                    "agora_document_type": self._resolve_document_type(
-                        item.get("Type") or item.get("type", "invoice")
-                    ),
-                    "agora_workplace_id": int(
-                        item.get("WorkplaceId") or item.get("workplace_id", 0)
-                    ),
-                    "agora_workplace_name": item.get("WorkplaceName")
-                    or item.get("workplace_name", ""),
-                    "agora_pos_id": int(item.get("PosId") or item.get("pos_id", 0)),
-                    "agora_business_day": business_day[:10] if business_day else False,
-                    "agora_series": item.get("Series") or item.get("series", ""),
-                    "agora_number": item.get("Number") or item.get("number", ""),
-                    "agora_customer_id": str(
-                        item.get("CustomerId") or item.get("customer_id", "")
-                    ),
-                    "invoice_date": invoice_date[:10] if invoice_date else False,
-                    "lines": lines,
-                    "raw_data": json.dumps(item),
-                }
+
+            # Customer: dict (real format) or flat CustomerId (legacy format).
+            customer_dict = item.get("Customer") or item.get("customer")
+            if isinstance(customer_dict, dict):
+                agora_customer_id = str(customer_dict.get("Id") or "")
+            else:
+                agora_customer_id = str(
+                    item.get("CustomerId") or item.get("customer_id", "")
+                )
+                customer_dict = None
+
+            # Workplace: dict (real format) or flat WorkplaceId (legacy format).
+            workplace = item.get("Workplace") or item.get("workplace") or {}
+            if isinstance(workplace, dict):
+                agora_workplace_id = int(workplace.get("Id", 0))
+                agora_workplace_name = workplace.get("Name", "")
+            else:
+                agora_workplace_id = int(
+                    item.get("WorkplaceId") or item.get("workplace_id", 0)
+                )
+                agora_workplace_name = item.get("WorkplaceName") or item.get(
+                    "workplace_name", ""
+                )
+
+            # Pos: dict (real format) or flat PosId (legacy format).
+            pos = item.get("Pos") or item.get("pos") or {}
+            if isinstance(pos, dict):
+                agora_pos_id = int(pos.get("Id", 0))
+            else:
+                agora_pos_id = int(item.get("PosId") or item.get("pos_id", 0))
+
+            agora_document_type = self._resolve_document_type(
+                item.get("DocumentType")
+                or item.get("Type")
+                or item.get("document_type")
+                or item.get("type", "simplified")
             )
+
+            invoice_data = {
+                "agora_invoice_id": agora_id,
+                "agora_document_type": agora_document_type,
+                "agora_workplace_id": agora_workplace_id,
+                "agora_workplace_name": agora_workplace_name,
+                "agora_pos_id": agora_pos_id,
+                "agora_business_day": business_day[:10] if business_day else False,
+                "agora_series": item.get("Series") or item.get("series", ""),
+                "agora_number": item.get("Number") or item.get("number", ""),
+                "agora_customer_id": agora_customer_id,
+                "invoice_date": invoice_date[:10] if invoice_date else False,
+                "lines": lines,
+                "raw_data": json.dumps(item),
+            }
+            # Resolve the real customer for standard invoices when possible.
+            invoice_data["partner_id"] = self._resolve_file_invoice_partner(
+                customer_node=None,
+                agora_customer_id=agora_customer_id,
+                agora_document_type=agora_document_type,
+                customer_dict=customer_dict,
+            )
+            invoices.append(invoice_data)
         return invoices
 
+    # Parse invoice lines from JSON export, handling both grouped and flat structures.
+    def _parse_json_invoice_lines(self, item):
+        lines = []
+        invoice_items = item.get("InvoiceItems") or item.get("invoice_items")
+        if isinstance(invoice_items, list):
+            for group in invoice_items:
+                item_discount_rate = float(
+                    (group.get("Discounts") or {}).get("DiscountRate", 0)
+                )
+                for line in group.get("Lines") or []:
+                    line_data = self._json_line_to_line(line, item_discount_rate)
+                    if line_data:
+                        lines.append(line_data)
+            return lines
+
+        for line in item.get("Lines") or item.get("lines") or []:
+            line_data = self._json_line_to_line(line, 0)
+            if line_data:
+                lines.append(line_data)
+        return lines
+
+    def _json_line_to_line(self, line, item_discount_rate=0):
+        """Convert a single JSON invoice line dict to an Odoo move line dict."""
+        raw_unit = (
+            line.get("UnitPrice")
+            or line.get("PrecioUnit")
+            or line.get("unit_price")
+            or 0
+        )
+        price_unit = float(raw_unit) * (1 - item_discount_rate)
+        vat_rate = float(line.get("VatRate") or line.get("TaxRate") or 0)
+        if vat_rate > 1:
+            vat_rate = vat_rate / 100.0
+        tax_ids = self._resolve_tax_ids(vat_rate)
+        account_id = self._resolve_income_account()
+        return {
+            "name": line.get("ProductName")
+            or line.get("Description")
+            or line.get("name", _("Product")),
+            "quantity": float(line.get("Quantity") or line.get("quantity", 1)),
+            "price_unit": price_unit,
+            "tax_ids": tax_ids,
+            "account_id": account_id,
+        }
+
+    # Normalize Agora document types to Odoo categories
     @staticmethod
     def _resolve_document_type(raw_type):
-        """Normalise Agora document type to selection value"""
+
         mapping = {
-            "invoice": "invoice",
-            "factura": "invoice",
-            "ticket": "ticket",
-            "roomcharge": "room_charge",
-            "room_charge": "room_charge",
+            # Standard invoices
+            "standardinvoice": "normal",
+            "invoice": "normal",
+            "factura": "normal",
+            "normal": "normal",
+            # Simplified invoices / tickets / room charges
+            "basicinvoice": "simplified",
+            "simplifiedinvoice": "simplified",
+            "ticket": "simplified",
+            "simplified": "simplified",
+            "roomcharge": "simplified",
+            "room_charge": "simplified",
+            # Credit notes
+            "basicrefund": "rectification",
+            "standardrefund": "rectification",
+            "refund": "rectification",
+            "rectification": "rectification",
+            "creditnote": "rectification",
+            "credit_note": "rectification",
         }
-        return mapping.get(str(raw_type).lower(), "invoice")
+        return mapping.get(str(raw_type).lower(), "simplified")
 
     def _resolve_tax_ids(self, tax_rate, company_id=None):
         """Resolve tax from explicit backend mapping by company and VAT rate.
@@ -520,6 +609,36 @@ class AgoraBackend(models.Model):
             limit=1,
         )
         return account.id if account else False
+
+    def _resolve_file_invoice_partner(
+        self,
+        customer_node=None,
+        agora_customer_id="",
+        agora_document_type="simplified",
+        customer_dict=None,
+    ):
+        """Resolve the Odoo partner for file-imported invoices.
+        Standard invoices use the existing partner resolution logic, while simplified
+        and rectification invoices keep the anonymous partner behaviour.
+        """
+        if agora_document_type != "normal":
+            return False
+
+        raw_for_resolver = {}
+
+        if customer_dict:
+            raw_for_resolver["Customer"] = dict(customer_dict)
+        elif customer_node is not None:
+            attrs = dict(customer_node.attrib)
+            if attrs:
+                raw_for_resolver["Customer"] = attrs
+        elif agora_customer_id:
+            raw_for_resolver["agora_customer_id"] = agora_customer_id
+
+        if not raw_for_resolver:
+            return False
+
+        return self._resolve_invoice_partner(raw_for_resolver)
 
     def action_view_invoices(self):
         """Open the list of account.move invoices imported from this backend"""
