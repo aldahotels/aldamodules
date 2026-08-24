@@ -98,3 +98,16 @@ class HrJob(models.Model):
                         )
                         % ", ".join(invalid_types.mapped("name"))
                     )
+
+    def write(self, vals):
+        result = super().write(vals)
+        if "ticket_team_id" in vals:
+            HelpdeskTeam = self.env["helpdesk.team"]
+            for job in self:
+                employees = self.env["hr.employee"].search([("job_id", "=", job.id)])
+                for emp in employees:
+                    if job.ticket_team_id and emp.active and emp.user_id:
+                        HelpdeskTeam._update_team_members_from_employee(emp)
+                    else:
+                        HelpdeskTeam._remove_employee_from_teams(emp)
+        return result
