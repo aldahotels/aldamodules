@@ -122,6 +122,12 @@ class AgoraBackend(models.Model):
         string="Tax Mapping by Company",
         help="Map Agora VAT rates to Odoo taxes per company",
     )
+    agora_tax_override_ids = fields.One2many(
+        "agora.tax.override",
+        "backend_id",
+        string="Tax Overrides by Workplace",
+        help="Map Agora VAT rates to Odoo taxes per workplace (overrides company defaults)",
+    )
 
     # Execution settings
     execute_user_id = fields.Many2one(
@@ -338,11 +344,19 @@ class AgoraBackend(models.Model):
 
         raw_data = ET.tostring(node, encoding="unicode")
 
+        # Determine workplace early so tax resolution can consider overrides
+        workplace_node = node.find("Workplace") or node.find("Local")
+        workplace_id = 0
+        workplace_name = node.get("WorkplaceName", "")
+        if workplace_node is not None:
+            workplace_id = int(workplace_node.get("Id", 0))
+            workplace_name = workplace_node.get("Name", workplace_name)
+
         # Resolve taxes from TaxRate attribute on each line
         lines = []
         for line_node in node.findall(".//Line"):
             tax_rate = float(line_node.get("TaxRate", 0))
-            tax_ids = self._resolve_tax_ids(tax_rate)
+            tax_ids = self._resolve_tax_ids(tax_rate, workplace_id=workplace_id)
             account_id = self._resolve_income_account()
             lines.append(
                 {
@@ -356,13 +370,6 @@ class AgoraBackend(models.Model):
 
         customer_node = node.find("Customer")
         customer_id = customer_node.get("Id", "") if customer_node is not None else ""
-
-        workplace_node = node.find("Workplace") or node.find("Local")
-        workplace_id = 0
-        workplace_name = node.get("WorkplaceName", "")
-        if workplace_node is not None:
-            workplace_id = int(workplace_node.get("Id", 0))
-            workplace_name = workplace_node.get("Name", workplace_name)
 
         invoice_date = node.get("Date", "") or node.get("InvoiceDate", "")
         business_day = node.get("BusinessDay", "") or invoice_date
@@ -410,9 +417,31 @@ class AgoraBackend(models.Model):
             agora_id = str(item.get("Id") or item.get("id", ""))
             if not agora_id:
                 continue
-
-            lines = self._parse_json_invoice_lines(item)
-
+            # Determine workplace early so tax resolution can consider overrides
+            agora_workplace_id = int(
+                item.get("WorkplaceId") or item.get("workplace_id", 0)
+            )
+            lines = []
+            for line in item.get("Lines") or item.get("lines") or []:
+                tax_rate = float(line.get("TaxRate") or line.get("tax_rate", 0))
+                tax_ids = self._resolve_tax_ids(
+                    tax_rate, workplace_id=agora_workplace_id
+                )
+                account_id = self._resolve_income_account()
+                lines.append(
+                    {
+                        "name": line.get("Description")
+                        or line.get("name", _("Product")),
+                        "quantity": float(
+                            line.get("Quantity") or line.get("quantity", 1)
+                        ),
+                        "price_unit": float(
+                            line.get("UnitPrice") or line.get("unit_price", 0)
+                        ),
+                        "tax_ids": tax_ids,
+                        "account_id": account_id,
+                    }
+                )
             invoice_date = (
                 item.get("Date")
                 or item.get("InvoiceDate")
@@ -555,7 +584,7 @@ class AgoraBackend(models.Model):
         }
         return mapping.get(str(raw_type).lower(), "simplified")
 
-    def _resolve_tax_ids(self, tax_rate, company_id=None):
+    def _resolve_tax_ids(self, tax_rate, company_id=None, workplace_id=None):
         """Resolve tax from explicit backend mapping by company and VAT rate.
 
         :param tax_rate: VAT rate from Agora, as fraction (0.10) or percent (10.0)
@@ -571,6 +600,37 @@ class AgoraBackend(models.Model):
         if normalized_rate > 1:
             normalized_rate = normalized_rate / 100.0
         normalized_rate = round(normalized_rate, 6)
+
+        # Per backend, cache resolved tax_ids for (company_id, workplace_id, normalized_rate)
+        cls = type(self)
+        if not hasattr(cls, "_tax_cache_store"):
+            cls._tax_cache_store = {}
+        backend_cache = cls._tax_cache_store.setdefault(self.id, {})
+
+        # Try workplace-specific override first (if provided)
+        if workplace_id:
+            cache_key_wp = (company_id, int(workplace_id), normalized_rate)
+            if cache_key_wp in backend_cache:
+                return backend_cache[cache_key_wp]
+            overrides = self.env["agora.tax.override"].search(
+                [
+                    ("backend_id", "=", self.id),
+                    ("company_id", "=", company_id),
+                    ("workplace_id", "=", int(workplace_id)),
+                ]
+            )
+            override = overrides.filtered(
+                lambda m: round(m.vat_rate, 6) == normalized_rate
+            )[:1]
+            if override:
+                res = [override.tax_id.id]
+                backend_cache[cache_key_wp] = res
+                return res
+
+        # Fallback to company-level mapping (existing behavior)
+        cache_key = (company_id, None, normalized_rate)
+        if cache_key in backend_cache:
+            return backend_cache[cache_key]
 
         mappings = self.env["agora.tax.mapping"].search(
             [
@@ -596,7 +656,9 @@ class AgoraBackend(models.Model):
                     "rate": "{:.6f}".format(normalized_rate),
                 }
             )
-        return [mapping.tax_id.id]
+        result = [mapping.tax_id.id]
+        backend_cache[cache_key] = result
+        return result
 
     def _resolve_income_account(self):
         """Return a default income account for invoice lines"""
@@ -618,12 +680,9 @@ class AgoraBackend(models.Model):
         customer_dict=None,
     ):
         """Resolve the Odoo partner for file-imported invoices.
-        Standard invoices use the existing partner resolution logic, while simplified
-        and rectification invoices keep the anonymous partner behaviour.
+        When a customer record is available, resolve it by fiscal identifier only;
+        otherwise fall back to anonymous. Rectification invoices are not excluded.
         """
-        if agora_document_type != "normal":
-            return False
-
         raw_for_resolver = {}
 
         if customer_dict:

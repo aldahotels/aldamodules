@@ -149,6 +149,20 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Workplace Tax Overrides" name="tax_overrides">
+                            <p class="text-muted">
+                                Define workplace-specific tax overrides. These override the company mapping when present.
+                            </p>
+                            <field name="agora_tax_override_ids">
+                                <tree editable="bottom">
+                                    <field name="company_id" />
+                                    <field name="workplace_id" />
+                                    <field name="workplace_name" />
+                                    <field name="vat_rate" />
+                                    <field name="tax_id" />
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

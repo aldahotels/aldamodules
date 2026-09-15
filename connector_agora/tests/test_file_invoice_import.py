@@ -32,6 +32,7 @@ class TestFileInvoiceImportPartnerAssignment(TransactionCase):
         cls.journal = cls.env["account.journal"].search(
             [("type", "=", "sale")], limit=1
         )
+        cls.company = cls.journal.company_id or cls.env.company
         # Backend with a temporary export folder so file mode constraints pass.
         cls.tmpdir = tempfile.mkdtemp(prefix="connector_agora_test_")
         cls.backend = cls.env["agora.backend"].create(
@@ -50,7 +51,7 @@ class TestFileInvoiceImportPartnerAssignment(TransactionCase):
                 "amount": 21.0,
                 "amount_type": "percent",
                 "type_tax_use": "sale",
-                "company_id": cls.env.company.id,
+                "company_id": cls.company.id,
             }
         )
         cls.tax_10 = cls.env["account.tax"].create(
@@ -59,18 +60,26 @@ class TestFileInvoiceImportPartnerAssignment(TransactionCase):
                 "amount": 10.0,
                 "amount_type": "percent",
                 "type_tax_use": "sale",
-                "company_id": cls.env.company.id,
+                "company_id": cls.company.id,
             }
         )
         for rate, tax in ((0.21, cls.tax_21), (0.10, cls.tax_10)):
             cls.env["agora.tax.mapping"].create(
                 {
                     "backend_id": cls.backend.id,
-                    "company_id": cls.env.company.id,
+                    "company_id": cls.company.id,
                     "vat_rate": rate,
                     "tax_id": tax.id,
                 }
             )
+        cls.env["agora.journal.mapping"].create(
+            {
+                "backend_id": cls.backend.id,
+                "workplace_id": 801,
+                "invoice_type": "normal",
+                "journal_id": cls.journal.id,
+            }
+        )
 
     @classmethod
     def tearDownClass(cls):
@@ -123,50 +132,44 @@ class TestFileInvoiceImportPartnerAssignment(TransactionCase):
         self.assertEqual(agora_move.odoo_id.partner_id, self.anonymous_partner)
 
     def test_json_api_format_standard_invoice_assigns_new_partner(self):
-        """Real Agora export format: DocumentType=StandardInvoice, Customer
-        dict, Workplace/Pos dicts and InvoiceItems[].Lines resolves the real
-        customer (HU-2/3/4) and keeps agora_customer_id on the binding."""
-        self._write_invoice_json(
-            {
-                "Id": "FILE-JSON-API-001",
-                "Serie": "FV801",
-                "Number": 7,
-                "Date": "2026-01-15",
-                "BusinessDay": "2026-01-14",
-                "DocumentType": "StandardInvoice",
-                "Workplace": {
-                    "Id": 801,
-                    "Name": "RESTAURANTE PUNTA DEL ESTE",
-                },
-                "Pos": {"Id": 1},
-                "Customer": {
-                    "Id": "2002000093",
-                    "FiscalName": "GLAUCOR SA",
-                    "Cif": "A1222222",
-                    "CountryCode": "ES",
-                    "City": "PAMPLONA",
-                    "ZipCode": "31003",
-                },
-                "InvoiceItems": [
-                    {
-                        "Discounts": {"DiscountRate": 0.0},
-                        "Lines": [
-                            {
-                                "ProductName": "Producto 1",
-                                "Quantity": 1,
-                                "UnitPrice": 10.5,
-                                "VatRate": 0.10,
-                            }
-                        ],
-                    }
-                ],
-            }
-        )
-        invoices = self.backend._parse_json_file(
-            os.path.join(self.tmpdir, "test_invoice.json")
-        )
-        self.assertEqual(len(invoices), 1)
-        invoice_data = invoices[0]
+        """Real Agora API payload: DocumentType=StandardInvoice, Customer dict,
+        Workplace/Pos dicts and InvoiceItems[].Lines resolves the real customer
+        and keeps the binding linked to that partner instead of the anonymous one."""
+        raw = {
+            "Id": "FILE-JSON-API-001",
+            "Serie": "FV801",
+            "Number": 7,
+            "Date": "2026-01-15",
+            "BusinessDay": "2026-01-14",
+            "DocumentType": "StandardInvoice",
+            "Workplace": {
+                "Id": 801,
+                "Name": "RESTAURANTE PUNTA DEL ESTE",
+            },
+            "Pos": {"Id": 1},
+            "Customer": {
+                "Id": "2002000093",
+                "FiscalName": "GLAUCOR SA",
+                "Cif": "A12345674",
+                "CountryCode": "ES",
+                "City": "PAMPLONA",
+                "ZipCode": "31003",
+            },
+            "InvoiceItems": [
+                {
+                    "Discounts": {"DiscountRate": 0.0},
+                    "Lines": [
+                        {
+                            "ProductName": "Producto 1",
+                            "Quantity": 1,
+                            "UnitPrice": 10.5,
+                            "VatRate": 0.10,
+                        }
+                    ],
+                }
+            ],
+        }
+        invoice_data = self.backend._parse_agora_api_invoice(raw)
         self.assertEqual(invoice_data["agora_document_type"], "normal")
         self.assertEqual(invoice_data["agora_workplace_id"], 801)
         self.assertEqual(
@@ -185,3 +188,54 @@ class TestFileInvoiceImportPartnerAssignment(TransactionCase):
         self.assertNotEqual(agora_move.odoo_id.partner_id, self.anonymous_partner)
         self.assertEqual(agora_move.odoo_id.partner_id.name, "GLAUCOR SA")
         self.assertEqual(agora_move.agora_customer_id, "2002000093")
+
+    def test_json_api_format_basic_refund_assigns_existing_partner_by_vat(self):
+        """Rectification / refund invoices still include the customer fiscal ID and
+        must resolve the real partner instead of anonymous."""
+        existing = self.env["res.partner"].create(
+            {
+                "name": "inxenia gestion proyecto obra slu",
+                "vat": "ESB70498589",
+                "customer_rank": 1,
+            }
+        )
+
+        raw = {
+            "Id": "FILE-JSON-API-REFUND-001",
+            "Serie": "RFC4232026",
+            "Number": 274,
+            "BusinessDay": "2026-04-30",
+            "Date": "2026-04-30T13:11:12",
+            "DocumentType": "BasicRefund",
+            "Customer": {
+                "Id": 2002000039,
+                "FiscalName": "inxenia gestion proyecto obra slu",
+                "Cif": "B70498589",
+                "Street": "rua do horreo 11",
+                "City": "carballo",
+                "Region": "a coruña",
+                "ZipCode": "15100",
+                "CountryCode": "ES",
+            },
+            "Workplace": {"Id": 2, "Name": "RESTAURANTE PUNTA DEL ESTE"},
+            "Pos": {"Id": 9},
+            "RelatedInvoice": {"Serie": "FC4232026", "Number": 11918},
+            "InvoiceItems": [
+                {
+                    "Discounts": {"DiscountRate": 0.0},
+                    "Lines": [
+                        {
+                            "ProductName": "Producto rectificativo",
+                            "Quantity": 1,
+                            "UnitPrice": 10.5,
+                            "VatRate": 0.21,
+                        }
+                    ],
+                }
+            ],
+        }
+
+        invoice_data = self.backend._parse_agora_api_invoice(raw)
+        self.assertEqual(invoice_data["agora_document_type"], "rectification")
+        self.assertEqual(invoice_data["partner_id"], existing.id)
+        self.assertNotEqual(invoice_data["partner_id"], self.anonymous_partner.id)
