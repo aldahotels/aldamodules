@@ -51,7 +51,7 @@ class TestFileInvoiceImportPartnerAssignment(TransactionCase):
                 "amount": 21.0,
                 "amount_type": "percent",
                 "type_tax_use": "sale",
-                "company_id": cls.company.id,
+                "company_id": cls.env.company.id,
             }
         )
         cls.tax_10 = cls.env["account.tax"].create(
@@ -60,23 +60,71 @@ class TestFileInvoiceImportPartnerAssignment(TransactionCase):
                 "amount": 10.0,
                 "amount_type": "percent",
                 "type_tax_use": "sale",
-                "company_id": cls.company.id,
+                "company_id": cls.env.company.id,
             }
         )
+        # If the journal belongs to a different company, create matching taxes
+        # for that company as well so mappings can point to valid company taxes.
+        if cls.company and cls.company.id != cls.env.company.id:
+            cls.tax_21_j = cls.env["account.tax"].create(
+                {
+                    "name": "IVA 21% (Test) - journal",
+                    "amount": 21.0,
+                    "amount_type": "percent",
+                    "type_tax_use": "sale",
+                    "company_id": cls.company.id,
+                }
+            )
+            cls.tax_10_j = cls.env["account.tax"].create(
+                {
+                    "name": "IVA 10% (Test) - journal",
+                    "amount": 10.0,
+                    "amount_type": "percent",
+                    "type_tax_use": "sale",
+                    "company_id": cls.company.id,
+                }
+            )
         for rate, tax in ((0.21, cls.tax_21), (0.10, cls.tax_10)):
             cls.env["agora.tax.mapping"].create(
                 {
                     "backend_id": cls.backend.id,
-                    "company_id": cls.company.id,
+                    "company_id": cls.env.company.id,
                     "vat_rate": rate,
                     "tax_id": tax.id,
                 }
             )
+        # Ensure mappings also exist for the journal's company (some journals
+        # belong to a different company in test env); create duplicates if needed
+        # and point them to taxes that belong to that company to satisfy the
+        # validation in _check_company_matches_tax.
+        if cls.company and cls.company.id != cls.env.company.id:
+            mappings = [
+                (0.21, getattr(cls, "tax_21_j", cls.tax_21)),
+                (0.10, getattr(cls, "tax_10_j", cls.tax_10)),
+            ]
+            for rate, tax in mappings:
+                cls.env["agora.tax.mapping"].create(
+                    {
+                        "backend_id": cls.backend.id,
+                        "company_id": cls.company.id,
+                        "vat_rate": rate,
+                        "tax_id": tax.id,
+                    }
+                )
         cls.env["agora.journal.mapping"].create(
             {
                 "backend_id": cls.backend.id,
                 "workplace_id": 801,
                 "invoice_type": "normal",
+                "journal_id": cls.journal.id,
+            }
+        )
+        # Add mappings required by tests that reference workplace_id=2 (refunds)
+        cls.env["agora.journal.mapping"].create(
+            {
+                "backend_id": cls.backend.id,
+                "workplace_id": 2,
+                "invoice_type": "simplified",
                 "journal_id": cls.journal.id,
             }
         )

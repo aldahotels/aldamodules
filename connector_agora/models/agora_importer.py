@@ -3,7 +3,6 @@
 
 import json
 import logging
-import unicodedata
 from datetime import date, datetime, timedelta
 
 import requests
@@ -612,24 +611,24 @@ class AgoraImporter(models.AbstractModel):
         """Return the province matching Region within the country, if any."""
         if not country or not region:
             return self.env["res.country.state"]
-        normalized = self._normalize_region_name(region)
-        if not normalized:
-            return self.env["res.country.state"]
-        for candidate in self.env["res.country.state"].search(
-            [("country_id", "=", country.id)]
-        ):
-            if self._normalize_region_name(candidate.name) == normalized:
-                return candidate
-        return self.env["res.country.state"]
+        # Prepare normalized input and candidate list
+        # Delegate to region matcher utility.
+        from .region_matcher import find_state
+
+        return find_state(self.env, country, region)
 
     @staticmethod
     def _normalize_region_name(value):
-        """Normalise a province name for matching: case, spaces and accents."""
+        """Normalise a province name for matching: case, spaces, accents, punctuation.
+
+        Also strips parenthesis content and common stopwords.
+        """
         if not value:
             return ""
-        text = unicodedata.normalize("NFD", str(value))
-        text = "".join(c for c in text if not unicodedata.combining(c))
-        return " ".join(text.lower().split())
+        # remove parenthesis content
+        from .region_matcher import normalize_region_name
+
+        return normalize_region_name(value)
 
     @staticmethod
     def _extract_customer_dict(raw):
