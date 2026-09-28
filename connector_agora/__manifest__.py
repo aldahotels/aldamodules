@@ -1,6 +1,6 @@
 {
     "name": "Connector Agora",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.2.0",
     "summary": "Connector for Agora POS - Import sales invoices",
     "category": "Connector",
     "author": (
@@ -22,6 +22,7 @@
         "security/ir.model.access.csv",
         "views/agora_import_wizard.xml",
         "views/agora_backend.xml",
+        "views/agora_tax_override_views.xml",
         "views/account_move.xml",
     ],
     "demo": ["demo/agora_backend.xml"],
