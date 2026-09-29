@@ -22,7 +22,7 @@
 {
     "name": "Alda PMS Kpis",
     "summary": "Track and show key performance indicators (KPIs) for property",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "license": "AGPL-3",
     "author": "Odoo Community Association (OCA),"
     "Jose Luis Algara (Alda Hotels), Irlui Ramirez (Alda Hotels)",
@@ -31,6 +31,7 @@
     "category": "PMS",
     "data": [
         "security/ir.model.access.csv",
+        "security/pms_daily_kpi_show_security.xml",
         "wizard/generate_multiply_kpi_wizard_view.xml",
         "views/pms_property_view.xml",
         "views/pms_daily_kpi_view.xml",

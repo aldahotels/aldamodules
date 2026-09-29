@@ -12,6 +12,7 @@
                     type="object"
                     name="action_open_kpis"
                     icon="fa-line-chart"
+                    groups="pms.group_pms_manager"
                     attrs="{'invisible': [('room_ids', '=', [])]}"
                 >
                     <div class="o_field_widget o_stat_info">
@@ -38,6 +39,7 @@
                         string="View Property KPI's"
                         type="action"
                         class="btn-primary"
+                        groups="pms.group_pms_manager"
                         attrs="{'invisible': [('room_ids', '=', [])]}"
                     />
                 </header>

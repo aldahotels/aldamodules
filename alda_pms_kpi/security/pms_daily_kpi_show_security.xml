@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The popup exposes the KPIs of a property through related fields that
+         are computed as superuser: each user only reads the popups created
+         for them (see helpdesk.ticket action_view_kpi_ticket). -->
+    <record id="pms_daily_kpi_show_own_rule" model="ir.rule">
+        <field name="name">Daily KPI popup: own records</field>
+        <field name="model_id" ref="model_pms_daily_kpi_show" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+</odoo>

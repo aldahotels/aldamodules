@@ -39,6 +39,13 @@ class PmsDailyKpiShow(models.TransientModel):
     adr = fields.Float(related="kpi_id.adr", string="Average Daily Rate", readonly=True)
     revpar = fields.Float(related="kpi_id.revpar", string="RevPAR", readonly=True)
 
+    def onchange(self, values, field_name, field_onchange):
+        # onchange() checks neither access rights nor record rules, and it
+        # computes the related fields above as superuser on a new record built
+        # from client values: only users who may read the KPIs can use it.
+        self.env["pms.daily.kpi"].check_access_rights("read")
+        return super().onchange(values, field_name, field_onchange)
+
     @api.onchange("date_today", "pms_property_id")
     def _onchange_load_kpi_data(self):
         for record in self:
