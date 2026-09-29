@@ -845,6 +845,16 @@ msgstr "Ocupación información"
 
 #. module: alda_helpdesk_pms
 #. odoo-python
+#: code:addons/alda_helpdesk_pms/models/helpdesk_ticket.py:0
+#, python-format
+msgid ""
+"Only Helpdesk administrators can refresh the blocked state of all tickets."
+msgstr ""
+"Solo los administradores de Helpdesk pueden actualizar el estado de bloqueo "
+"de todos los tickets."
+
+#. module: alda_helpdesk_pms
+#. odoo-python
 #: code:addons/alda_helpdesk_pms/controllers/portal.py:0
 #, python-format
 msgid "Open"

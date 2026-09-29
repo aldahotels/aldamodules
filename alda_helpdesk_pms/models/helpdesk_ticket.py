@@ -7,7 +7,7 @@ from random import randint
 from dateutil.easter import easter
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -237,7 +237,7 @@ class HelpdeskTicket(models.Model):
     @api.depends("pms_property_id")
     def _compute_take_ticket_count(self):
         for ticket in self:
-            if ticket.pms_property_id:
+            if ticket.pms_property_id and ticket._pms_values_allowed():
                 property_record = (
                     self.env["pms.property"].sudo().browse(ticket.pms_property_id.id)
                 )
@@ -347,10 +347,29 @@ class HelpdeskTicket(models.Model):
 
         return reason.name in BLOCK_REASONS
 
+    def _pms_values_allowed(self):
+        """Whether PMS figures may be computed for this ticket.
+
+        Saved tickets are covered by ``_check_property_consistency`` and the
+        record rules. ``onchange()`` computes fields as superuser on values
+        sent by the client, with no access or record rule check, and returns
+        them; so only compute them for values the user could save.
+        """
+        self.ensure_one()
+        if self.id:  # a NewId is falsy
+            return True
+        ticket = self.sudo()
+        pms_property = ticket.pms_property_id
+        if pms_property and pms_property not in self.env.user.pms_property_ids:
+            return False
+        return (
+            not ticket.pms_room_id or ticket.pms_room_id.pms_property_id == pms_property
+        )
+
     @api.depends("pms_room_id")
     def _compute_is_room_blocked(self):
         for ticket in self:
-            if not ticket.pms_room_id:
+            if not ticket.pms_room_id or not ticket._pms_values_allowed():
                 ticket.is_room_blocked = False
                 ticket.color = 0
                 ticket.ticket_blocked_room_adr_accumulated = 0.0
@@ -494,7 +513,26 @@ class HelpdeskTicket(models.Model):
                 ticket.tag_detail = False
 
     def action_update_is_room_blocked(self):
-        tickets = self.search([("pms_room_id", "!=", False)])
+        if self:
+            # Form button or explicit ids: only refresh these tickets; the
+            # record rules apply on write.
+            tickets = self.filtered("pms_room_id")
+            to_recompute = self
+        else:
+            # Model-level call (menu, server action, cron): refresh every
+            # ticket, which is restricted to Helpdesk administrators.
+            if not (
+                self.env.su
+                or self.env.user.has_group("helpdesk.group_helpdesk_manager")
+            ):
+                raise AccessError(
+                    _(
+                        "Only Helpdesk administrators can refresh the blocked "
+                        "state of all tickets."
+                    )
+                )
+            tickets = self.search([("pms_room_id", "!=", False)])
+            to_recompute = self.search([])
         updated_count = 0
 
         for ticket in tickets:
@@ -505,7 +543,7 @@ class HelpdeskTicket(models.Model):
                 )
                 updated_count += 1
 
-        self.env["helpdesk.ticket"].search([])._compute_is_room_blocked()
+        to_recompute._compute_is_room_blocked()
 
         return {
             "type": "ir.actions.client",
@@ -532,7 +570,16 @@ class HelpdeskTicket(models.Model):
     def _compute_show_daily_kpi(self):
         for ticket in self:
             ticket.date_now = fields.Date.today()
-            if not ticket.pms_property_id:
+            if ticket.pms_property_id and not ticket._pms_values_allowed():
+                ticket.update(
+                    {
+                        "occupancy_rate": 0.0,
+                        "blocked_rooms": 0,
+                        "occupancy_kpi_info": False,
+                        "block_kpi_info": False,
+                    }
+                )
+            elif not ticket.pms_property_id:
                 ticket.occupancy_rate = 0.0
                 ticket.blocked_rooms = 0
                 ticket.location_type = False
@@ -669,6 +716,8 @@ class HelpdeskTicket(models.Model):
             if not (
                 ticket.pms_property_id and ticket.is_room_blocked and ticket.create_date
             ):
+                continue
+            if not ticket._pms_values_allowed():
                 continue
 
             result = self._calculate_blocked_room_adr(
