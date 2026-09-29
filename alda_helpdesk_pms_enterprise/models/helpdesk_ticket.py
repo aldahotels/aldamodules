@@ -49,21 +49,24 @@ class HelpdeskPmsEnterprise(models.Model):
                 ticket.has_allowed_properties = False
 
     def _get_allowed_property_ids(self):
-        allowed_property_ids = self.env.context.get("allowed_pms_property_ids")
-        allowed_property_ids = self.env.context.get("allowed_pms_property_ids")
+        """Ids of the properties the current user may link to a ticket.
+
+        The web client sends ``allowed_pms_property_ids`` in the context. The
+        context is client-controlled, so it can only narrow the user's own
+        properties, never add new ones.
+        """
+        user_properties = self.env.user.pms_property_ids
+        context_ids = self.env.context.get("allowed_pms_property_ids")
+        if not context_ids:
+            return user_properties.ids
         company_ids = (
             self.env.context.get("allowed_company_ids") or self.env.company.ids
         )
-        if allowed_property_ids:
-            domain = [("id", "in", allowed_property_ids)]
-            if company_ids:
-                domain += [("company_id", "in", company_ids), ("active", "=", True)]
-                property_ids = self.env["pms.property"].sudo().search(domain)
-                self.has_allowed_properties = True
-                self.has_allowed_properties = bool(property_ids)
-
-            return property_ids.ids
-        return self.env.user.pms_property_ids.ids
+        return user_properties.filtered(
+            lambda p: p.active
+            and p.id in context_ids
+            and p.company_id.id in company_ids
+        ).ids
 
     @api.onchange("pms_property_id")
     def _onchange_pms_property_id(self):
