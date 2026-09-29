@@ -1,0 +1,134 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* alda_security_baseline
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: alda_security_baseline
+#: model:ir.model,name:alda_security_baseline.model_res_groups
+msgid "Access Groups"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.actions.server,name:alda_security_baseline.action_apply_security_baseline
+msgid "Apply Alda security baseline"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model,name:alda_security_baseline.model_base
+msgid "Base"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model,name:alda_security_baseline.model_alda_security_export_log
+msgid "Data Export Log"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__export_date
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_search
+msgid "Export Date"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.actions.act_window,name:alda_security_baseline.alda_security_export_log_action
+#: model:ir.ui.menu,name:alda_security_baseline.alda_security_export_log_menu
+msgid "Export Log"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__field_count
+msgid "Fields"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__id
+msgid "ID"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__import_compat
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_search
+msgid "Import-Compatible"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model_terms:ir.actions.act_window,help:alda_security_baseline.alda_security_export_log_action
+msgid "List view exports and API exports are recorded here."
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__model_name
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_search
+msgid "Model"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model_terms:ir.actions.act_window,help:alda_security_baseline.alda_security_export_log_action
+msgid "No export recorded yet"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__record_count
+msgid "Records"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,help:alda_security_baseline.field_alda_security_export_log__import_compat
+msgid "The export was requested in import-compatible mode."
+msgstr ""
+
+#. module: alda_security_baseline
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_tree
+msgid "Total"
+msgstr ""
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__user_id
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_search
+msgid "User"
+msgstr ""

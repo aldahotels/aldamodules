@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Alda Hotels
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="alda_security_export_log_view_tree" model="ir.ui.view">
+        <field name="model">alda.security.export.log</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0" delete="0">
+                <field name="export_date" />
+                <field name="user_id" />
+                <field name="model_name" />
+                <field name="record_count" sum="Total" />
+                <field name="field_count" />
+                <field name="import_compat" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="alda_security_export_log_view_pivot" model="ir.ui.view">
+        <field name="model">alda.security.export.log</field>
+        <field name="arch" type="xml">
+            <pivot disable_linking="1">
+                <field name="user_id" type="row" />
+                <field name="model_name" type="col" />
+                <field name="record_count" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="alda_security_export_log_view_search" model="ir.ui.view">
+        <field name="model">alda.security.export.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="user_id" />
+                <field name="model_name" />
+                <filter
+                    name="import_compat"
+                    string="Import-Compatible"
+                    domain="[('import_compat', '=', True)]"
+                />
+                <separator />
+                <filter name="export_date" string="Export Date" date="export_date" />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_user"
+                        string="User"
+                        context="{'group_by': 'user_id'}"
+                    />
+                    <filter
+                        name="group_by_model"
+                        string="Model"
+                        context="{'group_by': 'model_name'}"
+                    />
+                    <filter
+                        name="group_by_export_date"
+                        string="Export Date"
+                        context="{'group_by': 'export_date:day'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="alda_security_export_log_action" model="ir.actions.act_window">
+        <field name="name">Export Log</field>
+        <field name="res_model">alda.security.export.log</field>
+        <field name="view_mode">tree,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No export recorded yet</p>
+            <p>List view exports and API exports are recorded here.</p>
+        </field>
+    </record>
+
+    <menuitem
+        id="alda_security_export_log_menu"
+        action="alda_security_export_log_action"
+        parent="base.menu_security"
+        groups="base.group_system"
+        sequence="90"
+    />
+</odoo>

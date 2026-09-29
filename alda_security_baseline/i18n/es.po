@@ -1,0 +1,139 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* alda_security_baseline
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-29 08:00+0000\n"
+"PO-Revision-Date: 2026-09-29 08:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#. module: alda_security_baseline
+#: model:ir.model,name:alda_security_baseline.model_res_groups
+msgid "Access Groups"
+msgstr "Grupos de acceso"
+
+#. module: alda_security_baseline
+#: model:ir.actions.server,name:alda_security_baseline.action_apply_security_baseline
+msgid "Apply Alda security baseline"
+msgstr "Aplicar la línea base de seguridad de Alda"
+
+#. module: alda_security_baseline
+#: model:ir.model,name:alda_security_baseline.model_base
+msgid "Base"
+msgstr "Base"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: alda_security_baseline
+#: model:ir.model,name:alda_security_baseline.model_alda_security_export_log
+msgid "Data Export Log"
+msgstr "Registro de exportaciones de datos"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__display_name
+msgid "Display Name"
+msgstr "Nombre mostrado"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__export_date
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_search
+msgid "Export Date"
+msgstr "Fecha de exportación"
+
+#. module: alda_security_baseline
+#: model:ir.actions.act_window,name:alda_security_baseline.alda_security_export_log_action
+#: model:ir.ui.menu,name:alda_security_baseline.alda_security_export_log_menu
+msgid "Export Log"
+msgstr "Registro de exportaciones"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__field_count
+msgid "Fields"
+msgstr "Campos"
+
+#. module: alda_security_baseline
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_search
+msgid "Group By"
+msgstr "Agrupar por"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__id
+msgid "ID"
+msgstr "ID"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__import_compat
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_search
+msgid "Import-Compatible"
+msgstr "Compatible con importación"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: alda_security_baseline
+#: model_terms:ir.actions.act_window,help:alda_security_baseline.alda_security_export_log_action
+msgid "List view exports and API exports are recorded here."
+msgstr ""
+"Aquí se registran las exportaciones hechas desde las vistas de lista y a "
+"través de la API."
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__model_name
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_search
+msgid "Model"
+msgstr "Modelo"
+
+#. module: alda_security_baseline
+#: model_terms:ir.actions.act_window,help:alda_security_baseline.alda_security_export_log_action
+msgid "No export recorded yet"
+msgstr "Todavía no hay ninguna exportación registrada"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__record_count
+msgid "Records"
+msgstr "Registros"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,help:alda_security_baseline.field_alda_security_export_log__import_compat
+msgid "The export was requested in import-compatible mode."
+msgstr "La exportación se pidió en modo compatible con la importación."
+
+#. module: alda_security_baseline
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_tree
+msgid "Total"
+msgstr "Total"
+
+#. module: alda_security_baseline
+#: model:ir.model.fields,field_description:alda_security_baseline.field_alda_security_export_log__user_id
+#: model_terms:ir.ui.view,arch_db:alda_security_baseline.alda_security_export_log_view_search
+msgid "User"
+msgstr "Usuario"

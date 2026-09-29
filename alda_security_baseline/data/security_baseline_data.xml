@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Alda Hotels
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<!-- Not noupdate on purpose: the baseline is re-applied on every update of
+     this module. -->
+<odoo>
+    <function model="res.groups" name="_alda_security_baseline_apply" />
+
+    <record id="action_apply_security_baseline" model="ir.actions.server">
+        <field name="name">Apply Alda security baseline</field>
+        <field name="model_id" ref="base.model_res_groups" />
+        <field name="state">code</field>
+        <field name="groups_id" eval="[Command.link(ref('base.group_system'))]" />
+        <field name="code">env["res.groups"]._alda_security_baseline_apply()</field>
+    </record>
+</odoo>
