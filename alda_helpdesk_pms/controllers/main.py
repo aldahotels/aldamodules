@@ -1,8 +1,11 @@
 import base64
 import logging
 
+from werkzeug.exceptions import Forbidden
+
 from odoo import _, http
 from odoo.http import request
+from odoo.tools import consteq
 
 from odoo.addons.web.controllers.utils import ensure_db
 
@@ -10,6 +13,36 @@ _logger = logging.getLogger(__name__)
 
 
 class HelpdeskFormController(http.Controller):
+    def _is_form_user(self):
+        user = request.env.user
+        return user.has_group("base.group_user") or user.has_group("base.group_portal")
+
+    def _check_form_property(self, pms_property):
+        """Only let users open the forms for their own properties.
+
+        The forms list rooms and blocked states through sudo searches, and a
+        ticket can only be saved for a property of the current user anyway.
+        """
+        if not pms_property or pms_property not in request.env.user.pms_property_ids:
+            raise Forbidden()
+
+    def _get_form_teams(self):
+        """Teams the current user can pick in the website forms."""
+        Team = request.env["helpdesk.team"].sudo()
+        if request.env.user.has_group("base.group_portal"):
+            return Team.search(
+                [("privacy_visibility", "=", "portal"), ("is_pms_form", "=", True)]
+            )
+        teams = Team.search(
+            [
+                ("privacy_visibility", "in", ["portal", "internal"]),
+                ("is_pms_form", "=", True),
+            ]
+        )
+        return teams | Team.search(
+            [("privacy_visibility", "=", "internal"), ("is_purchases_form", "=", True)]
+        )
+
     def _prepare_ticket_vals(self, post):
         room_id = post.get("room_ids", "")
         pms_property = post.get("property_id", "")
@@ -40,7 +73,7 @@ class HelpdeskFormController(http.Controller):
 
         vals = {
             "name": subject_text,
-            "partner_id": int(post.get("partner_id")),
+            "partner_id": request.env.user.partner_id.id,
             "partner_name": post.get("partner_name"),
             "pms_property_id": int(pms_property),
             "team_id": int(post.get("team_id")),
@@ -190,6 +223,7 @@ class HelpdeskFormController(http.Controller):
         property_id = int(kwargs.get("property_id", 0))
 
         pms_property_ids = request.env["pms.property"].sudo().browse(property_id)
+        self._check_form_property(pms_property_ids)
 
         visibility_filter = []
         if user_id.has_group("base.group_portal"):
@@ -279,6 +313,7 @@ class HelpdeskFormController(http.Controller):
         user_id = request.env.user
         property_id = int(kwargs.get("property_id", 0))
         pms_property_ids = request.env["pms.property"].sudo().browse(property_id)
+        self._check_form_property(pms_property_ids)
         visibility_filter = ["internal"]
         team_ids = (
             request.env["helpdesk.team"]
@@ -348,7 +383,11 @@ class HelpdeskFormController(http.Controller):
     )
     def helpdesk_ticket_submit(self, **post):
         ensure_db()
-        team = request.env["helpdesk.team"].sudo().browse(int(post.get("team_id")))
+        if not self._is_form_user():
+            return request.redirect("/web/login")
+        team = request.env["helpdesk.team"].sudo().browse(int(post.get("team_id") or 0))
+        if not team.exists() or team not in self._get_form_teams():
+            raise Forbidden()
         attachments = []
         if team.is_purchases_form:
             ticket_vals, attachments = self._prepare_ticket_purchse_vals(post)
@@ -402,7 +441,10 @@ class HelpdeskFormController(http.Controller):
                 subtype_xmlid="mail.mt_comment",
             )
 
-        return request.redirect(f"/helpdesk/ticket/confirmation/{ticket.id}")
+        access_token = ticket.sudo()._portal_ensure_token()
+        return request.redirect(
+            f"/helpdesk/ticket/confirmation/{ticket.id}?access_token={access_token}"
+        )
 
     @http.route(
         "/helpdesk/ticket/confirmation/<int:ticket_id>",
@@ -410,15 +452,22 @@ class HelpdeskFormController(http.Controller):
         auth="public",
         website=True,
     )
-    def helpdesk_ticket_thankyou(self, ticket_id=None, **kwargs):
+    def helpdesk_ticket_thankyou(self, ticket_id=None, access_token=None, **kwargs):
         values = {
             "ticket": None,
             "ticket_url": None,
         }
-        if ticket_id:
+        if ticket_id and access_token:
             try:
                 ticket = request.env["helpdesk.ticket"].sudo().browse(int(ticket_id))
-                if ticket.exists():
+                # The page shows the ticket and its portal link (which carries
+                # the token), so only render it for whoever already holds the
+                # token: the submit redirect adds it to the URL.
+                if (
+                    ticket.exists()
+                    and ticket.access_token
+                    and consteq(ticket.access_token, access_token)
+                ):
                     ticket_url = f"/my/ticket/{ticket.id}/{ticket.access_token}"
                     values.update(
                         {

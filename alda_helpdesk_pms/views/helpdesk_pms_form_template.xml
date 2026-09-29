@@ -706,7 +706,7 @@
                                             Your ticket has been successfully submitted to
                                             <br />
                                             <strong
-                                                t-out="ticket.team_id.name"
+                                                t-out="ticket and ticket.team_id.name"
                                                 class="text-secundary"
                                             />
                                         </h4>
