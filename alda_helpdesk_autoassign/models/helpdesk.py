@@ -22,7 +22,6 @@ class HelpdeskTeam(models.Model):
     )
 
     def _sync_team_members_for_employee(self, employee):
-        """Actualiza automáticamente los equipos en los que el empleado participa."""
         if not employee.user_id:
             return
 
@@ -36,11 +35,16 @@ class HelpdeskTeam(models.Model):
         if not employee.user_id:
             return
 
-        teams = self.search([("team_job_ids", "in", employee.job_id.id)])
-        if not teams:
-            teams.member_ids = [(3, employee.user_id.id)]
+        HelpdeskTeam = self.env["helpdesk.team"]
+        teams = HelpdeskTeam.search([("assign_by_property", "=", True)])
+
         for team in teams:
-            if employee.user_id in team.member_ids:
+            valid_user_ids = team._get_filtered_member_ids()
+
+            if (
+                employee.user_id.id not in valid_user_ids
+                and employee.user_id in team.member_ids
+            ):
                 team.member_ids = [(3, employee.user_id.id)]
 
     def _get_filtered_member_ids(self):
@@ -65,7 +69,6 @@ class HelpdeskTeam(models.Model):
         return list(set(employees.mapped("user_id.id")))
 
     def _update_team_members_from_employee(self, employee):
-        """Actualiza la membresía del empleado en todos los equipos válidos."""
         if not employee.user_id:
             return
 

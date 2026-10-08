@@ -53,6 +53,7 @@
             "alda_helpdesk_pms/static/src/js/ticket_form.js",
             "alda_helpdesk_pms/static/src/js/purchase_ticket_form.js",
             "alda_helpdesk_pms/static/src/css/ticket_form.css",
+            "alda_helpdesk_pms/static/src/js/ticket_form_attachment.js",
         ],
     },
     "installable": True,
