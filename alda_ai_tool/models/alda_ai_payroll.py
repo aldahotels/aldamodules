@@ -73,9 +73,12 @@ class AldaAiPayrollTools(models.AbstractModel):
     def _alda_payroll_465_group(self, key, lines):
         company_id, account_id, number = key
         currency = lines[0].company_id.currency_id
-        debit = sum(lines.mapped("debit"))
-        credit = sum(lines.mapped("credit"))
-        balance = sum(lines.mapped("balance"))
+        # Open amounts: an item partly reconciled before only brings what is
+        # left, and that is what reconcile() matches.
+        residuals = lines.mapped("amount_residual")
+        debit = sum(r for r in residuals if r > 0)
+        credit = -sum(r for r in residuals if r < 0)
+        balance = sum(residuals)
         months = sorted({line.date.strftime("%Y-%m") for line in lines})
         reason = None
         if not credit:
@@ -96,7 +99,7 @@ class AldaAiPayrollTools(models.AbstractModel):
             "mixes_months": len(months) > 1,
             "lines": len(lines),
             "line_ids": lines.ids,
-            "balances": [[line.id, line.balance] for line in lines],
+            "balances": [[line.id, line.amount_residual] for line in lines],
             "debit": currency.round(debit),
             "credit": currency.round(credit),
             "reconcilable": reason is None,
@@ -266,9 +269,13 @@ class AldaAiPayrollTools(models.AbstractModel):
             ),
             _(
                 "Reconcilable group: debit and credit lines of the same company, "
-                "account and number that add up to exactly 0, with one partner or "
-                "none. First by number and month; what is left, by number only "
-                "(flagged as mixing months)."
+                "account and number whose open amounts add up to exactly 0, with "
+                "one partner or none. First by number and month; what is left, by "
+                "number only (flagged as mixing months)."
+            ),
+            _(
+                "Amounts are the open (residual) amounts: an item partly "
+                "reconciled before only counts for what is left."
             ),
         ]
 
@@ -380,7 +387,13 @@ class AldaAiPayrollTools(models.AbstractModel):
                     if any(lines.mapped("reconciled")):
                         raise UserError(_("Some lines were reconciled meanwhile."))
                     lines.reconcile()
-                done.append(group)
+                    lines.invalidate_recordset(["full_reconcile_id", "reconciled"])
+                    full = lines.full_reconcile_id
+                    if len(full) != 1 or not all(lines.mapped("reconciled")):
+                        raise UserError(
+                            _("The group was not fully reconciled; nothing was kept.")
+                        )
+                done.append(dict(group, full_reconcile_id=full.id))
             except (UserError, ValidationError) as error:
                 failed.append(
                     {
@@ -416,5 +429,16 @@ class AldaAiPayrollTools(models.AbstractModel):
                     for company in sorted({g["company"] for g in done})
                 ],
                 "failed": failed,
+                # Trace of what was done, to undo or audit it later.
+                "reconciled": [
+                    {
+                        "company": g["company"],
+                        "account": g["account"],
+                        "number": g["number"],
+                        "full_reconcile_id": g["full_reconcile_id"],
+                        "line_ids": g["line_ids"],
+                    }
+                    for g in done
+                ],
             },
         }

@@ -49,6 +49,9 @@ class TestPayroll465(TransactionCase):
             ("2026-07-31", "NOM 6666666 7777777", "", -40, None),
             ("2026-07-31", "NOM JUL 8888888", "", -60, None),
             ("2026-07-31", "PAGO", "REF 8888888", 60, None),
+            ("2026-07-31", "NOM JUL 9999999", "", -100, None),
+            ("2026-07-31", "PAGO 9999999", "", 100, None),
+            ("2026-07-31", "AJUSTE MANUAL", "", -30, None),
         ]
         cls.lines = cls.env["account.move.line"]
         for day, label, ref, balance, partner in rows:
@@ -86,6 +89,13 @@ class TestPayroll465(TransactionCase):
             cls.lines |= move.line_ids.filtered(
                 lambda line: line.account_id == cls.account_465
             )
+        # The payment of 9999999 was partly matched by hand with an adjustment:
+        # by balance the group adds up, by what is still open it does not.
+        partial = cls.lines.filtered(
+            lambda line: line.name in ("PAGO 9999999", "AJUSTE MANUAL")
+        )
+        partial.reconcile()
+        cls.lines = cls.lines.filtered(lambda line: line.name != "AJUSTE MANUAL")
         cls.user = new_test_user(
             cls.env,
             login="ai_marta",
@@ -128,7 +138,7 @@ class TestPayroll465(TransactionCase):
         self.assertEqual(
             row["pending"],
             {
-                "amounts_differ": 1,
+                "amounts_differ": 2,
                 "debit_only": 0,
                 "credit_only": 1,
                 "partners_differ": 1,
@@ -141,7 +151,7 @@ class TestPayroll465(TransactionCase):
         self.assertEqual(mixed["months"], ["2026-07", "2026-08"])
         self.assertEqual(
             {p["number"] for p in response["result"]["pending"]},
-            {"3333333", "4444444", "5555555"},
+            {"3333333", "4444444", "5555555", "9999999"},
         )
         # No names of employees in the answer.
         self.assertNotIn("AI employee", str(response))

@@ -95,6 +95,13 @@ class TestBankTools(TransactionCase):
         cls.st_transfer = st_line("2026-09-22", "HBD 12345 VARIAS RESERVAS", 300.0)
         cls.st_missing = st_line("2026-09-24", "TRANSFERENCIA CLIENTE", 75.0)
         cls.st_out = st_line("2026-09-22", "C. 351145677 2109", -9.4)
+        # TPV payments of the 25th not grouped yet, and a settlement whose
+        # grouped entry is dated the day before the settled day.
+        cls.tpv_pay_60 = cls._payment("2026-09-25", 60.0, cls.tb)
+        cls.tpv_pay_40 = cls._payment("2026-09-25", 40.0, cls.tb)
+        cls.st_pending = st_line("2026-09-26", "ON 351145677 2509", 100.0)
+        cls.tpv_day27 = cls._grouped("2026-09-27", 55.0)
+        cls.st_other_day = st_line("2026-09-29", "ON 351145677 2809", 55.0)
         cls.taz_user = new_test_user(cls.env, login="ai_taz", name="AI TAZ")
         job = cls.env["hr.job"].create({"name": "TAZ - Técnico administrativo de zona"})
         cls.env["hr.employee"].create(
@@ -136,7 +143,7 @@ class TestBankTools(TransactionCase):
         return move.line_ids.filtered(lambda line: line.account_id == cls.transit)
 
     @classmethod
-    def _payment(cls, day, amount):
+    def _payment(cls, day, amount, journal=None):
         payment = cls.env["account.payment"].create(
             {
                 "payment_type": "inbound",
@@ -144,7 +151,7 @@ class TestBankTools(TransactionCase):
                 "partner_id": cls.customer.id,
                 "amount": amount,
                 "date": day,
-                "journal_id": cls.cb.id,
+                "journal_id": (journal or cls.cb).id,
             }
         )
         payment.action_post()
@@ -174,12 +181,13 @@ class TestBankTools(TransactionCase):
             date_to="2026-09-30",
         )["result"]
         self.assertEqual(result["hotel_code"], "999")
-        self.assertEqual(result["totals"]["tpv"]["lines"], 2)
+        self.assertEqual(result["totals"]["tpv"]["lines"], 4)
         self.assertEqual(result["totals"]["transfer"]["lines"], 2)
         self.assertEqual(result["totals"]["outgoing"]["lines"], 1)
         tpv = [row for row in result["lines"] if row["kind"] == "tpv"]
         self.assertEqual(
-            [row["settled_date"] for row in tpv], ["2026-09-21", "2026-09-22"]
+            [row["settled_date"] for row in tpv],
+            ["2026-09-21", "2026-09-22", "2026-09-25", "2026-09-28"],
         )
 
     def test_match_candidates(self):
@@ -214,6 +222,25 @@ class TestBankTools(TransactionCase):
         self.assertEqual(notice["bank_amount"], 75.0)
         self.assertIn("missing", notice["likely_cause"])
 
+    def test_tpv_grouping_pending_and_other_day(self):
+        rows = {
+            row["statement_line_id"]: row
+            for row in self._run(
+                "alda_bank_match_candidates",
+                statement_line_ids=[self.st_pending.id, self.st_other_day.id],
+            )["result"]["lines"]
+        }
+        pending = rows[self.st_pending.id]
+        self.assertTrue(pending["grouping_pending"])
+        self.assertEqual(pending["breakdown"]["net"], 100.0)
+        self.assertFalse(pending["notice"])
+        self.assertFalse(pending["cents_writeoff"])
+        other_day = rows[self.st_other_day.id]
+        (match,) = other_day["exact_matches"]
+        self.assertEqual(match["move_line_id"], self.tpv_day27.id)
+        self.assertTrue(match["other_day"])
+        self.assertFalse(other_day["notice"])
+
     def test_notify_taz(self):
         preview, applied = self._confirmed(
             "alda_bank_notify_taz",
@@ -228,6 +255,13 @@ class TestBankTools(TransactionCase):
         self.assertEqual(activity.res_model, "account.move")
         self.assertEqual(activity.res_id, self.st_missing.move_id.id)
         self.assertIn("75,00", activity.note)
+        # The TAZ already has it: no second notice for the same line.
+        with self.assertRaisesRegex(UserError, "already have an open activity"):
+            self._run(
+                "alda_bank_notify_taz",
+                statement_line_id=self.st_missing.id,
+                message="Falta un cobro de 75,00 EUR del 24/09.",
+            )
 
     def test_reconcile_exact_and_combination(self):
         self._confirmed(
@@ -262,11 +296,25 @@ class TestBankTools(TransactionCase):
         )
 
     def test_reconcile_refuses_bad_matches(self):
-        with self.assertRaisesRegex(UserError, "above the cents rule"):
+        with self.assertRaisesRegex(UserError, "cannot be"):
             self._run(
                 "alda_bank_reconcile",
                 statement_line_id=self.st_missing.id,
                 move_line_ids=self.pay_999.ids,
+            )
+        # A TPV settlement is not reconciled with the payments it groups.
+        with self.assertRaisesRegex(UserError, "cannot be matched"):
+            self._run(
+                "alda_bank_reconcile",
+                statement_line_id=self.st_pending.id,
+                move_line_ids=(self.tpv_pay_60 | self.tpv_pay_40).ids,
+            )
+        # Nor a transfer with the TPV grouped entry.
+        with self.assertRaisesRegex(UserError, "cannot be matched"):
+            self._run(
+                "alda_bank_reconcile",
+                statement_line_id=self.st_transfer.id,
+                move_line_ids=self.tpv_day1.ids,
             )
         with self.assertRaisesRegex(UserError, "cannot be matched"):
             self._run(
