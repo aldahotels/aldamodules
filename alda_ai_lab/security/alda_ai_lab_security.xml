@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="alda_ai_lab_schedule_rule_own" model="ir.rule">
+        <field name="name">AI lab scheduled reports: own or received</field>
+        <field name="model_id" ref="model_alda_ai_lab_schedule" />
+        <field
+            name="domain_force"
+        >['|', ('user_id', '=', user.id), ('recipient_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+    </record>
+    <record id="alda_ai_lab_schedule_rule_system" model="ir.rule">
+        <field name="name">AI lab scheduled reports: all for administrators</field>
+        <field name="model_id" ref="model_alda_ai_lab_schedule" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_system'))]" />
+    </record>
+</odoo>

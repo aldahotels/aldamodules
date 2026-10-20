@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ai_tool_lab_reactivation_campaign" model="ai.tool">
+        <field name="name">lab_reactivation_campaign</field>
+        <field
+            name="description"
+        >LAB (staging only). Prepare a DRAFT email campaign for the companies that are cooling down for some salespeople, the same ones pms_salesperson_cooling_customers lists for date_to (use the date the data reaches). The body is simple HTML written by you (paragraphs, bold, lists, https links; no images, scripts or {{ }}), wrapped in the basic mailing theme with an unsubscribe link. Leaves out, with the reason, companies without a valid email, blacklisted or opted out, agencies, archived and repeated emails. Two steps: confirm=false previews the recipients, the left out and the text; show it and, only after the user's approval, call again with confirm=true, the token and exactly the same arguments, body included. It never sends: a person reviews and sends the draft from Email Marketing.</field>
+        <field name="model_id" ref="model_alda_ai_lab_campaign_tools" />
+        <field name="function_name">_ai_lab_reactivation_campaign</field>
+        <field name="kind">generic</field>
+    </record>
+</odoo>

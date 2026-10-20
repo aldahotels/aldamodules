@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ai_tool_lab_reservations_bulk_update" model="ai.tool">
+        <field name="name">lab_reservations_bulk_update</field>
+        <field
+            name="description"
+        >LAB (staging only). Apply a discount to the nights of many reservations at once, inside a window of dates (today or later, at most 62 days), selected by agency, partner (guest or folio holder), folios, reservations, room types or sale channels, optionally in some hotels. Nights that already have that discount or more stay as they are. Leaves out, with the reason, reservations that are cancelled, checked in or out, not normal, blocked, in overbooking, already started or whose folio has invoices. Two steps: confirm=false previews each reservation's room total before and after and the total impact; show it and, only after the user's approval, call again with confirm=true and the token. At most 50 reservations; the previous discounts are noted on each reservation.</field>
+        <field name="model_id" ref="model_alda_ai_lab_reservation_tools" />
+        <field name="function_name">_ai_lab_reservations_bulk_update</field>
+        <field name="kind">generic</field>
+    </record>
+</odoo>

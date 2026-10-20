@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ai_tool_lab_report_schedule" model="ai.tool">
+        <field name="name">lab_report_schedule</field>
+        <field
+            name="description"
+        >LAB (staging only). Schedule a recurring report: a catalogue READ tool (for example pms_discounts_summary or pms_service_nights) run every day, week or month at a local time, over a period relative to each run (previous week, previous month, next week...), delivered to the recipients' chat with OdooBot inside Odoo, computed with each recipient's permissions. Two steps: confirm=false previews the schedule, the next runs and a sample of the report with today's data; show it and, only after the user's approval, call again with confirm=true and the token. send_now=true also sends the first report right away.</field>
+        <field name="model_id" ref="model_alda_ai_lab_report_tools" />
+        <field name="function_name">_ai_lab_report_schedule</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_lab_report_schedules" model="ai.tool">
+        <field name="name">lab_report_schedules</field>
+        <field
+            name="description"
+        >LAB (staging only). The scheduled reports I own or receive: what they run, when, the next and last run and how it went. Read only.</field>
+        <field name="model_id" ref="model_alda_ai_lab_report_tools" />
+        <field name="function_name">_ai_lab_report_schedules</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_lab_report_schedule_manage" model="ai.tool">
+        <field name="name">lab_report_schedule_manage</field>
+        <field
+            name="description"
+        >LAB (staging only). Pause, resume, cancel, send now or change (period, frequency, day, time, recipients) a scheduled report created with lab_report_schedule. Two steps: confirm=false previews the change; only after the user's approval, confirm=true with the token.</field>
+        <field name="model_id" ref="model_alda_ai_lab_report_tools" />
+        <field name="function_name">_ai_lab_report_schedule_manage</field>
+        <field name="kind">generic</field>
+    </record>
+</odoo>

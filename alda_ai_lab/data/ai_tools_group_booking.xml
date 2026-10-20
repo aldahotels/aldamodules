@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ai_tool_lab_group_booking_create" model="ai.tool">
+        <field name="name">lab_group_booking_create</field>
+        <field
+            name="description"
+        >LAB (staging only). Create a group booking at one hotel: one folio with one reservation per room, rooms assigned. Arguments: dates, room type codes with the number of rooms (DBL=20), adults per room, optional board code (NONE for room only), pricelist, the customer company (partner_id or partner_name), sale channel and group name. Two steps: confirm=false previews the free rooms per night, the rooms it would assign, the estimated price per room type and the total, and why it cannot be done if so; show it and, only after the user's approval, call again with confirm=true and the token. Limits: at most 40 rooms and 14 nights, arrival in 2 days or later, no overbooking. Nothing is sent to the guest or to the channel manager.</field>
+        <field name="model_id" ref="model_alda_ai_lab_group_tools" />
+        <field name="function_name">_ai_lab_group_booking_create</field>
+        <field name="kind">generic</field>
+    </record>
+</odoo>

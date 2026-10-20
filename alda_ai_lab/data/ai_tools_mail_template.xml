@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ai_tool_lab_mail_template_create" model="ai.tool">
+        <field name="name">lab_mail_template_create</field>
+        <field
+            name="description"
+        >LAB (staging only). Create an email template for folios or reservations, in Spanish and optionally Galician. The subject takes placeholders like {{ object.partner_name }}; the HTML body takes &lt;t t-out="object.partner_name"&gt;guest&lt;/t&gt; or &lt;span t-field="object.first_checkin"/&gt; for formatted dates and amounts. Only fields of the folio, its guest, its hotel and its stay are allowed; an error lists them. Two steps: confirm=false validates the placeholders and renders the subject and body with a real folio or reservation of the user's hotels; show it and, only after the user's approval, call again with confirm=true and the token. The template is not linked to any automatic sending.</field>
+        <field name="model_id" ref="model_alda_ai_lab_template_tools" />
+        <field name="function_name">_ai_lab_mail_template_create</field>
+        <field name="kind">generic</field>
+    </record>
+</odoo>
