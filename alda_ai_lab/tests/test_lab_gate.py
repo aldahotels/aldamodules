@@ -1,10 +1,11 @@
 import os
+from datetime import date, timedelta
 from unittest.mock import patch
 
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
 
-from ..models.lab import PARAM_LAB_ENABLED, lab_silence, lab_silent
+from ..models.lab import PARAM_LAB_ENABLED, SMARTLOCK_KEY, lab_silence, lab_silent
 from .common import LabCase
 
 
@@ -60,6 +61,36 @@ class TestLabSilence(LabCase):
         with self.assertRaisesRegex(UserError, r"outside Odoo \(sms.sms\)"):
             with lab_silence(self.env["sms.sms"]) as sms:
                 sms.create({"number": "+34600000000", "body": "Lab"})
+
+    def test_staged_door_codes(self):
+        reservation = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.prop.id,
+                "room_type_id": self.room_type.id,
+                "partner_id": self.company_partner.id,
+                "sale_channel_origin_id": self.direct.id,
+                "checkin": date.today() + timedelta(days=10),
+                "checkout": date.today() + timedelta(days=11),
+            }
+        )
+        staged = self.env.cr.precommit.data
+        Reservation = type(self.env["pms.reservation"])
+        # With the smart lock module, a staged reservation that needs no door
+        # code is not a leak.
+        with patch.object(
+            Reservation, "_should_have_lock_codes", lambda r: False, create=True
+        ):
+            with lab_silence(reservation) as quiet:
+                staged[SMARTLOCK_KEY] = set(quiet.ids)
+            self.assertIn(SMARTLOCK_KEY, staged)
+            with self.assertRaisesRegex(UserError, "pms_smartlock"):
+                with patch.object(
+                    Reservation, "_should_have_lock_codes", lambda r: True
+                ):
+                    with lab_silence(reservation) as quiet:
+                        staged[SMARTLOCK_KEY] = set(quiet.ids)
+        # Aborting clears what was staged for the commit.
+        self.assertNotIn(SMARTLOCK_KEY, staged)
 
     def test_skips_automated_actions(self):
         self.env["base.automation"].create(

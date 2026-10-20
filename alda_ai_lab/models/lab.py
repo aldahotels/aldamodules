@@ -35,14 +35,16 @@ OUTBOX_MODELS = (
     "lock.code",
     "mailing.trace",
 )
-# Work that modules stage for the commit (channel exports, smart lock codes).
+# Work that modules stage for the commit: channel exports.
 PRECOMMIT_KEYS = (
     "connector_pms_wubook.availability_buffer",
     "connector_pms_wubook.plan_rules_buffer",
     "connector_pms_wubook.pending_plan_rules",
     "connector_pms_wubook.pending_plan_avail",
-    "pms_smartlock.pending_sync_ids",
 )
+# The smart lock module stages every new or changed reservation and, at the
+# commit, only generates door codes for those its own check selects.
+SMARTLOCK_KEY = "pms_smartlock.pending_sync_ids"
 
 
 def lab_enabled(env):
@@ -71,6 +73,20 @@ def lab_tripwire(what):
         raise UserError(
             _("AI lab stopped: this change would %s. Nothing was saved.") % what
         )
+
+
+def _staged_leaks(env):
+    """Keys of the work staged for the commit that would leave Odoo."""
+    staged = env.cr.precommit.data
+    leaks = [key for key in PRECOMMIT_KEYS if staged.get(key)]
+    pending = staged.get(SMARTLOCK_KEY)
+    if pending:
+        Reservation = env["pms.reservation"].sudo()
+        check = getattr(type(Reservation), "_should_have_lock_codes", None)
+        reservations = Reservation.browse(list(pending)).exists()
+        if not check or any(r._should_have_lock_codes() for r in reservations):
+            leaks.append(SMARTLOCK_KEY)
+    return leaks
 
 
 def _outbox_marks(env):
@@ -107,7 +123,7 @@ def lab_silence(records):
         # Computations left for the flush would otherwise run later, in an
         # environment without the lab context.
         quiet.env.flush_all()
-        leaks = [key for key in PRECOMMIT_KEYS if env.cr.precommit.data.get(key)]
+        leaks = _staged_leaks(env)
         for name, last_id in marks.items():
             if (
                 env[name]
@@ -117,6 +133,10 @@ def lab_silence(records):
             ):
                 leaks.append(name)
         if leaks:
+            # The rollback undoes the rows but not the work staged for the
+            # commit, which would still run if the request commits.
+            for key in (SMARTLOCK_KEY,) + PRECOMMIT_KEYS:
+                env.cr.precommit.data.pop(key, None)
             raise UserError(
                 _(
                     "AI lab stopped: the change would send or queue work outside "
