@@ -408,6 +408,9 @@ class PurchaseRequestJsonMethods(http.Controller):
             )
 
         try:
+            if not purchase_request.line_ids:
+                raise UserError(_("You cannot validate an empty purchase request."))
+
             for line in purchase_request.line_ids:
                 if line.product_qty <= 0:
                     raise UserError(

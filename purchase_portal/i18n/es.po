@@ -2041,3 +2041,11 @@ msgid ""
 "{{ object.property_id.name}}: Solicitud de compra (Ref {{ object.name or "
 "'n/a' }}) - {{ object.company_id.name}}"
 msgstr ""
+
+#. module: purchase_portal
+#. odoo-python
+#: code:addons/purchase_portal/controllers/prequest_json.py:0
+#: code:addons/purchase_portal/models/purchase_request.py:0
+#, python-format
+msgid "You cannot validate an empty purchase request."
+msgstr "No puedes validar una solicitud de compra vacía."

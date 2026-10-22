@@ -579,6 +579,37 @@ class PortalAccount(CustomerPortal):
         )
         return request.render("purchase_portal.portal_product_product", values)
 
+    @http.route(
+        ["/my/product_data_sheet/<int:attachment_id>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_product_data_sheet(self, attachment_id, **kw):
+        attachment = request.env["ir.attachment"].sudo().browse(attachment_id)
+        if not attachment.exists() or attachment.res_model != "product.template":
+            raise werkzeug.exceptions.NotFound()
+
+        allowed_product_domain = self._get_product_product_domain()
+        allowed_product = (
+            request.env["product.product"]
+            .sudo()
+            .search(
+                [
+                    ("product_tmpl_id", "=", attachment.res_id),
+                ]
+                + allowed_product_domain
+            )
+        )
+        if not allowed_product:
+            raise Unauthorized()
+
+        return (
+            request.env["ir.binary"]
+            ._get_stream_from(attachment)
+            .get_response(as_attachment=True)
+        )
+
     # ------------------------------------------------------------
     # My purchase requests saved carts
     # ------------------------------------------------------------

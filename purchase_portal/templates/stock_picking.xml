@@ -408,7 +408,7 @@
                                 />
                             <t t-if="attachment">
                                 <a
-                                        t-att-href="'/web/content/%s?download=True' % attachment.id"
+                                        t-att-href="'/my/product_data_sheet/%s' % attachment.id"
                                     >
                                     <i class="fa fa-file-pdf-o" /> Data sheet
                                 </a>

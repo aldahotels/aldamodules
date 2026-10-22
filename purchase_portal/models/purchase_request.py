@@ -51,7 +51,13 @@ class PurchaseRequest(models.Model):
                 )
         return
 
+    def _check_has_lines(self):
+        for pr in self:
+            if not pr.line_ids:
+                raise UserError(_("You cannot validate an empty purchase request."))
+
     def request_validation(self):
+        self._check_has_lines()
         res = super(PurchaseRequest, self).request_validation()
         if res.reviewer_ids:
             mt_comment = self.env.ref("mail.mt_comment")
@@ -70,6 +76,7 @@ class PurchaseRequest(models.Model):
         return res
 
     def button_approved(self):
+        self._check_has_lines()
         res = super(PurchaseRequest, self).button_approved()
         for pr in self:
             pr.message_subscribe(partner_ids=pr.property_id.partner_id.ids)
