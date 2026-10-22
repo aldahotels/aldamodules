@@ -54,9 +54,7 @@ class PurchaseRequest(models.Model):
     def _check_has_lines(self):
         for pr in self:
             if not pr.line_ids:
-                raise UserError(
-                    _("You cannot validate an empty purchase request.")
-                )
+                raise UserError(_("You cannot validate an empty purchase request."))
 
     def request_validation(self):
         self._check_has_lines()

@@ -591,11 +591,15 @@ class PortalAccount(CustomerPortal):
             raise werkzeug.exceptions.NotFound()
 
         allowed_product_domain = self._get_product_product_domain()
-        allowed_product = request.env["product.product"].sudo().search(
-            [
-                ("product_tmpl_id", "=", attachment.res_id),
-            ]
-            + allowed_product_domain
+        allowed_product = (
+            request.env["product.product"]
+            .sudo()
+            .search(
+                [
+                    ("product_tmpl_id", "=", attachment.res_id),
+                ]
+                + allowed_product_domain
+            )
         )
         if not allowed_product:
             raise Unauthorized()
