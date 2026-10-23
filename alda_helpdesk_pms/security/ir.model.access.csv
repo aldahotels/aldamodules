@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_helpdesk_ticket_detail_tag,access_helpdesk_ticket_detail_tag,model_helpdesk_ticket_detail_tag,base.group_user,1,1,1,1
+access_pms_block_episode_user,access_pms_block_episode_user,model_pms_block_episode,helpdesk.group_helpdesk_user,1,0,0,0
+access_pms_block_episode_manager,access_pms_block_episode_manager,model_pms_block_episode,helpdesk.group_helpdesk_manager,1,1,1,0

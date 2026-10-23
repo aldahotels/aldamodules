@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Tree View -->
+    <record id="pms_block_episode_view_tree" model="ir.ui.view">
+        <field name="name">pms.block.episode.tree</field>
+        <field name="model">pms.block.episode</field>
+        <field name="arch" type="xml">
+            <list string="Block Episodes" create="0" delete="0">
+                <field name="name" optional="hide" />
+                <field name="pms_property_id" optional="hide" />
+                <field name="room_id" />
+                <field name="closure_reason_id" optional="hide" />
+                <field name="closure_reason_name" optional="hide" />
+                <field name="date_start" />
+                <field name="date_end" optional="hide" />
+                <field name="state" />
+                <field name="duration_days" sum="Total Nights" />
+                <field name="ticket_count" optional="hide" />
+                <field name="last_observed_date" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="pms_block_episode_view_form" model="ir.ui.view">
+        <field name="name">pms.block.episode.form</field>
+        <field name="model">pms.block.episode</field>
+        <field name="arch" type="xml">
+            <form string="Block Episode" create="0" delete="0">
+                <header>
+                    <button
+                        name="action_view_chatter"
+                        string="Ver Chatter"
+                        type="object"
+                        class="btn-primary"
+                        icon="fa-comments"
+                    />
+                    <button
+                        name="action_export_chatter"
+                        string="Exportar Chatter"
+                        type="object"
+                        class="btn-secondary"
+                        icon="fa-download"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="room_id" readonly="1" />
+                            <field name="pms_property_id" readonly="1" />
+                            <field name="closure_reason_id" readonly="1" />
+                            <field name="closure_reason_name" readonly="1" />
+                        </group>
+                        <group>
+                            <field name="date_start" readonly="1" />
+                            <field name="date_end" readonly="1" />
+                            <field name="state" readonly="1" />
+                            <field name="duration_days" readonly="1" />
+                            <field name="last_observed_date" readonly="1" />
+                            <field name="origin_reservation_id" readonly="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tickets" name="tickets_page">
+                            <field name="ticket_ids" readonly="1">
+                                <list string="Linked Tickets" create="0" delete="0">
+                                    <field name="name" />
+                                    <field name="partner_id" />
+                                    <field name="stage_id" />
+                                    <field name="create_date" />
+                                    <field name="block_classification" />
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Chatter">
+                            <field name="message_ids" widget="mail_thread" />
+                            <field name="activity_ids" widget="mail_activity" />
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="pms_block_episode_view_search" model="ir.ui.view">
+        <field name="name">pms.block.episode.search</field>
+        <field name="model">pms.block.episode</field>
+        <field name="arch" type="xml">
+            <search string="Block Episodes">
+                <field name="name" string="Episode" />
+                <field name="room_id" string="Room" />
+                <field name="pms_property_id" string="Property" />
+                <field name="closure_reason_id" string="Closure Reason" />
+                <filter
+                    string="Open"
+                    name="filter_open"
+                    domain="[('state','=','open')]"
+                />
+                <filter
+                    string="Closed"
+                    name="filter_closed"
+                    domain="[('state','=','closed')]"
+                />
+                <filter
+                    string="Without Tickets"
+                    name="filter_no_tickets"
+                    domain="[('ticket_ids','=',False)]"
+                />
+                <group string="Group By">
+                    <filter
+                        string="Property"
+                        name="group_property"
+                        context="{'group_by': 'pms_property_id'}"
+                    />
+                    <filter
+                        string="Room"
+                        name="group_room"
+                        context="{'group_by': 'room_id'}"
+                    />
+                    <filter
+                        string="Motive"
+                        name="group_motive"
+                        context="{'group_by': 'closure_reason_id'}"
+                    />
+                    <filter
+                        string="State"
+                        name="group_state"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        string="Start Month"
+                        name="group_start_month"
+                        context="{'group_by': 'date_start:month'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="pms_block_episode_view_pivot" model="ir.ui.view">
+        <field name="name">pms.block.episode.pivot</field>
+        <field name="model">pms.block.episode</field>
+        <field name="arch" type="xml">
+            <pivot string="Block Episodes Analysis">
+                <field name="room_id" type="row" />
+                <field name="pms_property_id" type="row" />
+                <field name="closure_reason_id" type="row" />
+                <field name="date_start" interval="month" type="col" />
+                <field name="duration_days" type="measure" />
+                <field name="ticket_count" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_pms_block_episode" model="ir.actions.act_window">
+        <field name="name">Block Episodes</field>
+        <field name="res_model">pms.block.episode</field>
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="search_view_id" ref="pms_block_episode_view_search" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No block episodes recorded yet.</p>
+            <p>Episodes are created automatically by the daily reconciliation.</p>
+        </field>
+    </record>
+
+    <!-- Menu Item under PMS root -->
+    <menuitem
+        id="menu_pms_block_episode"
+        name="Block Episodes"
+        parent="alda_helpdesk_pms.menu_pms_root"
+        action="action_pms_block_episode"
+        sequence="20"
+        groups="helpdesk.group_helpdesk_user"
+    />
+</odoo>
