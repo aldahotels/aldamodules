@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Extend the enterprise ticket form to add block classification and episodes -->
+    <record id="helpdesk_ticket_form_inherit_block" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.inherit.block</field>
+        <field name="model">helpdesk.ticket</field>
+        <field
+            name="inherit_id"
+            ref="alda_helpdesk_pms.helpdesk_ticket_type_view_form_pms"
+        />
+        <field name="arch" type="xml">
+            <!-- Add classification field after room_closure_reason_id -->
+            <xpath expr="//field[@name='room_closure_reason_id']" position="after">
+                <field name="block_classification" readonly="1" />
+                <field
+                    name="block_episode_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="hide"
+                />
+            </xpath>
+            <!-- Add episodes field in the main sheet -->
+            <xpath expr="//sheet" position="inside">
+                <group string="Episodios de bloqueo">
+                    <field name="block_episode_ids" readonly="1">
+                        <list string="Linked Episodes" create="0" delete="0">
+                            <field name="name" />
+                            <field name="room_id" />
+                            <field name="date_start" />
+                            <field name="date_end" />
+                            <field name="state" />
+                            <field name="duration_days" />
+                        </list>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree view: add classification column -->
+    <record id="helpdesk_ticket_tree_inherit_block" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.tree.inherit.block</field>
+        <field name="model">helpdesk.ticket</field>
+        <field
+            name="inherit_id"
+            ref="alda_helpdesk_pms.helpdesk_ticket_type_view_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_room_blocked']" position="after">
+                <field name="block_classification" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search view: add filters and group by for block_classification -->
+    <record id="pms_helpdesk_ticket_search_inherit_block" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.search.inherit.block</field>
+        <field name="model">helpdesk.ticket</field>
+        <field
+            name="inherit_id"
+            ref="alda_helpdesk_pms.pms_helpdesk_ticket_search_inherit"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='filter_blocked']" position="after">
+                <filter
+                    string="Avería común"
+                    name="filter_block_common"
+                    domain="[('block_classification','=','common')]"
+                />
+                <filter
+                    string="Bloqueo irrelevante"
+                    name="filter_block_related"
+                    domain="[('block_classification','=','related')]"
+                />
+                <filter
+                    string="Bloqueo relevante confirmado"
+                    name="filter_block_confirmed"
+                    domain="[('block_classification','=','confirmed')]"
+                />
+                <separator />
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter
+                    string="Block Classification"
+                    name="group_block_classification"
+                    context="{'group_by': 'block_classification'}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

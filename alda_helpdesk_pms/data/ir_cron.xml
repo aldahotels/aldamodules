@@ -13,4 +13,16 @@
         </field>
         <field name="active">True</field>
     </record>
+
+    <record id="ir_cron_reconcile_block_episodes" model="ir.cron">
+        <field name="name">Reconcile Room Block Episodes</field>
+        <field name="interval_number">24</field>
+        <field name="interval_type">hours</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False" />
+        <field name="model_id" ref="model_pms_block_episode" />
+        <field name="state">code</field>
+        <field name="code">model._cron_reconcile_block_episodes()</field>
+        <field name="active">True</field>
+    </record>
 </odoo>
