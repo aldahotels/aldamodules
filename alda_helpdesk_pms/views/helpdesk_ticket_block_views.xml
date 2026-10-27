@@ -23,14 +23,14 @@
             <xpath expr="//sheet" position="inside">
                 <group string="Episodios de bloqueo">
                     <field name="block_episode_ids" readonly="1">
-                        <list string="Linked Episodes" create="0" delete="0">
+                        <tree create="0" delete="0" edit="0">
                             <field name="name" />
                             <field name="room_id" />
                             <field name="date_start" />
                             <field name="date_end" />
                             <field name="state" />
                             <field name="duration_days" />
-                        </list>
+                        </tree>
                     </field>
                 </group>
             </xpath>

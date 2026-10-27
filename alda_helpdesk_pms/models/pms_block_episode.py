@@ -7,11 +7,9 @@ from psycopg2 import IntegrityError
 
 from odoo import _, api, fields, models, tools
 
-_logger = logging.getLogger(__name__)
+from .helpdesk_ticket import BLOCK_REASONS
 
-# Motivos que implican "bloqueo real" (para DETECTAR y CLASIFICAR)
-# Debe coincidir con la detección en helpdesk_ticket._is_room_blocked
-BLOCK_REASONS = {"Avería", "Maintenance", "Mantenimiento programado", "Plaga"}
+_logger = logging.getLogger(__name__)
 
 
 def _date_range(start, end):
@@ -193,8 +191,13 @@ class PmsBlockEpisode(models.Model):
         room_ids = set(room_nights.keys()) | set(
             self.search([("date_end", "=", False)]).mapped("room_id").ids
         )
+        touched = self.env["pms.block.episode"]
         for room_id in sorted(room_ids):
-            self._reconcile_room(room_id, room_nights.get(room_id, {}), today)
+            touched |= self._reconcile_room(
+                room_id, room_nights.get(room_id, {}), today
+            )
+        if touched:
+            self._link_tickets_to_episodes(touched)
 
     @api.model
     def _get_blocked_nights_by_room(self, today):
@@ -203,6 +206,12 @@ class PmsBlockEpisode(models.Model):
         Uses the same criteria as the current helpdesk detection (overnight
         room, out reservation, state not draft/cancel, admitted motive names).
         """
+        # Flush pending reservation-line recomputations (e.g. a checkout
+        # change made in this same transaction) so the search below sees
+        # the current lines; _flush_search only flushes domain fields.
+        self.env["pms.reservation"].flush_model(
+            ["checkin", "checkout", "reservation_line_ids"]
+        )
         lines = (
             self.env["pms.reservation.line"]
             .sudo()
@@ -223,33 +232,10 @@ class PmsBlockEpisode(models.Model):
             result.setdefault(line.room_id.id, {})[line.date] = line
         return result
 
-    def _reconcile_room(self, room_id, nights_map, today):
-        """Reconcile episodes for a single room."""
-        runs = _maximal_runs(sorted(nights_map.keys()))
-        open_ep = self.search(
-            [("room_id", "=", room_id), ("date_end", "=", False)], limit=1
-        )
-
-        # Nights already covered by existing episodes.
-        covered = self._get_covered_nights(room_id)
-
-        # Current run that reaches today (if any).
-        current_run = self._find_current_run(runs, today)
-
-        # 1. Refresh or close the open episode.
-        if open_ep:
-            self._update_open_episode(open_ep, current_run, today, nights_map, covered)
-        else:
-            # No open episode, but there might be a current run to create.
-            pass
-
-        # Create episodes for uncovered nights in the current run only.
-        if current_run:
-            self._create_new_episodes(room_id, current_run, covered, nights_map, today)
-
+    def _get_covered_nights(self, room_id):
+        """Return the set of nights already covered by existing episodes."""
         covered = set()
-        eps = self.search([("room_id", "=", room_id)])
-        for ep in eps:
+        for ep in self.search([("room_id", "=", room_id)]):
             if ep.date_end:
                 covered |= set(
                     _date_range(ep.date_start, ep.date_end - timedelta(days=1))
@@ -258,6 +244,34 @@ class PmsBlockEpisode(models.Model):
                 covered |= set(_date_range(ep.date_start, ep.last_observed_date))
         return covered
 
+    def _reconcile_room(self, room_id, nights_map, today):
+        """Reconcile episodes for a single room. Returns the touched episodes."""
+        runs = _maximal_runs(sorted(nights_map.keys()))
+        open_ep = self.search(
+            [("room_id", "=", room_id), ("date_end", "=", False)], limit=1
+        )
+
+        # Current run that reaches today (if any).
+        current_run = self._find_current_run(runs, today)
+
+        touched = self.env["pms.block.episode"]
+
+        # 1. Refresh or close the open episode.
+        if open_ep:
+            self._update_open_episode(open_ep, current_run, today, nights_map)
+            touched |= open_ep
+
+        # 2. Nights covered, computed AFTER the update so extensions and
+        # closures are reflected when deciding what is still uncovered.
+        covered = self._get_covered_nights(room_id)
+
+        # 3. Create episodes for uncovered nights in the current run only.
+        if current_run:
+            touched |= self._create_new_episodes(
+                room_id, current_run, covered, nights_map, today
+            )
+        return touched
+
     def _find_current_run(self, runs, today):
         """Find the run that contains today (if any)."""
         for run_start, run_end in runs:
@@ -265,52 +279,68 @@ class PmsBlockEpisode(models.Model):
                 return (run_start, run_end)
         return None
 
-    def _update_open_episode(self, open_ep, current_run, today, nights_map, covered):
+    def _update_open_episode(self, open_ep, current_run, today, nights_map):
         """Refresh open episode or close it if block ended/gap detected."""
-        if current_run:
-            last_obs = open_ep.last_observed_date or open_ep.date_start
-            if current_run[0] <= last_obs + timedelta(days=1):
-                # Block continues: extend observation to the end of the run.
-                new_last = max(
-                    open_ep.last_observed_date or open_ep.date_start, current_run[1]
-                )
-                if new_last != open_ep.last_observed_date:
-                    open_ep.last_observed_date = new_last
-                    # Keep original motive snapshot; do not overwrite.
-                    if not open_ep.origin_reservation_id:
-                        first_line = nights_map.get(current_run[0])
-                        if first_line:
-                            open_ep.origin_reservation_id = first_line.reservation_id.id
-                    if not open_ep.closure_reason_id:
-                        first_line = nights_map.get(current_run[0])
-                        if first_line:
-                            reason = first_line.reservation_id.closure_reason_id
-                            open_ep.closure_reason_id = reason.id
-                            open_ep.closure_reason_name = reason.name or ""
-                    covered = set(
-                        _date_range(open_ep.date_start, open_ep.last_observed_date)
-                    )
-                    return covered
-                else:
-                    # Gap between last observation and current run:
-                    # close old, will create new below.
-                    self._close_episode(open_ep, today, reason="gap")
-                    return covered
-            else:
-                # No current run → block ended.
+        last_obs = open_ep.last_observed_date or open_ep.date_start
+
+        if not current_run:
+            # No blocked night reaches today. Only close once a full day has
+            # passed without observation; a same-day re-run (or a night
+            # removed retroactively today) must not close the episode, and
+            # last_observed_date is never rewritten.
+            if today > last_obs:
                 self._close_episode(open_ep, today, reason="ended")
-                return covered
+            elif nights_map:
+                # Retroactive shortening: tonight was observed as blocked in a
+                # previous run but is no longer blocked. Keep the history and
+                # record the anomaly in the chatter.
+                open_ep.message_post(
+                    body=_(
+                        "Se detectó una modificación retroactiva del bloqueo: "
+                        "la última noche observada ya no está bloqueada. "
+                        "El histórico del episodio no se reescribe."
+                    )
+                )
+            # else: the block source disappeared today (deleted/cancelled):
+            # keep the episode open and decide on the next daily run.
+            return
+
+        if current_run[0] > last_obs + timedelta(days=1):
+            # Gap between the last observation and the current run: close the
+            # old episode, a new one is created below for the current run.
+            self._close_episode(open_ep, today, reason="gap")
+            return
+
+        # Block continues: extend observation to the end of the run.
+        new_last = max(last_obs, current_run[1])
+        if new_last == open_ep.last_observed_date:
+            # Same-day re-run: observation unchanged, keep the episode open.
+            return
+        open_ep.last_observed_date = new_last
+        # Keep original motive snapshot; do not overwrite.
+        if not open_ep.origin_reservation_id:
+            first_line = nights_map.get(current_run[0])
+            if first_line:
+                open_ep.origin_reservation_id = first_line.reservation_id.id
+        if not open_ep.closure_reason_id:
+            first_line = nights_map.get(current_run[0])
+            if first_line:
+                reason = first_line.reservation_id.closure_reason_id
+                open_ep.closure_reason_id = reason.id
+                open_ep.closure_reason_name = reason.name or ""
 
     def _create_new_episodes(self, room_id, current_run, covered, nights_map, today):
-        """Create episodes for uncovered nights in the current run."""
+        """Create episodes for uncovered nights in the current run. Returns them."""
+        created = self.env["pms.block.episode"]
         run_nights = set(_date_range(current_run[0], current_run[1]))
         uncovered = sorted(run_nights - covered)
         if uncovered:
             subruns = _maximal_runs(uncovered)
             for sub_start, sub_end in subruns:
-                self._create_episode(
+                created |= self._create_episode(
                     room_id, sub_start, sub_end, nights_map, today, is_open=True
                 )
+        return created
 
     def _close_episode(self, ep, today, reason):
         """Close an open episode, using the last observed night."""
@@ -381,16 +411,14 @@ class PmsBlockEpisode(models.Model):
 
     # Ticket linking (forward-only, never retroactive, never infer causality)
     def _link_tickets_to_episodes(self, episodes):
-        """Link tickets created during the episode and classify them by block motive.
+        """Link tickets created during the episode.
 
         Forward-only: links tickets created while the episode is open or
-        closed in the current pass. Confirmed motives are classified as
-        'confirmed'; all others as 'related'.
+        closed in the current pass. Ticket classification is computed on the
+        ticket itself (see _compute_block_classification), not here.
         """
         Ticket = self.env["helpdesk.ticket"].sudo()
         for ep in episodes:
-            if not ep.ticket_ids:
-                continue
             last_night = ep.last_observed_date or ep.date_start
             # Tickets whose creation date falls within the episode's observed nights.
             tickets = Ticket.search(
@@ -417,13 +445,6 @@ class PmsBlockEpisode(models.Model):
             )
             for ticket in tickets:
                 ep.ticket_ids = [(4, ticket.id)]
-                # Automatic classification based on episode motive
-                if ep.closure_reason_id.name in BLOCK_REASONS:
-                    ticket.block_classification = (
-                        "confirmed"  # Bloqueo relevante confirmado
-                    )
-                else:
-                    ticket.block_classification = "related"  # Bloqueo irrelevante
 
     def action_view_chatter(self):
         """Open chatter (mail.message) filtered for this episode."""
@@ -451,35 +472,3 @@ class PmsBlockEpisode(models.Model):
             "target": "new",
             "flags": {"mode": "readonly"},
         }
-
-
-class HelpdeskTicket(models.Model):
-    _inherit = "helpdesk.ticket"
-
-    block_episode_ids = fields.Many2many(
-        comodel_name="pms.block.episode",
-        relation="pms_block_episode_ticket_rel",
-        column1="ticket_id",
-        column2="episode_id",
-        string="Block Episodes",
-        help="Episodes of room block linked to this ticket.",
-        readonly=True,
-    )
-    block_episode_count = fields.Integer(compute="_compute_block_episode_count")
-    block_classification = fields.Selection(
-        [
-            ("common", "Avería común"),
-            ("related", "Bloqueo irrelevante"),
-            ("confirmed", "Bloqueo relevante confirmado"),
-        ],
-        default="common",
-        tracking=True,
-        index=True,
-        copy=False,
-        string="Clasificación de bloqueo",
-    )
-
-    @api.depends("block_episode_ids")
-    def _compute_block_episode_count(self):
-        for t in self:
-            t.block_episode_count = len(t.block_episode_ids)
