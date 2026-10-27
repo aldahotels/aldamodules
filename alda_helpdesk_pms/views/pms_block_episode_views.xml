@@ -5,7 +5,7 @@
         <field name="name">pms.block.episode.tree</field>
         <field name="model">pms.block.episode</field>
         <field name="arch" type="xml">
-            <list string="Block Episodes" create="0" delete="0">
+            <tree create="0" delete="0">
                 <field name="name" optional="hide" />
                 <field name="pms_property_id" optional="hide" />
                 <field name="room_id" />
@@ -17,7 +17,7 @@
                 <field name="duration_days" sum="Total Nights" />
                 <field name="ticket_count" optional="hide" />
                 <field name="last_observed_date" optional="hide" />
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -68,13 +68,13 @@
                     <notebook>
                         <page string="Tickets" name="tickets_page">
                             <field name="ticket_ids" readonly="1">
-                                <list string="Linked Tickets" create="0" delete="0">
+                                <tree create="0" delete="0" edit="0">
                                     <field name="name" />
                                     <field name="partner_id" />
                                     <field name="stage_id" />
                                     <field name="create_date" />
                                     <field name="block_classification" />
-                                </list>
+                                </tree>
                             </field>
                         </page>
                         <page string="Chatter">

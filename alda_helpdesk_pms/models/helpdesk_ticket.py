@@ -11,6 +11,10 @@ from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
+# Motivos de cierre que implican un bloqueo relevante (para DETECTAR y CLASIFICAR).
+# Única fuente de verdad: la usan _is_room_blocked y la clasificación de bloqueo.
+BLOCK_REASONS = {"Avería", "Mantenimiento programado", "Plaga", "Obras"}
+
 
 class HelpdeskPmsTicketDetailsTag(models.Model):
     _name = "helpdesk.ticket.detail.tag"
@@ -74,6 +78,30 @@ class HelpdeskTicket(models.Model):
         store=False,
         readonly=True,
         help="Shows the closure reason of the current out-of-service reservation for the room.",
+    )
+
+    block_episode_ids = fields.Many2many(
+        comodel_name="pms.block.episode",
+        relation="pms_block_episode_ticket_rel",
+        column1="ticket_id",
+        column2="episode_id",
+        string="Block Episodes",
+        help="Episodes of room block linked to this ticket.",
+        readonly=True,
+    )
+    block_episode_count = fields.Integer(compute="_compute_block_episode_count")
+    block_classification = fields.Selection(
+        [
+            ("common", "Avería común"),
+            ("related", "Bloqueo irrelevante"),
+            ("confirmed", "Bloqueo relevante confirmado"),
+        ],
+        compute="_compute_block_classification",
+        store=True,
+        tracking=True,
+        index=True,
+        copy=False,
+        string="Clasificación de bloqueo",
     )
 
     is_room = fields.Boolean(
@@ -317,8 +345,7 @@ class HelpdeskTicket(models.Model):
         if not reason:
             return False
 
-        allowed_names = {"Avería", "Mantenimiento programado", "Plaga", "Obras"}
-        return reason.name in allowed_names
+        return reason.name in BLOCK_REASONS
 
     @api.depends("pms_room_id")
     def _compute_is_room_blocked(self):
@@ -338,6 +365,28 @@ class HelpdeskTicket(models.Model):
                     line.reservation_id.closure_reason_id if line else False
                 )
                 ticket.color = 9 if ticket.is_room_blocked else 0
+
+    @api.depends(
+        "pms_room_id",
+        "pms_room_id.reservation_line_ids.date",
+        "pms_room_id.reservation_line_ids.overnight_room",
+        "pms_room_id.reservation_line_ids.reservation_id.state",
+        "pms_room_id.reservation_line_ids.reservation_id.reservation_type",
+        "pms_room_id.reservation_line_ids.reservation_id.folio_id.closure_reason_id",
+    )
+    def _compute_block_classification(self):
+        """'confirmed' if the room is currently blocked for one of the
+        BLOCK_REASONS, 'common' otherwise. Independent of episodes and crons."""
+        for ticket in self:
+            if ticket.pms_room_id and ticket._is_room_blocked(ticket.pms_room_id):
+                ticket.block_classification = "confirmed"
+            else:
+                ticket.block_classification = "common"
+
+    @api.depends("block_episode_ids")
+    def _compute_block_episode_count(self):
+        for t in self:
+            t.block_episode_count = len(t.block_episode_ids)
 
     @api.onchange("team_id")
     def _onchange_team_id_update_ticket_type_domain(self):
