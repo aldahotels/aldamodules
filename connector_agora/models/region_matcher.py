@@ -94,17 +94,12 @@ def find_state(env, country, region):
     if match:
         return match
 
-    # 3) Substring match (both ways)
-    match = _match_substring(candidate_map, normalized_region)
-    if match:
-        return match
-
-    # 4) Token intersection ratio
+    # 3) Token intersection ratio
     match = _match_token_ratio(candidate_map, normalized_region)
     if match:
         return match
 
-    # 5) Fuzzy matching as last resort
+    # 4) Fuzzy matching as last resort
     match = _match_fuzzy(candidate_map, normalized_region, region)
     if match:
         return match
@@ -123,16 +118,6 @@ def _match_exact(candidate_map, normalized_region):
 def _match_no_paren(candidate_map, normalized_region):
     for c in candidate_map:
         if c["norm_no_paren"] == normalized_region:
-            return c["state"]
-    return None
-
-
-def _match_substring(candidate_map, normalized_region):
-    for c in candidate_map:
-        if (
-            normalized_region in c["norm_no_paren"]
-            or c["norm_no_paren"] in normalized_region
-        ):
             return c["state"]
     return None
 

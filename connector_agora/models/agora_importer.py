@@ -539,13 +539,11 @@ class AgoraImporter(models.AbstractModel):
                     [(field, "=ilike", candidate)], limit=1
                 )
                 if partner:
-                    self._set_state_if_missing(partner, customer)
                     return partner.id
             partner = self.env["res.partner"].search(
                 [("id_numbers.name", "=ilike", candidate)], limit=1
             )
             if partner:
-                self._set_state_if_missing(partner, customer)
                 return partner.id
 
         country_code = self._normalize_country_code(
@@ -577,7 +575,8 @@ class AgoraImporter(models.AbstractModel):
             vals["vat"] = preferred_vat
 
         try:
-            partner = self.env["res.partner"].create(vals)
+            with self.env.cr.savepoint():
+                partner = self.env["res.partner"].create(vals)
             _logger.info(
                 "Created new partner '%s' (VAT: %s) from Agora Customer id=%s",
                 vals.get("name"),
@@ -594,18 +593,6 @@ class AgoraImporter(models.AbstractModel):
                 str(e),
             )
             return self.anonymous_partner_id.id if self.anonymous_partner_id else False
-
-    def _set_state_if_missing(self, partner, customer):
-        """Assign the Agora Region province to an existing partner without state."""
-        if partner.state_id:
-            return
-        country_code = self._normalize_country_code(
-            customer.get("CountryCode") or customer.get("country_code") or "ES"
-        )
-        country = self.env["res.country"].search([("code", "=", country_code)], limit=1)
-        state = self._find_state(country, customer.get("Region"))
-        if state:
-            partner.state_id = state.id
 
     def _find_state(self, country, region):
         """Return the province matching Region within the country, if any."""

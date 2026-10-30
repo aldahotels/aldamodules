@@ -4,7 +4,7 @@
         <field name="name">Agora Backend (Demo)</field>
         <field name="active" eval="True" />
         <field name="connection_type">api</field>
-        <field name="api_url" />
+        <field name="api_url">https://agora.example.com</field>
         <field name="api_token" />
         <field name="import_invoices" eval="True" />
         <field name="import_pos_closeouts" eval="False" />
