@@ -16,6 +16,8 @@
         "connector",
         "pms",
         "account_payment_partner",
+        "l10n_es_aeat",
+        "partner_identification",
     ],
     "data": [
         "security/groups.xml",
@@ -26,6 +28,7 @@
         "views/account_move.xml",
     ],
     "demo": ["demo/agora_backend.xml"],
+    "pre_init_hook": "pre_init_hook",
     "installable": True,
     "application": False,
     "auto_install": False,

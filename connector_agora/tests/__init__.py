@@ -1,2 +1,3 @@
-from . import test_agora_backend
-from . import test_file_invoice_import
+from . import test_import
+from . import test_partner
+from . import test_tax

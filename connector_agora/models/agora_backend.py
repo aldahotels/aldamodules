@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 
 import requests
 
-from odoo import _, api, fields, models
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -601,48 +601,10 @@ class AgoraBackend(models.Model):
             normalized_rate = normalized_rate / 100.0
         normalized_rate = round(normalized_rate, 6)
 
-        # Per backend, cache resolved tax_ids for (company_id, workplace_id, normalized_rate)
-        cls = type(self)
-        if not hasattr(cls, "_tax_cache_store"):
-            cls._tax_cache_store = {}
-        backend_cache = cls._tax_cache_store.setdefault(self.id, {})
-
-        # Try workplace-specific override first (if provided)
-        if workplace_id:
-            cache_key_wp = (company_id, int(workplace_id), normalized_rate)
-            if cache_key_wp in backend_cache:
-                return backend_cache[cache_key_wp]
-            overrides = self.env["agora.tax.override"].search(
-                [
-                    ("backend_id", "=", self.id),
-                    ("company_id", "=", company_id),
-                    ("workplace_id", "=", int(workplace_id)),
-                ]
-            )
-            override = overrides.filtered(
-                lambda m: round(m.vat_rate, 6) == normalized_rate
-            )[:1]
-            if override:
-                res = [override.tax_id.id]
-                backend_cache[cache_key_wp] = res
-                return res
-
-        # Fallback to company-level mapping (existing behavior)
-        cache_key = (company_id, None, normalized_rate)
-        if cache_key in backend_cache:
-            return backend_cache[cache_key]
-
-        mappings = self.env["agora.tax.mapping"].search(
-            [
-                ("backend_id", "=", self.id),
-                ("company_id", "=", company_id),
-            ]
+        tax_id = self._get_mapped_tax_id(
+            company_id, int(workplace_id) if workplace_id else False, normalized_rate
         )
-        mapping = mappings.filtered(lambda m: round(m.vat_rate, 6) == normalized_rate)[
-            :1
-        ]
-
-        if not mapping:
+        if not tax_id:
             company_name = self.env["res.company"].browse(company_id).name
             raise UserError(
                 _(
@@ -656,9 +618,41 @@ class AgoraBackend(models.Model):
                     "rate": "{:.6f}".format(normalized_rate),
                 }
             )
-        result = [mapping.tax_id.id]
-        backend_cache[cache_key] = result
-        return result
+        return [tax_id]
+
+    @tools.ormcache("self.id", "company_id", "workplace_id", "normalized_rate")
+    def _get_mapped_tax_id(self, company_id, workplace_id, normalized_rate):
+        """Return the mapped account.tax id, or False if there is no mapping.
+
+        Cached in the registry; invalidated from agora.tax.mapping and
+        agora.tax.override on create/write/unlink (propagated to all workers).
+        """
+        # Try workplace-specific override first (if provided)
+        if workplace_id:
+            overrides = self.env["agora.tax.override"].search(
+                [
+                    ("backend_id", "=", self.id),
+                    ("company_id", "=", company_id),
+                    ("workplace_id", "=", workplace_id),
+                ]
+            )
+            override = overrides.filtered(
+                lambda m: round(m.vat_rate, 6) == normalized_rate
+            )[:1]
+            if override:
+                return override.tax_id.id
+
+        # Fallback to company-level mapping (existing behavior)
+        mappings = self.env["agora.tax.mapping"].search(
+            [
+                ("backend_id", "=", self.id),
+                ("company_id", "=", company_id),
+            ]
+        )
+        mapping = mappings.filtered(lambda m: round(m.vat_rate, 6) == normalized_rate)[
+            :1
+        ]
+        return mapping.tax_id.id or False
 
     def _resolve_income_account(self):
         """Return a default income account for invoice lines"""
@@ -848,34 +842,8 @@ class AgoraTaxMapping(models.Model):
     """Map Agora VAT rates to Odoo taxes per backend and company."""
 
     _name = "agora.tax.mapping"
+    _inherit = "agora.tax.mixin"
     _description = "Agora Tax Mapping"
-
-    backend_id = fields.Many2one("agora.backend", required=True, ondelete="cascade")
-    company_id = fields.Many2one("res.company", required=True)
-    vat_rate = fields.Float(
-        string="Agora VAT Rate",
-        required=True,
-        digits=(16, 6),
-        help="VAT rate from Agora as fraction (e.g. 0.10 for 10%%)",
-    )
-    tax_id = fields.Many2one(
-        "account.tax",
-        string="Odoo Tax",
-        required=True,
-        domain="[('type_tax_use', '=', 'sale'), ('company_id', '=', company_id)]",
-    )
-
-    @api.constrains("vat_rate")
-    def _check_vat_rate_range(self):
-        for rec in self:
-            if rec.vat_rate < 0:
-                raise ValidationError(_("Agora VAT Rate cannot be negative."))
-
-    @api.constrains("company_id", "tax_id")
-    def _check_company_matches_tax(self):
-        for rec in self:
-            if rec.tax_id and rec.company_id != rec.tax_id.company_id:
-                raise ValidationError(_("Tax company must match mapping company."))
 
     _sql_constraints = [
         (

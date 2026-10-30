@@ -2,9 +2,8 @@
 <odoo>
 
     <!-- ================================================================
-         Extend account.move form view:
-         - visibility of partner_shipping_id, fiscal_position_id,
-           reversed_entry_id and ref
+         Extend account.move form view (only affects Agora invoices):
+         - visibility of partner_shipping_id and reversed_entry_id
          - Add "Agora TPV" tab in the notebook
          ================================================================ -->
     <record id="view_account_move_agora_form" model="ir.ui.view">
@@ -13,31 +12,16 @@
         <field name="inherit_id" ref="account.view_move_form" />
         <field name="arch" type="xml">
 
-            <!-- partner_shipping_id always visible (normally requires
-                 the "Delivery Addresses" feature group) -->
-            <xpath expr="//field[@name='partner_shipping_id']" position="attributes">
-                <attribute name="groups" />
-                <attribute
-                    name="attrs"
-                >{'readonly': [('state', '!=', 'draft')]}</attribute>
-            </xpath>
-
-            <!-- the "Accounting" group in Other Info always visible
-                 (fiscal_position_id lives here; normally hidden for non-invoice types) -->
-            <xpath
-                expr="//page[@name='other_info']//group[@name='accounting_info_group']"
-                position="attributes"
-            >
-                <attribute name="attrs">{}</attribute>
-            </xpath>
-
-            <!-- the "Invoice" group in Other Info always visible
-                 (ref / Customer Reference lives here; normally hidden for bills) -->
-            <xpath
-                expr="//page[@name='other_info']//group[@name='sale_info_group']"
-                position="attributes"
-            >
-                <attribute name="attrs">{}</attribute>
+            <!-- partner_shipping_id visible on Agora invoices even without the
+                 "Delivery Addresses" feature group (when the user has that
+                 group, the standard field is already shown) -->
+            <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                <field name="agora_invoice_ref" invisible="1" />
+                <field
+                    name="partner_shipping_id"
+                    groups="!account.group_delivery_invoice_address"
+                    attrs="{'invisible': [('agora_invoice_ref', '=', False)], 'readonly': [('state', '!=', 'draft')]}"
+                />
             </xpath>
 
             <!-- Add reversed_entry_id inside the invoice Other Info tab
@@ -46,13 +30,17 @@
                 expr="//page[@name='other_info']//group[@name='accounting_info_group']/field[@name='fiscal_position_id']"
                 position="after"
             >
-                <field name="reversed_entry_id" />
+                <field
+                    name="reversed_entry_id"
+                    attrs="{'invisible': [('agora_invoice_ref', '=', False)]}"
+                />
             </xpath>
 
             <xpath expr="//page[@name='other_info']" position="after">
                 <page
                     string="Agora TPV"
                     name="agora_tab"
+                    groups="account.group_account_invoice,connector_agora.group_connector_agora_user"
                     attrs="{'invisible': [('agora_bind_ids', '=', [])]}"
                 >
                     <field name="agora_bind_ids" readonly="1" nolabel="1">
