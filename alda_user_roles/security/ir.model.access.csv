@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pms_property_support_readonly,access_pms_property_support_readonly,pms.model_pms_property,group_pms_support_readonly,1,0,0,0
+access_pms_room_support_readonly,access_pms_room_support_readonly,pms.model_pms_room,group_pms_support_readonly,1,0,0,0
+access_pms_room_type_support_readonly,access_pms_room_type_support_readonly,pms.model_pms_room_type,group_pms_support_readonly,1,0,0,0
+access_pms_amenity_support_readonly,access_pms_amenity_support_readonly,pms.model_pms_amenity,group_pms_support_readonly,1,0,0,0

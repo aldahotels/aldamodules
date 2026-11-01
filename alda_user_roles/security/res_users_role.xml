@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- implied_ids is written on the role, not on its group: the role write
+         recomputes the holders at once, so an update that takes a group out
+         of the role takes it away from them too. -->
+    <record id="role_smt" model="res.users.role">
+        <field name="group_id" ref="group_role_smt" />
+        <field
+            name="implied_ids"
+            eval="[(6, 0, [ref('base.group_user'), ref('helpdesk.group_helpdesk_user'), ref('group_pms_support_readonly'), ref('base.group_multi_company')])]"
+        />
+        <field name="assignable" eval="True" />
+        <field name="pms_all_properties" eval="True" />
+    </record>
+</odoo>

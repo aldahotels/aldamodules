@@ -1,0 +1,41 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* alda_user_roles
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-01 08:35+0000\n"
+"PO-Revision-Date: 2026-11-01 08:35+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: alda_user_roles
+#: model:res.groups,comment:alda_user_roles.group_role_smt
+msgid ""
+"Helpdesk and Discuss only, on the tickets of every hotel. No access to the "
+"PMS, invoicing, accounting, payroll, sales or exports."
+msgstr "Solo Helpdesk y Conversaciones, sobre los tickets de todos los hoteles. Sin acceso al PMS, facturación, contabilidad, nóminas, ventas ni exportaciones."
+
+#. module: alda_user_roles
+#: model:res.groups,name:alda_user_roles.group_pms_support_readonly
+msgid "PMS support read-only"
+msgstr "Soporte PMS solo lectura"
+
+#. module: alda_user_roles
+#: model:res.groups,comment:alda_user_roles.group_pms_support_readonly
+msgid ""
+"Reads properties, rooms, room types and amenities, which the helpdesk ticket"
+" form needs to show and search the hotel and the room of a ticket. Gives no "
+"access to any PMS operation. Granted through roles only."
+msgstr "Lee propiedades, habitaciones, tipos de habitación y servicios, que el formulario de ticket necesita para mostrar y buscar el hotel y la habitación del ticket. No da acceso a ninguna operación del PMS. Solo se concede mediante roles."
+
+#. module: alda_user_roles
+#: model:res.groups,name:alda_user_roles.group_role_smt
+msgid "SMT (support team)"
+msgstr "SMT (equipo de soporte)"
