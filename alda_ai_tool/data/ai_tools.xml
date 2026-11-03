@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ai_tool_alda_payroll_465_preview" model="ai.tool">
+        <field name="name">alda_payroll_465_preview</field>
+        <field
+            name="description"
+        >Simulation of the reconciliation of the payroll accounts 465: groups of pending journal items with the same 7-digit employee number (first by month, then across months) that add up to 0, and the ones that do not (amounts differ, only one side, different partners, no number, ambiguous), by company. Read only; no employee names.</field>
+        <field name="model_id" ref="model_alda_ai_payroll_tools" />
+        <field name="function_name">_ai_alda_payroll_465_preview</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_alda_payroll_465_reconcile" model="ai.tool">
+        <field name="name">alda_payroll_465_reconcile</field>
+        <field
+            name="description"
+        >Reconcile the payroll groups of the accounts 465 that add up to 0 (the same groups as alda_payroll_465_preview). Two steps: call it with confirm=false to get the preview and a token, show it to the user, and only after their approval call it again with confirm=true and the token. Each group is reconciled on its own and can be undone with Unreconcile.</field>
+        <field name="model_id" ref="model_alda_ai_payroll_tools" />
+        <field name="function_name">_ai_alda_payroll_465_reconcile</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_alda_bank_pending_lines" model="ai.tool">
+        <field name="name">alda_bank_pending_lines</field>
+        <field
+            name="description"
+        >Statement lines of a hotel's CaixaBank journal still to reconcile in a period (at most 93 days), classified as TPV settlement (concept ON + merchant number, settled the day before), incoming transfer or outgoing. Concepts are cut. Read only.</field>
+        <field name="model_id" ref="model_alda_ai_bank_tools" />
+        <field name="function_name">_ai_alda_bank_pending_lines</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_alda_bank_match_candidates" model="ai.tool">
+        <field name="name">alda_bank_match_candidates</field>
+        <field
+            name="description"
+        >For bank statement lines, the open entries of Odoo that match them: for a TPV settlement, the grouped TB entry of the settled day with the same amount (or the breakdown of collections minus refunds and the days around); for a transfer, the CB collections of the same day or the next one, alone or adding up in sets of up to 6. Flags differences of cents and drafts the notice for the TAZ when nothing adds up. Read only.</field>
+        <field name="model_id" ref="model_alda_ai_bank_tools" />
+        <field name="function_name">_ai_alda_bank_match_candidates</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_alda_bank_notify_taz" model="ai.tool">
+        <field name="name">alda_bank_notify_taz</field>
+        <field
+            name="description"
+        >Notify the TAZ of the hotel about a bank statement line that does not add up: creates a to-do activity on the bank entry for the TAZ assigned to the hotel in Employees. Two steps: confirm=false previews the recipients and the text; only after the user's approval, call again with confirm=true and the token.</field>
+        <field name="model_id" ref="model_alda_ai_bank_tools" />
+        <field name="function_name">_ai_alda_bank_notify_taz</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_alda_bank_reconcile" model="ai.tool">
+        <field name="name">alda_bank_reconcile</field>
+        <field
+            name="description"
+        >Reconcile a bank statement line with the open entries proposed by alda_bank_match_candidates, through the bank reconciliation of Odoo. A difference of up to a few cents goes to 678 (bank pays in less) or 778 (more) with the hotel's analytic account; larger differences are refused. Two steps: confirm=false previews; only after the user's approval, confirm=true with the token.</field>
+        <field name="model_id" ref="model_alda_ai_bank_tools" />
+        <field name="function_name">_ai_alda_bank_reconcile</field>
+        <field name="kind">generic</field>
+    </record>
+</odoo>
