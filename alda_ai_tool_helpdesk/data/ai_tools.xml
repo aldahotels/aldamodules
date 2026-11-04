@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ai_tool_alda_helpdesk_ticket_search" model="ai.tool">
+        <field name="name">alda_helpdesk_ticket_search</field>
+        <field
+            name="description"
+        >Search helpdesk tickets of the user's hotels (and the tickets without hotel) by words in the title or the description, by ticket number (ticket_ref, the number users see, not the internal id), hotel, team and open or closed (open by default). For each ticket it returns ticket_ref, title, team, stage, assignee, hotel, creation date and last update. Read only; no customer data.</field>
+        <field name="model_id" ref="pms_ai_tool.model_pms_ai_tools" />
+        <field name="function_name">_ai_alda_helpdesk_ticket_search</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_alda_helpdesk_ticket_detail" model="ai.tool">
+        <field name="name">alda_helpdesk_ticket_detail</field>
+        <field
+            name="description"
+        >One helpdesk ticket by ticket_ref (the number users see): title, description (cut), team, stage, priority, assignee, customer (name; e-mail and phone masked), hotel and room, SLA status and the last 10 comments and e-mails with author, date, internal or public and body as plain text (cut to 500 characters). Read only. It shows personal data, so the result is not kept in the log.</field>
+        <field name="model_id" ref="pms_ai_tool.model_pms_ai_tools" />
+        <field name="function_name">_ai_alda_helpdesk_ticket_detail</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_alda_helpdesk_backlog" model="ai.tool">
+        <field name="name">alda_helpdesk_backlog</field>
+        <field
+            name="description"
+        >Open helpdesk tickets by team, stage and hotel with their age (under 2 days, 2 to 7 days, over 7 days) and how many have no assignee, with totals and a summary by team; optional filters by team and hotel. Read only; aggregated figures, no customer data.</field>
+        <field name="model_id" ref="pms_ai_tool.model_pms_ai_tools" />
+        <field name="function_name">_ai_alda_helpdesk_backlog</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_alda_helpdesk_ticket_add_note" model="ai.tool">
+        <field name="name">alda_helpdesk_ticket_add_note</field>
+        <field
+            name="description"
+        >Post an internal note on a helpdesk ticket by ticket_ref (the number users see). The customer does not see the note and it names nobody, so no e-mail goes to anyone in particular; it is posted in the name of the user who confirms it. Two steps: confirm=false previews the ticket and the text; only after the user's approval, call again with confirm=true and the token. It changes data (adds one note).</field>
+        <field name="model_id" ref="pms_ai_tool.model_pms_ai_tools" />
+        <field name="function_name">_ai_alda_helpdesk_ticket_add_note</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_alda_helpdesk_activity_schedule" model="ai.tool">
+        <field name="name">alda_helpdesk_activity_schedule</field>
+        <field
+            name="description"
+        >Schedule a To-Do activity on a helpdesk ticket (by ticket_ref) for a user, with a deadline, a title and an optional note. The assigned user gets the assignment email of Odoo and becomes a follower of the ticket. Two steps: confirm=false previews who, when and what; only after the user's approval, call again with confirm=true and the token. It changes data (adds one activity).</field>
+        <field name="model_id" ref="pms_ai_tool.model_pms_ai_tools" />
+        <field name="function_name">_ai_alda_helpdesk_activity_schedule</field>
+        <field name="kind">generic</field>
+    </record>
+</odoo>

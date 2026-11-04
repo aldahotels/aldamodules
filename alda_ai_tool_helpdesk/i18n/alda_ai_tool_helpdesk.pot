@@ -1,0 +1,270 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* alda_ai_tool_helpdesk
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid ""
+"%(open)s open tickets: %(new)s under 2 days, %(mid)s from 2 to 7 days, "
+"%(old)s over 7 days; %(unassigned)s without assignee."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "%(shown)s of the %(total)s tickets that match."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid ""
+"%(user)s already has an open activity %(summary)s on the ticket %(ref)s."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid ""
+"%(user)s cannot read the ticket %(ref)s, so the activity would not reach "
+"them. Choose someone of the team."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid ""
+"%s will receive the assignment email of Odoo when the activity is created."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "Activity created on the ticket %(ref)s for %(user)s."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid ""
+"Age counts from the creation of the ticket: under 2 days, from 2 to 7 days "
+"and over 7 days add up to the open tickets. unassigned counts the open "
+"tickets without assignee, whatever their age."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid "Give the number of the ticket (ticket_ref)."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid "Internal note"
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "Internal note posted on the ticket %s."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid ""
+"Messages: the last %(count)s comments and e-mails, oldest first, as plain "
+"text cut to %(chars)s characters. Internal ones are notes that the "
+"customer does not see."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "No ticket found with the number %s among those you can see."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid ""
+"Only the first %(shown)s of %(total)s tickets are shown: narrow the search."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid ""
+"Open: tickets whose stage is not folded in the pipeline of their team. "
+"Tickets without a hotel are included; the rest are limited to your hotels."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "Post an internal note on the ticket %(ref)s: %(title)s."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid ""
+"Schedule the activity %(summary)s on the ticket %(ref)s for %(user)s, due "
+"on %(date)s."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "Several tickets have the number %(ref)s (teams: %(teams)s)."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid ""
+"The activity is a To-Do on the ticket. Odoo sends the assigned user its "
+"usual assignment email and the user becomes a follower of the ticket."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid ""
+"The customer is the person who opened the ticket; the e-mail and the phone "
+"are masked, and so are the e-mails and phone numbers found in the texts."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid "The deadline cannot be in the past."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "The deadline cannot be more than %s days away."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid ""
+"The links stored on a ticket are the hotel and the room (Alda tickets have "
+"no folio field)."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid "The note is empty."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid ""
+"The note is internal: the customer does not see it and nobody is named in "
+"it, so no e-mail goes to anyone in particular. It is posted in the name of "
+"the user who confirms it."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid ""
+"The number users see is ticket_ref, not the internal id. A ticket is open "
+"while its stage is not folded in the pipeline of its team."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid "The summary is empty."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid "The ticket no longer exists."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "Ticket %(ref)s, %(stage)s: %(title)s."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid ""
+"Tickets without a hotel are included (every helpdesk user sees them); the "
+"rest are limited to your hotels."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "Times are in the time zone %s."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+msgid "To-Do"
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "Unknown team %s, or you cannot see it."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid "User %s is not an active internal user that you can see."
+msgstr ""
+
+#. module: alda_ai_tool_helpdesk
+#. odoo-python
+#: code:addons/alda_ai_tool_helpdesk/models/alda_helpdesk_tools.py:0
+#, python-format
+msgid ""
+"last_update is the last time the ticket was saved. Times are in the time "
+"zone %s."
+msgstr ""
