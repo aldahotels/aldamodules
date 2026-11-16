@@ -33,8 +33,14 @@ class ResUsers(models.Model):
             users = self.with_user(SUPERUSER_ID).search([("id", "=", self._uid)])
             if not users:
                 raise
+            # The signup token is only a password for portal users (purchase portal
+            # login by link): an internal account must never open with a leaked token.
+            if not users.share:
+                raise
 
-            if not self.signup_token \
-                or not self.signup_valid \
-                    or self.signup_token != password:
+            if (
+                not self.signup_token
+                or not self.signup_valid
+                or self.signup_token != password
+            ):
                 raise
