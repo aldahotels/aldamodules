@@ -278,28 +278,82 @@
                                                 <div
                                                     class="form-group row s_website_form_field mb-3"
                                                 >
-                                                    <label
-                                                        class="col-sm-3 col-form-label s_website_form_label"
-                                                        for="attachment"
+                                                    <div
+                                                        class="form-group row s_website_form_field mb-3"
                                                     >
-                                                        <span
-                                                            class="s_website_form_label_content"
-                                                        >Attachment File</span>
-                                                    </label>
-                                                    <div class="col-sm">
-                                                        <input
-                                                            type="file"
-                                                            class="form-control s_website_form_input"
-                                                            name="attachment"
-                                                            id="attachment"
-                                                            multiple="true"
-                                                        />
                                                         <small
                                                             class="form-text text-muted mt-1"
                                                         >
-                                                            Please send us a photo, screenshot, digital document, or any other resource
-                                                            that provides relevant information to help us address your request.
+                                                            <i
+                                                                class="fa fa-exclamation-triangle m-1 text-danger"
+                                                            />
+                                                            Please, a photo must be included with every ticket submitted to TMZ/IT.
                                                         </small>
+                                                    </div>
+                                                    <div
+                                                        class="form-group row s_website_form_field mb-3"
+                                                    >
+                                                        <label
+                                                            class="col-sm-3 col-form-label s_website_form_label"
+                                                            for="attachment"
+                                                        >
+                                                            <span
+                                                                class="s_website_form_label_content"
+                                                            >Attachment File</span>
+                                                        </label>
+                                                        <div class="col-sm">
+                                                            <div class="input-group">
+                                                                <input
+                                                                    type="file"
+                                                                    class="form-control s_website_form_input"
+                                                                    name="attachment"
+                                                                    id="attachment"
+                                                                    multiple="true"
+                                                                    style="appearance: none;"
+                                                                    accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.mp4,.avi,.mov,.mkv,.doc,.docx,.xls,.xlsx,.txt"
+                                                                />
+                                                                <button
+                                                                    class="btn btn-outline-secondary"
+                                                                    type="button"
+                                                                    id="clearAllFilesBtn"
+                                                                >
+                                                                    <i
+                                                                        class="fa fa-trash"
+                                                                    /> Clear All
+                                                                </button>
+                                                            </div>
+
+                                                            <div
+                                                                id="file-list-container"
+                                                            >
+                                                                <div id="file-list" />
+                                                            </div>
+
+                                                            <small
+                                                                class="form-text text-muted mt-1"
+                                                            >
+                                                                <i
+                                                                    class="fa fa-info-circle me-1"
+                                                                />
+                                                                Max 5 file per upload. Supported formats: PDF, images, videos (only one), Office documents<br
+                                                                />
+                                                                <i
+                                                                    class="fa fa-exclamation-triangle me-1 text-warning"
+                                                                />
+                                                                <strong
+                                                                >Limits:</strong> 10 MB per file, 15 MB total<br
+                                                                />
+                                                                <i
+                                                                    class="fa fa-envelope me-1 text-info"
+                                                                />
+                                                                Videos over 5 MB will not be sent by email
+                                                            </small>
+
+                                                            <div
+                                                                id="selected-files-list"
+                                                            />
+                                                            <div id="file-warnings" />
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="text-center mt-3">
@@ -786,5 +840,147 @@
             </section>
         </t>
     </template>
+
+
+    <template id="error_template" name="Helpdesk Ticket File Size Error">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-md-8 col-lg-6">
+                            <div class="alert alert-danger text-center" role="alert">
+                                <h4 class="alert-heading">Warning!</h4>
+                                <p t-esc="error_message" />
+                                <hr />
+                                <a
+                                    t-att-href="'/helpdesk/ticket/new?property_id=%s' % property_id"
+                                    class="btn btn-primary"
+                                >
+                                    Back to Ticket Form
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="error_template_back" name="Alda Helpdesk Error">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-md-8 col-lg-6">
+                            <div class="alert alert-danger">
+                                <h4
+                                >Error. Please, contact with administrator system</h4>
+                                <p t-out="error_message" />
+                            </div>
+                            <a
+                                t-attf-href="/helpdesk/ticket/property"
+                                class="btn btn-primary mt-3"
+                            >
+                                Back to form
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="property_not_allowed" name="Property Not Allowed">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-md-8 col-lg-6">
+                            <div class="alert alert-danger">
+                                <h4>Property not allowed</h4>
+                                <p>You cannot create tickets for this property.</p>
+                            </div>
+                            <a
+                                t-attf-href="/helpdesk/ticket/property"
+                                class="btn btn-primary mt-3"
+                            >
+                                Back to form
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="mail_template_ticket_assignment_with_property">
+            <div style="font-family: Arial, sans-serif; padding: 20px;">
+                <!-- Sección del Hotel -->
+                <t t-if="object.pms_property_id">
+                <div
+                    style="background-color: #f0f7ff; padding: 15px; margin-bottom: 20px;
+                            border-left: 4px solid #4a90e2; border-radius: 4px;"
+                >
+                    <h3 style="margin-top: 0; color: #2c3e50;">🏨 Property</h3>
+                    <p style="margin: 5px 0;">
+                        <strong>Name:</strong>
+                        <span style="color: #875A7B;">
+                            <t t-out="object.pms_property_id.name" />
+                        </span>
+                    </p>
+                    <t t-if="object.pms_property_id.email">
+                        <p style="margin: 5px 0;">
+                            <strong>Email:</strong>
+                            <t t-out="object.pms_property_id.email" />
+                        </p>
+                    </t>
+                    <t t-if="object.pms_property_id.phone">
+                        <p style="margin: 5px 0;">
+                            <strong>Phone:</strong>
+                            <t t-out="object.pms_property_id.phone" />
+                        </p>
+                    </t>
+                </div>
+                </t>
+
+                <div
+                style="background-color: #f9f9f9; padding: 15px; border-radius: 4px;"
+            >
+                    <p>You have been assigned to the Helpdesk Ticket:</p>
+                    <h2 style="color: #875A7B; margin-top: 0;">
+                        <t t-out="object.name" />
+                        <span style="color: #666; font-size: 0.9em;">
+                            (#<t t-out="object.ticket_ref" />)
+                        </span>
+                    </h2>
+
+                    <table style="width: 100%; margin-top: 10px;">
+                        <tr>
+                            <td style="width: 30%; padding: 5px 0;"><strong
+                            >Priority:</strong></td>
+                            <td style="padding: 5px 0;">
+                                <t t-if="object.priority == '0'">🟢 Low</t>
+                                <t t-elif="object.priority == '1'">🟡 Medium</t>
+                                <t t-elif="object.priority == '2'">🟠 High</t>
+                                <t t-elif="object.priority == '3'">🔴 Urgent</t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 0;"><strong
+                            >Created to:</strong></td>
+                            <td style="padding: 5px 0;">
+                                <t t-out="object.partner_id.name or 'No client'" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 0;"><strong>Team:</strong></td>
+                            <td style="padding: 5px 0;">
+                                <t t-out="object.team_id.name" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </template>
 
 </odoo>
