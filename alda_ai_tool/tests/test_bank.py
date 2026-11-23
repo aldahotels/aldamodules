@@ -519,3 +519,38 @@ class TestBankTools(TransactionCase):
             date_to="2026-09-30",
         )
         self.assertFalse(self.st_tpv.is_reconciled)
+
+    def test_reconcile_all_token_bound_to_the_table(self):
+        period = {
+            "property_id": self.prop.id,
+            "date_from": "2026-09-20",
+            "date_to": "2026-09-30",
+        }
+        preview = self._run("alda_bank_reconcile_all", **period)
+        token = preview["confirmation"]["confirmation_token"]
+        # Leaving a line out needs a new preview of the final table.
+        with self.assertRaisesRegex(UserError, "does not match"):
+            self._run(
+                "alda_bank_reconcile_all",
+                confirm=True,
+                confirmation_token=token,
+                exclude_numbers=[1],
+                **period,
+            )
+        # A new bank line renumbers the table: the token is no longer valid.
+        self.env["account.bank.statement.line"].create(
+            {
+                "journal_id": self.cb.id,
+                "date": "2026-09-20",
+                "payment_ref": "TRANSFERENCIA NUEVA",
+                "amount": 10.0,
+            }
+        )
+        with self.assertRaisesRegex(UserError, "does not match"):
+            self._run(
+                "alda_bank_reconcile_all",
+                confirm=True,
+                confirmation_token=token,
+                **period,
+            )
+        self.assertFalse(self.st_tpv.is_reconciled)
