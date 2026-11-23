@@ -453,7 +453,9 @@ written off for Sabadell.</li>
 provider of the hotel (read with sudo, only that field). Other numbers are
 stored per hotel with <tt class="docutils literal">alda_bank_sabadell_merchant</tt> after the user confirms
 them (model <tt class="docutils literal">alda.bank.merchant</tt>: read for accountants, changes for
-accounting managers and the tool).</p>
+accounting managers and the tool), with their journal when the hotel has
+several of that type (<tt class="docutils literal">journal_code</tt>); until then, its settlements are not
+reconciled.</p>
 <p>Write tools (<tt class="docutils literal">alda_bank_reconcile</tt>, <tt class="docutils literal">alda_bank_reconcile_all</tt>,
 <tt class="docutils literal">alda_bank_reconcile_sabadell</tt>, <tt class="docutils literal">alda_bank_sabadell_merchant</tt>,
 <tt class="docutils literal">alda_bank_notify_taz</tt>…) are created with changes disabled: enable

@@ -185,6 +185,12 @@ msgstr "Cada línea se concilia por separado. Deshacer: en la conciliación banc
 
 #. module: alda_ai_tool
 #. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "Foreign currency: reconcile it in Odoo."
+msgstr "Moneda extranjera: concílialo en Odoo."
+
+#. module: alda_ai_tool
+#. odoo-python
 #: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
 msgid "Lines: journal items of reconcilable accounts starting with 465, posted and not reconciled."
 msgstr "Líneas: apuntes de cuentas conciliables que empiezan por 465, publicados y sin conciliar."
@@ -480,6 +486,20 @@ msgstr "El hotel no tiene ningún diario de compras que empiece por %s: los carg
 #. odoo-python
 #: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
 #, python-format
+msgid "The hotel has several %(type)s journals (%(codes)s): confirm the journal of the number with alda_bank_sabadell_merchant and journal_code."
+msgstr "El hotel tiene varios diarios %(type)s (%(codes)s): confirma el diario del número con alda_bank_sabadell_merchant y journal_code."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "The hotel has several %(type)s journals (%(codes)s): say which one with journal_code."
+msgstr "El hotel tiene varios diarios %(type)s (%(codes)s): indica cuál con journal_code."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
 msgid "The journal type %(type)s comes from the history of the number: confirm it with alda_bank_sabadell_merchant before reconciling."
 msgstr "El tipo de diario %(type)s sale del historial del número: confírmalo con alda_bank_sabadell_merchant antes de conciliar."
 
@@ -749,9 +769,19 @@ msgid "Digits of the merchant number, without leading zeros."
 msgstr "Cifras del número de comercio, sin ceros a la izquierda."
 
 #. module: alda_ai_tool
+#: model:ir.model.fields,field_description:alda_ai_tool.field_alda_bank_merchant__journal_id
+msgid "Journal"
+msgstr "Diario"
+
+#. module: alda_ai_tool
 #: model:ir.model.fields,field_description:alda_ai_tool.field_alda_bank_merchant__journal_type
 msgid "Journal Type"
 msgstr "Tipo de diario"
+
+#. module: alda_ai_tool
+#: model:ir.model.fields,help:alda_ai_tool.field_alda_bank_merchant__journal_id
+msgid "Journal of the settlements of the number, among the hotel's journals of the type."
+msgstr "Diario de las liquidaciones del número, entre los diarios del hotel de ese tipo."
 
 #. module: alda_ai_tool
 #: model:ir.model.fields.selection,name:alda_ai_tool.selection__alda_bank_merchant__journal_type__wa

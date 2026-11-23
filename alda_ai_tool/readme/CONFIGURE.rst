@@ -40,7 +40,9 @@ The merchant number is P&S (VA) when it is the merchant code of a Redsys
 provider of the hotel (read with sudo, only that field). Other numbers are
 stored per hotel with ``alda_bank_sabadell_merchant`` after the user confirms
 them (model ``alda.bank.merchant``: read for accountants, changes for
-accounting managers and the tool).
+accounting managers and the tool), with their journal when the hotel has
+several of that type (``journal_code``); until then, its settlements are not
+reconciled.
 
 Write tools (``alda_bank_reconcile``, ``alda_bank_reconcile_all``,
 ``alda_bank_reconcile_sabadell``, ``alda_bank_sabadell_merchant``,

@@ -350,6 +350,12 @@ class AldaAiBankTools(models.AbstractModel):
             if st_line._seek_for_lines()[2]:
                 row["reason"] = _("Matched in part already: finish it in Odoo.")
                 lines = None
+            elif (
+                st_line.foreign_currency_id
+                or st_line.currency_id != st_line.company_id.currency_id
+            ):
+                row["reason"] = _("Foreign currency: reconcile it in Odoo.")
+                lines = None
             else:
                 lines = match(st_line, row)
             if lines:

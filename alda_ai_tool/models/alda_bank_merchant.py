@@ -29,6 +29,12 @@ class AldaBankMerchant(models.Model):
         help="Digits of the merchant number, without leading zeros.",
     )
     journal_type = fields.Selection(JOURNAL_TYPES, required=True)
+    journal_id = fields.Many2one(
+        "account.journal",
+        ondelete="set null",
+        help="Journal of the settlements of the number, among the hotel's journals "
+        "of the type.",
+    )
     confirmed_by_id = fields.Many2one("res.users", readonly=True)
 
     _sql_constraints = [

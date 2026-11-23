@@ -299,3 +299,60 @@ class TestBankSabadell(TransactionCase):
         self.assertEqual(len(records), 1)
         with self.assertRaises(AccessError):
             records.write({"journal_type": "ta"})
+
+    def test_several_journals_of_a_type(self):
+        self.env["account.journal"].create(
+            {
+                "name": "AI second terminal",
+                "code": "TA99B",
+                "type": "bank",
+                "pms_property_ids": [(6, 0, self.prop.ids)],
+            }
+        )
+        with self.assertRaisesRegex(UserError, "several TA journals"):
+            self._run(
+                "alda_bank_sabadell_merchant",
+                property_id=self.prop.id,
+                merchant="777001",
+                journal_type="ta",
+            )
+        self._confirmed(
+            "alda_bank_sabadell_merchant",
+            property_id=self.prop.id,
+            merchant="777001",
+            journal_type="ta",
+            journal_code="TA998",
+        )
+        merchant = self.env["alda.bank.merchant"].search(
+            [("property_id", "=", self.prop.id), ("merchant", "=", "777001")]
+        )
+        self.assertEqual(merchant.journal_id, self.ta)
+        rows = self._rows(
+            self._run("alda_bank_sabadell_pending", **self.period)["result"]
+        )
+        self.assertEqual(rows[self.st_ta.id]["action"], "reconcile")
+        self.assertEqual(
+            [c["move_line_id"] for c in rows[self.st_ta.id]["odoo"]], self.ta_90.ids
+        )
+
+    def test_stored_number_seen_with_another_journal(self):
+        merchant = self.env["alda.bank.merchant"].create(
+            {
+                "property_id": self.prop.id,
+                "merchant": "777001",
+                "journal_type": "wa",
+                "journal_id": self.wa.id,
+            }
+        )
+        # Stored before the settlement of September reconciled with TA.
+        self.env.flush_all()
+        self.env.cr.execute(
+            "UPDATE alda_bank_merchant SET write_date = '2026-09-01' WHERE id = %s",
+            [merchant.id],
+        )
+        merchant.invalidate_recordset(["write_date"])
+        result = self._run("alda_bank_sabadell_pending", **self.period)
+        row = self._rows(result["result"])[self.st_ta.id]
+        self.assertEqual(row["action"], "skip")
+        self.assertIn("also been reconciled with TA", row["reason"])
+        self.assertTrue(any("777001" in w for w in result["warnings"]))

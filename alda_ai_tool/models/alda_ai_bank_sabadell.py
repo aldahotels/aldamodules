@@ -192,6 +192,17 @@ class AldaAiBankSabadellTools(models.AbstractModel):
         }
 
     @api.model
+    def _alda_sabadell_provider_journals(self, prop, merchant):
+        """Journals of the hotel's Redsys providers with this merchant code."""
+        Provider = self.env["payment.provider"].sudo()
+        if not {"redsys_merchant_code", "journal_id"} <= set(Provider._fields):
+            return self.env["account.journal"]
+        providers = Provider.search(
+            [("code", "=", "redsys"), ("pms_property_ids", "in", prop.id)]
+        ).filtered(lambda p: _merchant_key(p.redsys_merchant_code) == merchant)
+        return self.env["account.journal"].browse(providers.journal_id.ids)
+
+    @api.model
     def _alda_sabadell_journal_type(self, context, journal):
         for key, journals in context["types"].items():
             if journal in journals:
@@ -252,6 +263,7 @@ class AldaAiBankSabadellTools(models.AbstractModel):
             "to_confirm": False,
             "history": counts,
             "warning": None,
+            "journal": stored.journal_id.code or None,
         }
         if merchant in context["provider_codes"]:
             info.update(type="va", source="payment_provider")
@@ -304,6 +316,20 @@ class AldaAiBankSabadellTools(models.AbstractModel):
         return lines
 
     @api.model
+    def _alda_sabadell_merchant_journals(self, context, info):
+        """Journal a merchant number settles; several mean it is not known."""
+        journals = context["types"][info["type"]]
+        if info["journal"]:
+            return journals.filtered(lambda j: j.code == info["journal"])
+        if len(journals) > 1 and info["source"] == "payment_provider":
+            provider = self._alda_sabadell_provider_journals(
+                context["property"], info["merchant"]
+            )
+            if len(provider & journals) == 1:
+                return provider & journals
+        return journals
+
+    @api.model
     def _alda_sabadell_breakdown(self, context, journals, day):
         """Collections minus refunds of the journals on a day, by payment method."""
         currency = context["company"].currency_id
@@ -342,10 +368,20 @@ class AldaAiBankSabadellTools(models.AbstractModel):
                 "alda_bank_sabadell_merchant. Not reconciled."
             )
             return None
-        journals = context["types"][info["type"]]
-        if not journals:
-            row["reason"] = _("The hotel has no journal of type %s.") % (
-                info["type"].upper()
+        journals = self._alda_sabadell_merchant_journals(context, info)
+        if len(journals) != 1:
+            row["reason"] = (
+                _(
+                    "The hotel has several %(type)s journals (%(codes)s): confirm "
+                    "the journal of the number with alda_bank_sabadell_merchant "
+                    "and journal_code."
+                )
+                % {
+                    "type": info["type"].upper(),
+                    "codes": ", ".join(journals.mapped("code")),
+                }
+                if journals
+                else _("The hotel has no journal of type %s.") % info["type"].upper()
             )
             return None
         sign = 1 if st_line.amount > 0 else -1
@@ -607,6 +643,12 @@ class AldaAiBankSabadellTools(models.AbstractModel):
                 "description": "ta: Sabadell card terminal; wa: kiosk; va: payment "
                 "provider P&S.",
             },
+            "journal_code": {
+                "type": "string",
+                "maxLength": 10,
+                "description": "Code of the journal, needed when the hotel has "
+                "several journals of that type.",
+            },
         },
         output_schema={
             "merchant": {"type": "string"},
@@ -619,7 +661,9 @@ class AldaAiBankSabadellTools(models.AbstractModel):
         write=True,
         apply="_alda_bank_sabadell_merchant_apply",
     )
-    def _ai_alda_bank_sabadell_merchant(self, property_id, merchant, journal_type):
+    def _ai_alda_bank_sabadell_merchant(
+        self, property_id, merchant, journal_type, journal_code=None
+    ):
         context = self._alda_sabadell_context(self._alda_bank_property(property_id))
         merchant = _merchant_key(merchant)
         if not merchant:
@@ -634,9 +678,23 @@ class AldaAiBankSabadellTools(models.AbstractModel):
                 % merchant
             )
         journals = context["types"][journal_type]
+        if journal_code:
+            journals = journals.filtered(lambda j: j.code == journal_code)
         if not journals:
             raise UserError(
-                _("The hotel has no journal of type %s.") % journal_type.upper()
+                _("The hotel has no journal of type %s.")
+                % (journal_code or journal_type.upper())
+            )
+        if len(journals) > 1:
+            raise UserError(
+                _(
+                    "The hotel has several %(type)s journals (%(codes)s): say which "
+                    "one with journal_code."
+                )
+                % {
+                    "type": journal_type.upper(),
+                    "codes": ", ".join(journals.mapped("code")),
+                }
             )
         stored = (
             self.env["alda.bank.merchant"]
@@ -676,6 +734,7 @@ class AldaAiBankSabadellTools(models.AbstractModel):
                 "property_id": context["property"].id,
                 "merchant": merchant,
                 "journal_type": journal_type,
+                "journal_id": journals.id,
             },
         }
 
@@ -683,6 +742,7 @@ class AldaAiBankSabadellTools(models.AbstractModel):
         Merchant = self.env["alda.bank.merchant"].sudo()
         values = {
             "journal_type": plan["journal_type"],
+            "journal_id": plan["journal_id"],
             "confirmed_by_id": self.env.uid,
         }
         record = Merchant.search(
