@@ -65,6 +65,13 @@ msgstr "%(matched)s líneas con candidatos, %(cents)s con una diferencia de cén
 
 #. module: alda_ai_tool
 #. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "%(merchant)s stored as %(type)s."
+msgstr "%(merchant)s guardado como %(type)s."
+
+#. module: alda_ai_tool
+#. odoo-python
 #: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
 #, python-format
 msgid "%s groups could not be reconciled and were left as they were."
@@ -76,6 +83,13 @@ msgstr "%s grupos no se han podido conciliar y se han quedado como estaban."
 #, python-format
 msgid "%s groups have lines in a locked period: once reconciled, 'Unreconcile' will be refused for them."
 msgstr "%s grupos tienen líneas en un periodo bloqueado: una vez conciliados, se rechazará 'Romper conciliación' para ellos."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "%s is the merchant code of a payment provider of the hotel: it settles the P&S journal (VA)."
+msgstr "%s es el código de comercio de un proveedor de pago del hotel: liquida el diario de P&S (VA)."
 
 #. module: alda_ai_tool
 #. odoo-python
@@ -112,6 +126,12 @@ msgstr "Candidatos: apuntes abiertos de las cuentas puente. TPV: en el diario de
 
 #. module: alda_ai_tool
 #. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+msgid "Cash deposit: never reconciled automatically (its matching entry is not defined yet); reconcile it by hand."
+msgstr "Ingreso de efectivo: nunca se concilia automáticamente (aún no está definido su asiento de contrapartida); concílialo a mano."
+
+#. module: alda_ai_tool
+#. odoo-python
 #: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
 #, python-format
 msgid "Charges (negative lines): the open vendor bill of the hotel's %s journal whose amount due is exactly the charge (same supplier when the bank line has one; the supplier's reference in the concept picks one among several). term: days since the bill against the supplier's payment term; a late payment brings a draft notice for the TAZ."
@@ -130,6 +150,13 @@ msgstr "Los conceptos se recortan a %s caracteres."
 #, python-format
 msgid "Create an activity on %(move)s for %(users)s."
 msgstr "Crear una actividad en %(move)s para %(users)s."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "Differs by %(diff)s from the entry of %(day)s, within the tolerance of %(cents)s: to confirm; not reconciled by this tool."
+msgstr "Difiere en %(diff)s del asiento del %(day)s, dentro de la tolerancia de %(cents)s: a confirmar; esta herramienta no lo concilia."
 
 #. module: alda_ai_tool
 #. odoo-python
@@ -170,10 +197,38 @@ msgstr "Ya está casada en parte: termínala en Odoo."
 
 #. module: alda_ai_tool
 #. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "Merchant numbers with a type to confirm: %s."
+msgstr "Números de comercio con un tipo a confirmar: %s."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "Merchant numbers without a known journal: %s."
+msgstr "Números de comercio sin diario conocido: %s."
+
+#. module: alda_ai_tool
+#. odoo-python
 #: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
 #, python-format
 msgid "No TAZ with an active internal user is assigned to %s in Employees."
 msgstr "No hay ningún TAZ con usuario interno activo asignado a %s en Empleados."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "No grouped entry of the journal %(journals)s for this exact amount: see the collections of the day by payment method."
+msgstr "No hay ningún asiento agrupado del diario %(journals)s por este importe exacto: mira los cobros del día por forma de pago."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "No open collection of %s for this exact amount."
+msgstr "No hay ningún cobro abierto de %s por este importe exacto."
 
 #. module: alda_ai_tool
 #. odoo-python
@@ -306,9 +361,21 @@ msgstr "Conciliada mientras tanto."
 
 #. module: alda_ai_tool
 #. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+msgid "Several open entries for this exact amount: choose one in Odoo."
+msgstr "Varios asientos abiertos por este importe exacto: elige uno en Odoo."
+
+#. module: alda_ai_tool
+#. odoo-python
 #: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
 msgid "Several open entries for this exact amount: choose one with alda_bank_reconcile."
 msgstr "Varios asientos abiertos por este importe exacto: elige uno con alda_bank_reconcile."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+msgid "Several open grouped entries for this exact amount: see the chronological proposal and reconcile them by hand."
+msgstr "Varios asientos agrupados abiertos por este importe exacto: mira la propuesta cronológica y concílialos a mano."
 
 #. module: alda_ai_tool
 #. odoo-python
@@ -331,6 +398,13 @@ msgstr "Línea de extracto %(id)s conciliada (%(move)s)."
 
 #. module: alda_ai_tool
 #. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "Store that %(merchant)s settles the %(type)s journal of %(hotel)s."
+msgstr "Guardar que %(merchant)s liquida el diario %(type)s de %(hotel)s."
+
+#. module: alda_ai_tool
+#. odoo-python
 #: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
 msgid "TPV settlements and transfers: the same matching as alda_bank_match_candidates, keeping only single exact matches. Combinations and differences of cents are listed to review (cents only with include_writeoffs)."
 msgstr "Liquidaciones de TPV y transferencias: el mismo casado que alda_bank_match_candidates, quedándose solo con coincidencias exactas únicas. Las combinaciones y las diferencias de céntimos se listan para revisar (los céntimos solo con include_writeoffs)."
@@ -340,6 +414,19 @@ msgstr "Liquidaciones de TPV y transferencias: el mismo casado que alda_bank_mat
 #: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
 msgid "Table: every pending line of the hotel's CB journals in the period, numbered by date. action reconcile: a single Odoo counterpart with exactly the same amount; skip: nothing is done, see reason."
 msgstr "Tabla: todas las líneas pendientes de los diarios CB del hotel en el periodo, numeradas por fecha. action reconcile: una única contrapartida en Odoo con exactamente el mismo importe; skip: no se hace nada, ver reason."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+msgid "Table: every pending line of the hotel's Sabadell journals in the period, numbered by date, with the full concept and the extras of its notes (made_on, posting_date). action reconcile: a single Odoo counterpart with exactly the same amount; skip: nothing is done, see reason."
+msgstr "Tabla: todas las líneas pendientes de los diarios de Sabadell del hotel en el periodo, numeradas por fecha, con el concepto completo y los extras de sus notas (made_on, posting_date). action reconcile: una única contrapartida en Odoo con exactamente el mismo importe; skip: no se hace nada, ver reason."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "The Sabadell journal of the hotels is not configured: an administrator must set the system parameter %s to the code prefix of the hotels' Sabadell bank journals (the journal where the Sabadell statements are imported). Nothing was read."
+msgstr "El diario de Sabadell de los hoteles no está configurado: un administrador debe poner en el parámetro del sistema %s el prefijo del código de los diarios de banco de Sabadell de los hoteles (el diario donde se importan los extractos de Sabadell). No se ha leído nada."
 
 #. module: alda_ai_tool
 #. odoo-python
@@ -377,10 +464,51 @@ msgstr "El grupo no ha quedado conciliado del todo; no se ha guardado nada."
 
 #. module: alda_ai_tool
 #. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "The hotel has no journal of type %s."
+msgstr "El hotel no tiene ningún diario de tipo %s."
+
+#. module: alda_ai_tool
+#. odoo-python
 #: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
 #, python-format
 msgid "The hotel has no purchase journal starting with %s: charges are not matched."
 msgstr "El hotel no tiene ningún diario de compras que empiece por %s: los cargos no se casan."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "The journal type %(type)s comes from the history of the number: confirm it with alda_bank_sabadell_merchant before reconciling."
+msgstr "El tipo de diario %(type)s sale del historial del número: confírmalo con alda_bank_sabadell_merchant antes de conciliar."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+msgid "The merchant number has no digits."
+msgstr "El número de comercio no tiene cifras."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "The number %(merchant)s (%(type)s) has also been reconciled with %(others)s: check which journal it settles."
+msgstr "El número %(merchant)s (%(type)s) también se ha conciliado con %(others)s: revisa qué diario liquida."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "The number %(merchant)s is the merchant code of a payment provider of the hotel (VA) but it was stored as %(type)s: check it before reconciling."
+msgstr "El número %(merchant)s es el código de comercio de un proveedor de pago del hotel (VA) pero se guardó como %(type)s: revísalo antes de conciliar."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "The number has been reconciled before with %s."
+msgstr "El número se ha conciliado antes con %s."
 
 #. module: alda_ai_tool
 #. odoo-python
@@ -455,6 +583,13 @@ msgstr "La línea de extracto no está en un diario de banco de la propiedad."
 
 #. module: alda_ai_tool
 #. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "The system parameter %(key)s is not a valid pattern: %(value)s"
+msgstr "El parámetro del sistema %(key)s no es un patrón válido: %(value)s"
+
+#. module: alda_ai_tool
+#. odoo-python
 #: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
 msgid "The write-off is not the one previewed."
 msgstr "El descuadre no es el de la vista previa."
@@ -484,6 +619,12 @@ msgstr "Deshacer: 'Romper conciliación' en los apuntes en Odoo."
 #: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
 msgid "Undo: in the bank reconciliation, open the statement line and reset it."
 msgstr "Deshacer: en la conciliación bancaria, abre la línea de extracto y restablécela."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+msgid "Unknown merchant number and no clear history: tell which journal it settles (TA terminal or WA kiosk) with alda_bank_sabadell_merchant. Not reconciled."
+msgstr "Número de comercio desconocido y sin historial claro: indica qué diario liquida (TA datáfono o WA kiosco) con alda_bank_sabadell_merchant. No se concilia."
 
 #. module: alda_ai_tool
 #. odoo-python
@@ -551,10 +692,23 @@ msgstr "notice: borrador del mensaje para el TAZ del hotel cuando nada cuadra (l
 
 #. module: alda_ai_tool
 #. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+msgid "order_proposal: unmatched settlements of a number paired in chronological order (made_on, posting_date) with the open grouped entries; only a proposal to confirm."
+msgstr "order_proposal: liquidaciones sin casar de un número emparejadas por orden cronológico (made_on, posting_date) con los asientos agrupados abiertos; solo una propuesta a confirmar."
+
+#. module: alda_ai_tool
+#. odoo-python
 #: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
 #, python-format
 msgid "paid %(days)s days after the bill; the agreed term is %(term)s days"
 msgstr "pagada %(days)s días después de la factura; el plazo pactado es de %(term)s días"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+#, python-format
+msgid "pos: card settlement; the merchant number is VA when it is the merchant code of a payment provider of the hotel, otherwise the type confirmed with alda_bank_sabadell_merchant (TA or WA). A type read from the history of the number is only a proposal to confirm. Settlements, positive or negative, match the open grouped entry of that journal with the same amount in the %s days before."
+msgstr "pos: liquidación de tarjeta; el número de comercio es VA cuando es el código de comercio de un proveedor de pago del hotel; si no, el tipo confirmado con alda_bank_sabadell_merchant (TA o WA). Un tipo sacado del historial del número es solo una propuesta a confirmar. Las liquidaciones, positivas o negativas, casan con el asiento agrupado abierto de ese diario con el mismo importe en los %s días anteriores."
 
 #. module: alda_ai_tool
 #. odoo-python
@@ -567,3 +721,64 @@ msgstr "el banco tiene más que Odoo: puede faltar un cobro"
 #: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
 msgid "tpv: the concept starts with ON and the merchant number; the settlement is for the day before (settled_date, read from the DDMM of the concept when present). transfer: any other income. outgoing: payments out, not covered by these tools."
 msgstr "tpv: el concepto empieza por ON y el número de comercio; la liquidación es del día anterior (settled_date, leída del DDMM del concepto si lo trae). transfer: cualquier otro ingreso. outgoing: pagos, no cubiertos por estas herramientas."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_sabadell.py:0
+msgid "transfer: an open collection of the CA journal on the day or the next one with exactly the same amount. cash: never reconciled automatically. charge: the single open vendor bill of the hotel's FR journal with exactly the amount, with its payment term check."
+msgstr "transfer: un cobro abierto del diario CA del día o del siguiente con exactamente el mismo importe. cash: nunca se concilia automáticamente. charge: la única factura de proveedor abierta del diario FR del hotel con exactamente el importe, con la comprobación de su plazo de pago."
+
+#. module: alda_ai_tool
+#: model:ir.model.fields.selection,name:alda_ai_tool.selection__alda_bank_merchant__journal_type__ta
+msgid "Card terminal (TA)"
+msgstr "Datáfono (TA)"
+
+#. module: alda_ai_tool
+#: model:ir.model.fields,field_description:alda_ai_tool.field_alda_bank_merchant__company_id
+msgid "Company"
+msgstr "Compañía"
+
+#. module: alda_ai_tool
+#: model:ir.model.fields,field_description:alda_ai_tool.field_alda_bank_merchant__confirmed_by_id
+msgid "Confirmed By"
+msgstr "Confirmado por"
+
+#. module: alda_ai_tool
+#: model:ir.model.fields,help:alda_ai_tool.field_alda_bank_merchant__merchant
+msgid "Digits of the merchant number, without leading zeros."
+msgstr "Cifras del número de comercio, sin ceros a la izquierda."
+
+#. module: alda_ai_tool
+#: model:ir.model.fields,field_description:alda_ai_tool.field_alda_bank_merchant__journal_type
+msgid "Journal Type"
+msgstr "Tipo de diario"
+
+#. module: alda_ai_tool
+#: model:ir.model.fields.selection,name:alda_ai_tool.selection__alda_bank_merchant__journal_type__wa
+msgid "Kiosk (WA)"
+msgstr "Kiosco (WA)"
+
+#. module: alda_ai_tool
+#: model:ir.model.fields,field_description:alda_ai_tool.field_alda_bank_merchant__merchant
+msgid "Merchant number"
+msgstr "Número de comercio"
+
+#. module: alda_ai_tool
+#: model:ir.model,name:alda_ai_tool.model_alda_bank_merchant
+msgid "Merchant number of a hotel's card settlements"
+msgstr "Número de comercio de las liquidaciones de tarjeta de un hotel"
+
+#. module: alda_ai_tool
+#: model:ir.model.fields.selection,name:alda_ai_tool.selection__alda_bank_merchant__journal_type__va
+msgid "Payment provider P&S (VA)"
+msgstr "Proveedor de pago P&S (VA)"
+
+#. module: alda_ai_tool
+#: model:ir.model.fields,field_description:alda_ai_tool.field_alda_bank_merchant__property_id
+msgid "Property"
+msgstr "Propiedad"
+
+#. module: alda_ai_tool
+#: model:ir.model.constraint,message:alda_ai_tool.constraint_alda_bank_merchant_property_merchant_uniq
+msgid "This merchant number is already stored for the hotel."
+msgstr "Este número de comercio ya está guardado para el hotel."

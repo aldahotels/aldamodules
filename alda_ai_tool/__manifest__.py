@@ -3,7 +3,7 @@
 {
     "name": "Alda AI Tool",
     "summary": "AI tools of Alda Hotels: payroll 465 and bank reconciliation",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Accounting/Accounting",
     "author": "Commit [Sun]",
     "website": "https://github.com/OCA/pms",
@@ -15,6 +15,7 @@
         "pms_hr_property",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "data/ai_tools.xml",
     ],
     "installable": True,

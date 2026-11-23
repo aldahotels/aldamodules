@@ -14,6 +14,14 @@ AI tools specific to Alda Hotels, served over MCP with the guardrails of
   with a single exact match, and charges with the single vendor bill of the
   hotel's ``FR`` journal whose amount due is exactly the charge, checking the
   supplier's payment term (draft notice for the TAZ when paid late).
+* ``alda_bank_sabadell_pending``, ``alda_bank_sabadell_merchant`` and
+  ``alda_bank_reconcile_sabadell``: first, conservative version for the
+  Sabadell statements: card settlements by merchant number (payment provider
+  P&S, card terminal or kiosk, confirmed by the user and stored per hotel),
+  transfers, charges and cash deposits (only reported), with the same numbered
+  table and exclusions. Types read from the history, differences within the
+  tolerance and chronological pairings are proposals to confirm, never
+  applied.
 
 The write tools need a preview and an explicit confirmation, a list of allowed
 users and the switches of ``pms_ai_tool`` turned on.

@@ -572,6 +572,24 @@ class AldaAiBankTools(models.AbstractModel):
         return _("Bank reconciliation difference")
 
     @api.model
+    def _alda_bank_notify_line(self, statement_line_id):
+        """Any statement line of a bank journal of the user's hotels.
+
+        Reconciled lines too: a supplier paid out of term is reconciled and
+        still notified; and lines of the Sabadell journals as well as CB.
+        """
+        st_line = self.env["account.bank.statement.line"].browse(statement_line_id)
+        if not st_line.exists():
+            raise UserError(_("Unknown statement line %s.") % statement_line_id)
+        allowed = set(self._ai_scope_property_ids())
+        props = st_line.journal_id.pms_property_ids.filtered(lambda p: p.id in allowed)
+        if not props or st_line.journal_id.type != "bank":
+            raise AccessError(
+                _("You have no access to the property of this statement line.")
+            )
+        return st_line, props[0]
+
+    @api.model
     def _alda_bank_taz_users(self, prop):
         param = self.env["ir.config_parameter"].sudo().get_param(PARAM_TAZ_JOBS)
         jobs = self.env["hr.job"].sudo()
@@ -617,16 +635,12 @@ class AldaAiBankTools(models.AbstractModel):
         apply="_alda_bank_notify_taz_apply",
     )
     def _ai_alda_bank_notify_taz(self, statement_line_id, message):
-        # Reconciled lines too: a supplier paid out of term is reconciled and
-        # still notified.
-        st_line, context = self._alda_bank_statement_line(
-            statement_line_id, pending=False
-        )
-        users = self._alda_bank_taz_users(context["property"])
+        st_line, prop = self._alda_bank_notify_line(statement_line_id)
+        users = self._alda_bank_taz_users(prop)
         if not users:
             raise UserError(
                 _("No TAZ with an active internal user is assigned to %s in Employees.")
-                % context["property"].name
+                % prop.name
             )
         notified = (
             self.env["mail.activity"]

@@ -300,7 +300,33 @@ class AldaAiBankTools(models.AbstractModel):
                 % {"count": len(st_lines), "max": MAX_ALL_LINES}
             )
         include_writeoffs = options.get("include_writeoffs")
-        exclude = set(options.get("exclude") or [])
+
+        def match(st_line, row):
+            row["kind"] = (
+                "charge"
+                if st_line.amount < 0
+                else self._alda_bank_classify(st_line)["kind"]
+            )
+            if st_line.amount < 0:
+                return self._alda_bank_match_charge(st_line, context, row)
+            return self._alda_bank_match_income(
+                st_line, context, row, include_writeoffs
+            )
+
+        return dict(
+            self._alda_bank_numbered_table(st_lines, match, options.get("exclude")),
+            period=period,
+            context=context,
+        )
+
+    @api.model
+    def _alda_bank_numbered_table(self, st_lines, match, exclude=None, concept=None):
+        """Number the lines (date, id order) and propose their single matches.
+
+        ``match(st_line, row)`` fills the row and returns the Odoo items to
+        reconcile, if any. ``exclude`` lists the numbers the user left out.
+        """
+        exclude = set(exclude or [])
         rows, items = [], {}
         for number, st_line in enumerate(st_lines, 1):
             row = {
@@ -308,10 +334,10 @@ class AldaAiBankTools(models.AbstractModel):
                 "statement_line_id": st_line.id,
                 "date": st_line.date,
                 "amount": st_line.amount,
-                "concept": truncate(st_line.payment_ref, CONCEPT_CHARS),
-                "kind": "charge"
-                if st_line.amount < 0
-                else self._alda_bank_classify(st_line)["kind"],
+                "concept": concept(st_line)
+                if concept
+                else truncate(st_line.payment_ref, CONCEPT_CHARS),
+                "kind": None,
                 "action": "skip",
                 "odoo": [],
                 "candidates": [],
@@ -324,12 +350,8 @@ class AldaAiBankTools(models.AbstractModel):
             if st_line._seek_for_lines()[2]:
                 row["reason"] = _("Matched in part already: finish it in Odoo.")
                 lines = None
-            elif st_line.amount < 0:
-                lines = self._alda_bank_match_charge(st_line, context, row)
             else:
-                lines = self._alda_bank_match_income(
-                    st_line, context, row, include_writeoffs
-                )
+                lines = match(st_line, row)
             if lines:
                 row["action"] = "reconcile"
                 row["odoo"] = [self._alda_bank_candidate(line) for line in lines]
@@ -354,8 +376,6 @@ class AldaAiBankTools(models.AbstractModel):
         for row in rows:
             totals[row["action"]] = totals.get(row["action"], 0) + 1
         return {
-            "period": period,
-            "context": context,
             "rows": rows,
             "items": items,
             "totals": totals,
@@ -504,6 +524,13 @@ class AldaAiBankTools(models.AbstractModel):
             exclude=exclude_numbers,
         )
         summary, warnings, result = self._alda_bank_all_public(table)
+        return self._alda_bank_table_write(
+            table, summary, warnings, result, self._alda_bank_all_definitions()
+        )
+
+    @api.model
+    def _alda_bank_table_write(self, table, summary, warnings, result, definitions):
+        """Preview of a write tool that reconciles the proposed rows of a table."""
         plan = [
             {
                 "number": row["number"],
@@ -520,7 +547,7 @@ class AldaAiBankTools(models.AbstractModel):
         return {
             "summary": summary,
             "period": table["period"],
-            "definitions": self._alda_bank_all_definitions()
+            "definitions": definitions
             + [
                 _(
                     "Each line is reconciled on its own. Undo: in the bank "

@@ -386,6 +386,14 @@ against Odoo the user can leave lines out of: TPV settlements and transfers
 with a single exact match, and charges with the single vendor bill of the
 hotel’s <tt class="docutils literal">FR</tt> journal whose amount due is exactly the charge, checking the
 supplier’s payment term (draft notice for the TAZ when paid late).</li>
+<li><tt class="docutils literal">alda_bank_sabadell_pending</tt>, <tt class="docutils literal">alda_bank_sabadell_merchant</tt> and
+<tt class="docutils literal">alda_bank_reconcile_sabadell</tt>: first, conservative version for the
+Sabadell statements: card settlements by merchant number (payment provider
+P&amp;S, card terminal or kiosk, confirmed by the user and stored per hotel),
+transfers, charges and cash deposits (only reported), with the same numbered
+table and exclusions. Types read from the history, differences within the
+tolerance and chronological pairings are proposals to confirm, never
+applied.</li>
 </ul>
 <p>The write tools need a preview and an explicit confirmation, a list of allowed
 users and the switches of <tt class="docutils literal">pms_ai_tool</tt> turned on.</p>
@@ -422,7 +430,32 @@ or be coded prefix + hotel code.</li>
 <p>The hotel of an employee comes from the employee’s properties
 (<tt class="docutils literal">pms_hr_property</tt>); the analytic account of the write-off, from the
 property.</p>
+<p>Sabadell (<tt class="docutils literal">alda_bank_sabadell_pending</tt>, <tt class="docutils literal">alda_bank_sabadell_merchant</tt>,
+<tt class="docutils literal">alda_bank_reconcile_sabadell</tt>):</p>
+<ul class="simple">
+<li><tt class="docutils literal">alda_ai_tool.sabadell_journal_prefix</tt>, <strong>no default</strong>: code prefix of the
+hotels’ Sabadell bank journals, where the statements are imported. Until it
+is set, the Sabadell tools only explain what to configure.</li>
+<li><tt class="docutils literal">alda_ai_tool.sabadell_transfer_prefix</tt> (<tt class="docutils literal">CA</tt>),
+<tt class="docutils literal">alda_ai_tool.sabadell_terminal_prefix</tt> (<tt class="docutils literal">TA</tt>),
+<tt class="docutils literal">alda_ai_tool.sabadell_provider_prefix</tt> (<tt class="docutils literal">VA</tt>) and
+<tt class="docutils literal">alda_ai_tool.sabadell_kiosk_prefix</tt> (<tt class="docutils literal">WA</tt>): journals of transfers and
+cash, Sabadell card terminal, payment provider P&amp;S and kiosk.</li>
+<li><tt class="docutils literal">alda_ai_tool.sabadell_pos_concept</tt> (<tt class="docutils literal"><span class="pre">POS\s+SETTLEMENT\D*(\d+)</span></tt>) and
+<tt class="docutils literal">alda_ai_tool.sabadell_cash_concept</tt> (<tt class="docutils literal">CASH\s+DEPOSIT</tt>): patterns, case
+insensitive, of the concept of a card settlement (the first group is the
+merchant number) and of a cash deposit. Check them against a real statement.</li>
+<li><tt class="docutils literal">alda_ai_tool.sabadell_cents_threshold</tt>: tolerance shown for card
+settlements; by default, <tt class="docutils literal">alda_ai_tool.cents_threshold</tt>. Nothing is
+written off for Sabadell.</li>
+</ul>
+<p>The merchant number is P&amp;S (VA) when it is the merchant code of a Redsys
+provider of the hotel (read with sudo, only that field). Other numbers are
+stored per hotel with <tt class="docutils literal">alda_bank_sabadell_merchant</tt> after the user confirms
+them (model <tt class="docutils literal">alda.bank.merchant</tt>: read for accountants, changes for
+accounting managers and the tool).</p>
 <p>Write tools (<tt class="docutils literal">alda_bank_reconcile</tt>, <tt class="docutils literal">alda_bank_reconcile_all</tt>,
+<tt class="docutils literal">alda_bank_reconcile_sabadell</tt>, <tt class="docutils literal">alda_bank_sabadell_merchant</tt>,
 <tt class="docutils literal">alda_bank_notify_taz</tt>…) are created with changes disabled: enable
 <tt class="docutils literal">write_enabled</tt> and set the allowed users on each tool, and the system
 parameter <tt class="docutils literal">pms_ai_tool.write_enabled</tt>.</p>
