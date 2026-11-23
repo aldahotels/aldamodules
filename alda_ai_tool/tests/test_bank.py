@@ -120,7 +120,11 @@ class TestBankTools(TransactionCase):
             pms_property_ids=[(6, 0, cls.prop.ids)],
             pms_property_id=cls.prop.id,
         )
-        for name in ("alda_bank_notify_taz", "alda_bank_reconcile"):
+        for name in (
+            "alda_bank_notify_taz",
+            "alda_bank_reconcile",
+            "alda_bank_reconcile_all",
+        ):
             cls.env.ref(f"alda_ai_tool.ai_tool_{name}").write(
                 {"allowed_user_ids": [(6, 0, cls.user.ids)], "write_enabled": True}
             )
@@ -323,3 +327,195 @@ class TestBankTools(TransactionCase):
                 move_line_ids=self.st_out.move_id.line_ids[:1].ids,
             )
         self.assertFalse(self.st_missing.is_reconciled)
+
+    # Reconcile everything (CaixaBank)
+
+    def _charges(self):
+        """FR journal, a supplier paid at 30 days, bills and bank charges."""
+        journal = self.env["account.journal"].create(
+            {
+                "name": "AI purchases 999",
+                "code": "FR999",
+                "type": "purchase",
+                "pms_property_ids": [(6, 0, self.prop.ids)],
+            }
+        )
+        term = self.env["account.payment.term"].create(
+            {
+                "name": "AI 30 days",
+                "line_ids": [(0, 0, {"value": "balance", "days": 30})],
+            }
+        )
+        supplier = self.env["res.partner"].create(
+            {"name": "AI supplier", "property_supplier_payment_term_id": term.id}
+        )
+        expense = self.env["account.account"].create(
+            {
+                "code": "62900000099",
+                "name": "AI expense",
+                "account_type": "expense",
+                "company_id": self.env.company.id,
+            }
+        )
+
+        def bill(day, amount, ref):
+            move = self.env["account.move"].create(
+                {
+                    "move_type": "in_invoice",
+                    "journal_id": journal.id,
+                    "partner_id": supplier.id,
+                    "invoice_date": day,
+                    "ref": ref,
+                    "invoice_line_ids": [
+                        (
+                            0,
+                            0,
+                            {
+                                "name": "AI supplies",
+                                "account_id": expense.id,
+                                "price_unit": amount,
+                                "tax_ids": [(6, 0, [])],
+                            },
+                        )
+                    ],
+                }
+            )
+            move.action_post()
+            return move
+
+        def charge(day, concept, amount):
+            return self.env["account.bank.statement.line"].create(
+                {
+                    "journal_id": self.cb.id,
+                    "date": day,
+                    "payment_ref": concept,
+                    "amount": amount,
+                }
+            )
+
+        return {
+            "late_bill": bill("2026-08-01", 121.0, "AI-A-0001"),
+            "late": charge("2026-09-25", "RECIBO PROVEEDOR", -121.0),
+            "bill_a": bill("2026-09-01", 50.0, "AI-B-1001"),
+            "bill_b": bill("2026-09-02", 50.0, "AI-B-1002"),
+            "by_ref": charge("2026-09-21", "TRANSF PROVEEDOR AI-B-1002", -50.0),
+            "in_term_bill": bill("2026-09-10", 60.0, "AI-C-0001"),
+            "in_term": charge("2026-09-27", "RECIBO PROVEEDOR", -60.0),
+            "none": charge("2026-09-28", "COMISION MANTENIMIENTO", -77.77),
+        }
+
+    def test_reconcile_all(self):
+        charges = self._charges()
+        period = {
+            "property_id": self.prop.id,
+            "date_from": "2026-09-20",
+            "date_to": "2026-09-30",
+        }
+        table = self._run("alda_bank_reconcile_all_preview", **period)["result"][
+            "table"
+        ]
+        self.assertEqual([r["number"] for r in table], list(range(1, len(table) + 1)))
+        rows = {row["statement_line_id"]: row for row in table}
+        tpv = rows[self.st_tpv.id]
+        self.assertEqual(tpv["action"], "reconcile")
+        self.assertEqual([c["move_line_id"] for c in tpv["odoo"]], self.tpv_day1.ids)
+        self.assertEqual(rows[self.st_other_day.id]["action"], "reconcile")
+        # Cents, combinations, pending groupings and notices are not touched.
+        for st_line in (
+            self.st_cents,
+            self.st_transfer,
+            self.st_pending,
+            self.st_missing,
+        ):
+            self.assertEqual(rows[st_line.id]["action"], "skip")
+        self.assertTrue(rows[self.st_missing.id]["notice"])
+        late = rows[charges["late"].id]
+        self.assertEqual(late["action"], "reconcile")
+        self.assertTrue(late["term"]["late"])
+        self.assertEqual(late["term"]["agreed_days"], 30)
+        self.assertEqual(late["notice"]["days_since_bill"], 55)
+        by_ref = rows[charges["by_ref"].id]
+        self.assertEqual(by_ref["action"], "reconcile")
+        self.assertEqual(by_ref["candidates"][0]["move_id"], charges["bill_b"].id)
+        in_term = rows[charges["in_term"].id]
+        self.assertEqual(in_term["action"], "reconcile")
+        self.assertFalse(in_term["term"]["late"])
+        self.assertFalse(in_term["notice"])
+        self.assertEqual(rows[charges["none"].id]["action"], "skip")
+        self.assertEqual(rows[self.st_out.id]["action"], "skip")
+        # The user leaves the settlement of the 28th out.
+        excluded = rows[self.st_other_day.id]["number"]
+        preview, applied = self._confirmed(
+            "alda_bank_reconcile_all", exclude_numbers=[excluded], **period
+        )
+        actions = {r["number"]: r["action"] for r in preview["result"]["table"]}
+        self.assertEqual(actions[excluded], "excluded")
+        self.assertEqual(len(applied["result"]["reconciled"]), 4)
+        self.assertFalse(applied["result"]["failed"])
+        for st_line in (
+            self.st_tpv,
+            charges["late"],
+            charges["by_ref"],
+            charges["in_term"],
+        ):
+            self.assertTrue(st_line.is_reconciled)
+        for st_line in (self.st_other_day, self.st_cents, charges["none"]):
+            self.assertFalse(st_line.is_reconciled)
+        self.assertIn(charges["late_bill"].payment_state, ("paid", "in_payment"))
+        self.assertEqual(charges["bill_a"].payment_state, "not_paid")
+        # The late payment, already reconciled, can still be notified.
+        _preview, notified = self._confirmed(
+            "alda_bank_notify_taz",
+            statement_line_id=charges["late"].id,
+            message="Factura pagada 55 días después; plazo pactado 30 días.",
+        )
+        self.assertTrue(notified["result"]["activity_ids"])
+
+    def test_reconcile_all_conflicts_and_writeoffs(self):
+        charges = self._charges()
+        twin = self.env["account.bank.statement.line"].create(
+            {
+                "journal_id": self.cb.id,
+                "date": "2026-09-26",
+                "payment_ref": "RECIBO PROVEEDOR",
+                "amount": -121.0,
+            }
+        )
+        period = {
+            "property_id": self.prop.id,
+            "date_from": "2026-09-20",
+            "date_to": "2026-09-30",
+        }
+        preview, applied = self._confirmed(
+            "alda_bank_reconcile_all", include_writeoffs=True, **period
+        )
+        rows = {r["statement_line_id"]: r for r in preview["result"]["table"]}
+        # One bill for two bank charges: neither is reconciled.
+        for st_line in (charges["late"], twin):
+            self.assertEqual(rows[st_line.id]["action"], "skip")
+            self.assertFalse(st_line.is_reconciled)
+        self.assertEqual(rows[self.st_cents.id]["writeoff"]["amount"], 0.03)
+        self.assertTrue(self.st_cents.is_reconciled)
+        writeoff = self.st_cents.move_id.line_ids.filtered(
+            lambda line: line.account_id.code == "77800000000"
+        )
+        self.assertEqual(writeoff.credit, 0.03)
+        # The cents rule never covers transfers or charges.
+        self.assertFalse(self.st_transfer.is_reconciled)
+
+    def test_reconcile_all_needs_a_match(self):
+        with self.assertRaisesRegex(UserError, "Nothing to reconcile"):
+            self._run(
+                "alda_bank_reconcile_all",
+                property_id=self.prop.id,
+                date_from="2026-09-24",
+                date_to="2026-09-24",
+            )
+        # Without confirmation, nothing is written.
+        self._run(
+            "alda_bank_reconcile_all",
+            property_id=self.prop.id,
+            date_from="2026-09-20",
+            date_to="2026-09-30",
+        )
+        self.assertFalse(self.st_tpv.is_reconciled)

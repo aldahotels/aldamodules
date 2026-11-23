@@ -38,6 +38,12 @@ AI tools specific to Alda Hotels, served over MCP with the guardrails of
   CaixaBank statements of each hotel against the grouped TPV entries (``TB``)
   and the transfer collections (``CB``), the notice to the hotel's TAZ and the
   write-off of cents differences to 678/778.
+* ``alda_bank_reconcile_all_preview`` and ``alda_bank_reconcile_all``: the
+  whole CaixaBank account of a hotel in one request, as a numbered table bank
+  against Odoo the user can leave lines out of: TPV settlements and transfers
+  with a single exact match, and charges with the single vendor bill of the
+  hotel's ``FR`` journal whose amount due is exactly the charge, checking the
+  supplier's payment term (draft notice for the TAZ when paid late).
 
 The write tools need a preview and an explicit confirmation, a list of allowed
 users and the switches of ``pms_ai_tool`` turned on.
@@ -60,10 +66,19 @@ System parameters, all optional:
   ``alda_ai_tool.writeoff_income_account_code`` (``77800000000``).
 * ``alda_ai_tool.taz_job_ids``: jobs that make an employee the TAZ of a hotel.
   By default, the jobs whose name contains "TAZ".
+* ``alda_ai_tool.purchase_journal_prefix`` (``FR``): code of the hotel's
+  purchase journal, where ``alda_bank_reconcile_all`` looks for the vendor
+  bills of the charges. The journal must have the hotel among its properties
+  or be coded prefix + hotel code.
 
 The hotel of an employee comes from the employee's properties
 (``pms_hr_property``); the analytic account of the write-off, from the
 property.
+
+Write tools (``alda_bank_reconcile``, ``alda_bank_reconcile_all``,
+``alda_bank_notify_taz``...) are created with changes disabled: enable
+``write_enabled`` and set the allowed users on each tool, and the system
+parameter ``pms_ai_tool.write_enabled``.
 
 Bug Tracker
 ===========

@@ -54,4 +54,22 @@
         <field name="function_name">_ai_alda_bank_reconcile</field>
         <field name="kind">generic</field>
     </record>
+    <record id="ai_tool_alda_bank_reconcile_all_preview" model="ai.tool">
+        <field name="name">alda_bank_reconcile_all_preview</field>
+        <field
+            name="description"
+        >Numbered table, bank against Odoo, of every pending line of a hotel's CaixaBank journals (prefix CB) in a period of at most 31 days, with what alda_bank_reconcile_all would do: TPV settlements and transfers with a single open entry of exactly the same amount; charges with the single open vendor bill of the hotel's FR journal whose amount due is exactly the charge, with the days since the bill against the supplier's payment term and a draft notice for the TAZ when paid late. Everything else is left as it is, with the reason. Read only.</field>
+        <field name="model_id" ref="model_alda_ai_bank_tools" />
+        <field name="function_name">_ai_alda_bank_reconcile_all_preview</field>
+        <field name="kind">generic</field>
+    </record>
+    <record id="ai_tool_alda_bank_reconcile_all" model="ai.tool">
+        <field name="name">alda_bank_reconcile_all</field>
+        <field
+            name="description"
+        >Reconcile in one go the lines of a hotel's CaixaBank journals (prefix CB) that alda_bank_reconcile_all_preview proposes: TPV settlements, transfers and charges with a single exact counterpart, never anything else. Two steps: confirm=false returns the numbered table and a token; show it to the user. If they leave lines out, call it again with confirm=false and exclude_numbers to show the final table and get a new token. Only after their approval, call it with confirm=true, the same arguments and the token. Each line is reconciled on its own; notices to the TAZ are not sent (alda_bank_notify_taz).</field>
+        <field name="model_id" ref="model_alda_ai_bank_tools" />
+        <field name="function_name">_ai_alda_bank_reconcile_all</field>
+        <field name="kind">generic</field>
+    </record>
 </odoo>

@@ -380,6 +380,12 @@ reconciliation of the payroll accounts 465 by the 7-digit employee number.</li>
 CaixaBank statements of each hotel against the grouped TPV entries (<tt class="docutils literal">TB</tt>)
 and the transfer collections (<tt class="docutils literal">CB</tt>), the notice to the hotel’s TAZ and the
 write-off of cents differences to 678/778.</li>
+<li><tt class="docutils literal">alda_bank_reconcile_all_preview</tt> and <tt class="docutils literal">alda_bank_reconcile_all</tt>: the
+whole CaixaBank account of a hotel in one request, as a numbered table bank
+against Odoo the user can leave lines out of: TPV settlements and transfers
+with a single exact match, and charges with the single vendor bill of the
+hotel’s <tt class="docutils literal">FR</tt> journal whose amount due is exactly the charge, checking the
+supplier’s payment term (draft notice for the TAZ when paid late).</li>
 </ul>
 <p>The write tools need a preview and an explicit confirmation, a list of allowed
 users and the switches of <tt class="docutils literal">pms_ai_tool</tt> turned on.</p>
@@ -408,10 +414,18 @@ TPV journals; the digits after the prefix are the hotel code.</li>
 <tt class="docutils literal">alda_ai_tool.writeoff_income_account_code</tt> (<tt class="docutils literal">77800000000</tt>).</li>
 <li><tt class="docutils literal">alda_ai_tool.taz_job_ids</tt>: jobs that make an employee the TAZ of a hotel.
 By default, the jobs whose name contains “TAZ”.</li>
+<li><tt class="docutils literal">alda_ai_tool.purchase_journal_prefix</tt> (<tt class="docutils literal">FR</tt>): code of the hotel’s
+purchase journal, where <tt class="docutils literal">alda_bank_reconcile_all</tt> looks for the vendor
+bills of the charges. The journal must have the hotel among its properties
+or be coded prefix + hotel code.</li>
 </ul>
 <p>The hotel of an employee comes from the employee’s properties
 (<tt class="docutils literal">pms_hr_property</tt>); the analytic account of the write-off, from the
 property.</p>
+<p>Write tools (<tt class="docutils literal">alda_bank_reconcile</tt>, <tt class="docutils literal">alda_bank_reconcile_all</tt>,
+<tt class="docutils literal">alda_bank_notify_taz</tt>…) are created with changes disabled: enable
+<tt class="docutils literal">write_enabled</tt> and set the allowed users on each tool, and the system
+parameter <tt class="docutils literal">pms_ai_tool.write_enabled</tt>.</p>
 </div>
 <div class="section" id="bug-tracker">
 <h1><a class="toc-backref" href="#toc-entry-2">Bug Tracker</a></h1>

@@ -1,0 +1,569 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* alda_ai_tool
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid " and a write-off of %(amount)s to %(account)s"
+msgstr " y un descuadre de %(amount)s a %(account)s"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "%(count)s activities created on %(move)s."
+msgstr "%(count)s actividades creadas en %(move)s."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "%(count)s pending lines in the period; at most %(max)s in one call. Narrow the period."
+msgstr "%(count)s líneas pendientes en el periodo; como mucho %(max)s por llamada. Acorta el periodo."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "%(count)s statement lines to reconcile in %(journals)s."
+msgstr "%(count)s líneas de extracto por conciliar en %(journals)s."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+#, python-format
+msgid "%(groups)s groups can be reconciled (%(mixed)s mix months); %(pending)s do not add up, %(loose)s lines have no clear number."
+msgstr "%(groups)s grupos se pueden conciliar (%(mixed)s mezclan meses); %(pending)s no cuadran, %(loose)s líneas no tienen un número claro."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "%(lines)s pending lines: %(reconcile)s to reconcile, %(excluded)s excluded, %(skip)s left as they are, %(notices)s notices to send."
+msgstr "%(lines)s líneas pendientes: %(reconcile)s por conciliar, %(excluded)s excluidas, %(skip)s se quedan como están, %(notices)s avisos por enviar."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "%(matched)s lines with candidates, %(cents)s with a difference of cents, %(notices)s to notify."
+msgstr "%(matched)s líneas con candidatos, %(cents)s con una diferencia de céntimos, %(notices)s por avisar."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+#, python-format
+msgid "%s groups could not be reconciled and were left as they were."
+msgstr "%s grupos no se han podido conciliar y se han quedado como estaban."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+#, python-format
+msgid "%s groups have lines in a locked period: once reconciled, 'Unreconcile' will be refused for them."
+msgstr "%s grupos tienen líneas en un periodo bloqueado: una vez conciliados, se rechazará 'Romper conciliación' para ellos."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "%s lines could not be reconciled and were left as they were."
+msgstr "%s líneas no se han podido conciliar y se han quedado como estaban."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "%s open vendor bills for this exact amount: choose one in Odoo."
+msgstr "%s facturas de proveedor abiertas por este importe exacto: elige una en Odoo."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+msgid "Amounts are the open (residual) amounts: an item partly reconciled before only counts for what is left."
+msgstr "Los importes son los abiertos (residuales): un apunte conciliado antes en parte solo cuenta por lo que le queda."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "Bank reconciliation difference"
+msgstr "Diferencia en la conciliación bancaria"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "Candidates: open journal items of the transit accounts. TPV: in the TPV journal, dated the settled day (grouped entry) with the same amount. Transfer: in the bank journal, dated the same day or the next one, alone or in sets of up to %s items adding up exactly."
+msgstr "Candidatos: apuntes abiertos de las cuentas puente. TPV: en el diario de TPV, con fecha del día liquidado (asiento agrupado) y el mismo importe. Transferencia: en el diario de banco, con fecha del mismo día o del siguiente, solos o en grupos de hasta %s apuntes que sumen exactamente."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "Charges (negative lines): the open vendor bill of the hotel's %s journal whose amount due is exactly the charge (same supplier when the bank line has one; the supplier's reference in the concept picks one among several). term: days since the bill against the supplier's payment term; a late payment brings a draft notice for the TAZ."
+msgstr "Cargos (líneas negativas): la factura de proveedor abierta del diario %s del hotel cuyo importe pendiente es exactamente el cargo (mismo proveedor si la línea del banco lo trae; la referencia del proveedor en el concepto elige entre varias). term: días desde la factura frente al plazo de pago del proveedor; un pago fuera de plazo trae un borrador de aviso para el TAZ."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "Concepts are cut to %s characters."
+msgstr "Los conceptos se recortan a %s caracteres."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "Create an activity on %(move)s for %(users)s."
+msgstr "Crear una actividad en %(move)s para %(users)s."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "Differs by %s from the grouped entry: include write-offs or use alda_bank_reconcile."
+msgstr "Difiere en %s del asiento agrupado: incluye los descuadres o usa alda_bank_reconcile."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "Differs by a few cents but there is no single grouped entry of the settled day, or the hotel has no analytic account."
+msgstr "Difiere en unos céntimos pero no hay un único asiento agrupado del día liquidado, o el hotel no tiene cuenta analítica."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+msgid "Each group is reconciled on its own; it can be undone from Odoo with 'Unreconcile'."
+msgstr "Cada grupo se concilia por separado; se puede deshacer desde Odoo con 'Romper conciliación'."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "Each line is reconciled on its own. Undo: in the bank reconciliation, open the statement line and reset it."
+msgstr "Cada línea se concilia por separado. Deshacer: en la conciliación bancaria, abre la línea de extracto y restablécela."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+msgid "Lines: journal items of reconcilable accounts starting with 465, posted and not reconciled."
+msgstr "Líneas: apuntes de cuentas conciliables que empiezan por 465, publicados y sin conciliar."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "Matched in part already: finish it in Odoo."
+msgstr "Ya está casada en parte: termínala en Odoo."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "No TAZ with an active internal user is assigned to %s in Employees."
+msgstr "No hay ningún TAZ con usuario interno activo asignado a %s en Empleados."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "No open entry for this amount."
+msgstr "No hay ningún asiento abierto por este importe."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "No open vendor bill of %s for this exact amount: not reconciled."
+msgstr "No hay ninguna factura de proveedor abierta de %s por este importe exacto: no se concilia."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "Nothing in Odoo adds up: send the notice with alda_bank_notify_taz."
+msgstr "Nada en Odoo cuadra: envía el aviso con alda_bank_notify_taz."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "Nothing to reconcile: %s"
+msgstr "Nada que conciliar: %s"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "Notices are drafts: nothing is sent; use alda_bank_notify_taz with the statement line and the text."
+msgstr "Los avisos son borradores: no se envía nada; usa alda_bank_notify_taz con la línea de extracto y el texto."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+msgid "Number: the first 7-digit number of the label or, if it has none, of the entry reference. A label with several numbers is ambiguous and left out."
+msgstr "Número: el primer número de 7 cifras de la etiqueta o, si no tiene, de la referencia del asiento. Una etiqueta con varios números es ambigua y se deja fuera."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "Odoo has more than the bank: a collection may be extra or late"
+msgstr "Odoo tiene más que el banco: puede sobrar un cobro o llegar tarde"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+#, python-format
+msgid "Only %(shown)s of %(total)s groups go in this call."
+msgstr "Solo van %(shown)s de %(total)s grupos en esta llamada."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "Only a set of collections adds up: review it with alda_bank_reconcile."
+msgstr "Solo cuadra un conjunto de cobros: revísalo con alda_bank_reconcile."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "Only incoming statement lines can be reconciled here."
+msgstr "Aquí solo se pueden conciliar líneas de extracto de ingreso."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "Outgoing lines are not covered by these tools."
+msgstr "Las líneas de pago no están cubiertas por estas herramientas."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "Over %s reconciliations: run it again afterwards."
+msgstr "Más de %s conciliaciones: vuelve a ejecutarla después."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "Pending: statement lines of the hotel's bank journals (prefix %s) not reconciled yet."
+msgstr "Pendientes: líneas de extracto de los diarios de banco del hotel (prefijo %s) aún sin conciliar."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "Recipients: the users of the employees whose job is TAZ and who have the hotel among their properties."
+msgstr "Destinatarios: los usuarios de los empleados cuyo puesto es TAZ y que tienen el hotel entre sus propiedades."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+msgid "Reconcilable group: debit and credit lines of the same company, account and number whose open amounts add up to exactly 0, with one partner or none. First by number and month; what is left, by number only (flagged as mixing months)."
+msgstr "Grupo conciliable: líneas al debe y al haber de la misma compañía, cuenta y número cuyos importes abiertos suman exactamente 0, con un solo contacto o ninguno. Primero por número y mes; lo que queda, solo por número (marcado como que mezcla meses)."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+#, python-format
+msgid "Reconcile %(groups)s groups (%(lines)s lines) of the 465 accounts."
+msgstr "Conciliar %(groups)s grupos (%(lines)s líneas) de las cuentas 465."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "Reconcile the bank line of %(date)s for %(amount)s with %(count)s items%(writeoff)s."
+msgstr "Conciliar la línea del banco del %(date)s por %(amount)s con %(count)s apuntes%(writeoff)s."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+#, python-format
+msgid "Reconciled %(done)s groups; %(failed)s failed."
+msgstr "Conciliados %(done)s grupos; %(failed)s han fallado."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "Reconciled %(done)s lines; %(failed)s failed."
+msgstr "Conciliadas %(done)s líneas; %(failed)s han fallado."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "Reconciled meanwhile."
+msgstr "Conciliada mientras tanto."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "Several open entries for this exact amount: choose one with alda_bank_reconcile."
+msgstr "Varios asientos abiertos por este importe exacto: elige uno con alda_bank_reconcile."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "Some journal items do not exist."
+msgstr "Algunos apuntes no existen."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+msgid "Some lines were reconciled meanwhile."
+msgstr "Algunas líneas se han conciliado mientras tanto."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "Statement line %(id)s reconciled (%(move)s)."
+msgstr "Línea de extracto %(id)s conciliada (%(move)s)."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "TPV settlements and transfers: the same matching as alda_bank_match_candidates, keeping only single exact matches. Combinations and differences of cents are listed to review (cents only with include_writeoffs)."
+msgstr "Liquidaciones de TPV y transferencias: el mismo casado que alda_bank_match_candidates, quedándose solo con coincidencias exactas únicas. Las combinaciones y las diferencias de céntimos se listan para revisar (los céntimos solo con include_writeoffs)."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "Table: every pending line of the hotel's CB journals in the period, numbered by date. action reconcile: a single Odoo counterpart with exactly the same amount; skip: nothing is done, see reason."
+msgstr "Tabla: todas las líneas pendientes de los diarios CB del hotel en el periodo, numeradas por fecha. action reconcile: una única contrapartida en Odoo con exactamente el mismo importe; skip: no se hace nada, ver reason."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "The TAZ already have an open activity on %s about this line."
+msgstr "Los TAZ ya tienen una actividad abierta en %s sobre esta línea."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "The bank line is %(bank)s and the items add up to %(odoo)s: a difference of %(diff)s cannot be written off (the cents rule is for whole TPV settlements). Notify the TAZ instead of reconciling."
+msgstr "La línea del banco es de %(bank)s y los apuntes suman %(odoo)s: una diferencia de %(diff)s no se puede llevar a descuadre (la regla de céntimos es para liquidaciones de TPV completas). Avisa al TAZ en lugar de conciliar."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "The bank reconciliation proposes other lines (%s); nothing was done. Finish it in Odoo."
+msgstr "La conciliación bancaria propone otras líneas (%s); no se ha hecho nada. Termínala en Odoo."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "The company %(company)s has no account %(code)s for write-offs."
+msgstr "La compañía %(company)s no tiene la cuenta %(code)s para los descuadres."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+msgid "The group was not fully reconciled; nothing was kept."
+msgstr "El grupo no ha quedado conciliado del todo; no se ha guardado nada."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "The hotel has no purchase journal starting with %s: charges are not matched."
+msgstr "El hotel no tiene ningún diario de compras que empiece por %s: los cargos no se casan."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "The payable items of %s do not add up to its amount due: reconcile it in Odoo."
+msgstr "Los apuntes a pagar de %s no suman su importe pendiente: concílialo en Odoo."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "The payments of the settled day add up to the bank amount but their grouped TPV entry does not exist yet: reconcile it once the daily grouping has run. Nothing to notify."
+msgstr "Los cobros del día liquidado suman el importe del banco pero aún no existe su asiento agrupado de TPV: concílialo cuando se haya ejecutado la agrupación diaria. No hay nada que avisar."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "The property %(prop)s has no bank journal starting with %(prefix)s."
+msgstr "La propiedad %(prop)s no tiene ningún diario de banco que empiece por %(prefix)s."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "The property %s has no analytic account for the write-off."
+msgstr "La propiedad %s no tiene cuenta analítica para el descuadre."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "The reconciliation does not balance; nothing was done."
+msgstr "La conciliación no cuadra; no se ha hecho nada."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "The reconciliation has no line for the write-off."
+msgstr "La conciliación no tiene línea para el descuadre."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+msgid "The same Odoo entry matches several bank lines: reconcile them one by one."
+msgstr "El mismo asiento de Odoo casa con varias líneas del banco: concílialas una a una."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "The statement line %s is already matched in part: finish it in the bank reconciliation of Odoo."
+msgstr "La línea de extracto %s ya está casada en parte: termínala en la conciliación bancaria de Odoo."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "The statement line %s is already reconciled."
+msgstr "La línea de extracto %s ya está conciliada."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "The statement line could not be reconciled."
+msgstr "No se ha podido conciliar la línea de extracto."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "The statement line is not in a bank journal of the property."
+msgstr "La línea de extracto no está en un diario de banco de la propiedad."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "The write-off is not the one previewed."
+msgstr "El descuadre no es el de la vista previa."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "These journal items cannot be matched with this statement line (already reconciled, not posted, outside the dates, or not the open %(kind)s collections of the hotel): %(moves)s."
+msgstr "Estos apuntes no se pueden casar con esta línea de extracto (ya conciliados, sin publicar, fuera de fechas o que no son cobros %(kind)s abiertos del hotel): %(moves)s."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "These numbers are not in the table: %s."
+msgstr "Estos números no están en la tabla: %s."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+msgid "Undo: 'Unreconcile' on the journal items in Odoo."
+msgstr "Deshacer: 'Romper conciliación' en los apuntes en Odoo."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "Undo: in the bank reconciliation, open the statement line and reset it."
+msgstr "Deshacer: en la conciliación bancaria, abre la línea de extracto y restablécela."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "Unknown statement line %s."
+msgstr "Línea de extracto %s desconocida."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_payroll.py:0
+#, python-format
+msgid "You have no access to the companies %s."
+msgstr "No tienes acceso a las compañías %s."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "You have no access to the property of this statement line."
+msgstr "No tienes acceso a la propiedad de esta línea de extracto."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "a collection seems to be missing in Roomdoo"
+msgstr "parece que falta un cobro en Roomdoo"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "cents_writeoff: a difference up to %(cents)s goes to %(expense)s when the bank pays in less and to %(income)s when it pays in more, with the hotel's analytic account."
+msgstr "cents_writeoff: una diferencia de hasta %(cents)s va a %(expense)s cuando el banco abona menos y a %(income)s cuando abona más, con la cuenta analítica del hotel."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "collections minus refunds of the TPV journal that day"
+msgstr "cobros menos devoluciones del diario de TPV ese día"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "collections of the bank journal on the day and the day after"
+msgstr "cobros del diario de banco del día y del día siguiente"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+#, python-format
+msgid "combinations of up to %s collections"
+msgstr "combinaciones de hasta %s cobros"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "grouped TPV entry of the settled day and the days around it"
+msgstr "asiento agrupado de TPV del día liquidado y de los días de alrededor"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "notice: draft of the message for the hotel's TAZ when nothing adds up (alda_bank_notify_taz sends it)."
+msgstr "notice: borrador del mensaje para el TAZ del hotel cuando nada cuadra (lo envía alda_bank_notify_taz)."
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank_all.py:0
+#, python-format
+msgid "paid %(days)s days after the bill; the agreed term is %(term)s days"
+msgstr "pagada %(days)s días después de la factura; el plazo pactado es de %(term)s días"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "the bank has more than Odoo: a collection may be missing"
+msgstr "el banco tiene más que Odoo: puede faltar un cobro"
+
+#. module: alda_ai_tool
+#. odoo-python
+#: code:addons/alda_ai_tool/models/alda_ai_bank.py:0
+msgid "tpv: the concept starts with ON and the merchant number; the settlement is for the day before (settled_date, read from the DDMM of the concept when present). transfer: any other income. outgoing: payments out, not covered by these tools."
+msgstr "tpv: el concepto empieza por ON y el número de comercio; la liquidación es del día anterior (settled_date, leída del DDMM del concepto si lo trae). transfer: cualquier otro ingreso. outgoing: pagos, no cubiertos por estas herramientas."

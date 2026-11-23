@@ -14,12 +14,14 @@ PARAM_TAZ_JOBS = "alda_ai_tool.taz_job_ids"
 PARAM_CENTS = "alda_ai_tool.cents_threshold"
 PARAM_EXPENSE_ACCOUNT = "alda_ai_tool.writeoff_expense_account_code"
 PARAM_INCOME_ACCOUNT = "alda_ai_tool.writeoff_income_account_code"
+PARAM_PURCHASE_PREFIX = "alda_ai_tool.purchase_journal_prefix"
 DEFAULTS = {
     PARAM_BANK_PREFIX: "CB",
     PARAM_TPV_PREFIX: "TB",
     PARAM_CENTS: "0.05",
     PARAM_EXPENSE_ACCOUNT: "67800000000",
     PARAM_INCOME_ACCOUNT: "77800000000",
+    PARAM_PURCHASE_PREFIX: "FR",
 }
 # "ON <merchant number> <DDMM of the settled day>"
 TPV_CONCEPT = re.compile(r"^\s*ON\s+(\d+)(?:\s+(\d{2})(\d{2}))?\b")
@@ -615,7 +617,11 @@ class AldaAiBankTools(models.AbstractModel):
         apply="_alda_bank_notify_taz_apply",
     )
     def _ai_alda_bank_notify_taz(self, statement_line_id, message):
-        st_line, context = self._alda_bank_statement_line(statement_line_id)
+        # Reconciled lines too: a supplier paid out of term is reconciled and
+        # still notified.
+        st_line, context = self._alda_bank_statement_line(
+            statement_line_id, pending=False
+        )
         users = self._alda_bank_taz_users(context["property"])
         if not users:
             raise UserError(
@@ -802,13 +808,26 @@ class AldaAiBankTools(models.AbstractModel):
             plan["statement_line_id"]
         )
         lines = self.env["account.move.line"].browse(plan["line_ids"])
+        self._alda_bank_widget_reconcile(st_line, lines, plan["writeoff"])
+        return {
+            "summary": _("Statement line %(id)s reconciled (%(move)s).")
+            % {"id": st_line.id, "move": st_line.move_id.name},
+            "result": {
+                "statement_line_id": st_line.id,
+                "move": st_line.move_id.name,
+                "reconciled": True,
+            },
+        }
+
+    @api.model
+    def _alda_bank_widget_reconcile(self, st_line, lines, writeoff=None):
+        """Reconcile through the bank widget exactly what a preview showed."""
         widget = (
             self.env["bank.rec.widget"]
             .with_context(default_st_line_id=st_line.id)
             .new({})
         )
         widget._action_add_new_amls(lines, allow_partial=False)
-        writeoff = plan["writeoff"]
         if writeoff:
             balance_line = widget.line_ids.filtered(lambda l: l.flag == "auto_balance")
             if not balance_line:
@@ -847,12 +866,3 @@ class AldaAiBankTools(models.AbstractModel):
         st_line.invalidate_recordset(["is_reconciled"])
         if not st_line.is_reconciled:
             raise UserError(_("The statement line could not be reconciled."))
-        return {
-            "summary": _("Statement line %(id)s reconciled (%(move)s).")
-            % {"id": st_line.id, "move": st_line.move_id.name},
-            "result": {
-                "statement_line_id": st_line.id,
-                "move": st_line.move_id.name,
-                "reconciled": True,
-            },
-        }
