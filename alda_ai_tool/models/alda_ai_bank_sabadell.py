@@ -211,7 +211,8 @@ class AldaAiBankSabadellTools(models.AbstractModel):
 
     @api.model
     def _alda_sabadell_history(self, context, merchant):
-        """(date, journal type) of the past reconciled settlements of a number."""
+        """(date, journal type, journal code) of the past reconciled settlements
+        of a number."""
         st_lines = self.env["account.bank.statement.line"].search(
             [
                 ("journal_id", "in", context["bank"].ids),
@@ -231,11 +232,14 @@ class AldaAiBankSabadellTools(models.AbstractModel):
                 other.matched_debit_ids.debit_move_id
                 | other.matched_credit_ids.credit_move_id
             )
-            for kind in {
-                self._alda_sabadell_journal_type(context, journal)
-                for journal in counterparts.journal_id
-            }:
-                history.append((st_line.date, kind))
+            for journal in counterparts.journal_id:
+                history.append(
+                    (
+                        st_line.date,
+                        self._alda_sabadell_journal_type(context, journal),
+                        journal.code,
+                    )
+                )
         return history
 
     @api.model
@@ -254,7 +258,7 @@ class AldaAiBankSabadellTools(models.AbstractModel):
         )
         history = self._alda_sabadell_history(context, merchant)
         counts = {}
-        for _day, kind in history:
+        for _day, kind, _code in history:
             counts[kind] = counts.get(kind, 0) + 1
         info = {
             "merchant": merchant,
@@ -278,10 +282,14 @@ class AldaAiBankSabadellTools(models.AbstractModel):
         elif len(counts) == 1 and next(iter(counts)) in MERCHANT_TYPES:
             info.update(type=next(iter(counts)), source="history", to_confirm=True)
         if info["type"] and not info["warning"] and info["source"] != "history":
+            # Seen later with another journal (or type, if none is stored).
             since = stored.write_date.date() if stored else date.min
-            others = sorted(
-                {kind for day, kind in history if day >= since} - {info["type"]}
-            )
+            if info["journal"]:
+                seen = {code for day, _kind, code in history if day >= since}
+                others = sorted(seen - {info["journal"]})
+            else:
+                seen = {kind for day, kind, _code in history if day >= since}
+                others = sorted(seen - {info["type"]})
             if others:
                 info["warning"] = _(
                     "The number %(merchant)s (%(type)s) has also been reconciled "
